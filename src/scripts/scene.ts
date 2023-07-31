@@ -44,8 +44,6 @@ export class Scene extends Container {
         // discern portrait/landscape
 
         const grid = new Grid(5, this.gridWidth);
-        const symbol = grid.columns[0].tokens[0]
-        grid.position.set(0 + symbol.width/2, 0 + symbol.height/2)
         this.addChild(grid);
     }
 

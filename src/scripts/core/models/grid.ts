@@ -1,20 +1,25 @@
 import { Container } from "pixi.js";
 import { Column } from "./column";
 import { eventEmitter } from "../../../event-emitter";
+import { Token } from "./token";
 
 export class Grid extends Container {
 
     private gridSize: number;
-    public columns: Column[];
+    private columns: Column[];
     private activeToken: number;
 
 
     constructor (gridSize: number, availWidth: number) {
         super ()
 
-        eventEmitter.on('clickCheck', this.clickCheck)
-        eventEmitter.on('tokenFirstClicked', this.swapPrepare);
-        eventEmitter.on('tokenSecondClicked', this.swapCheck);
+        //for fixing context issues
+        //eventEmitter.on('clickCheck', this.clickCheck.bind(this))
+        //eventEmitter.on('clickCheck', this.clickCheck, this)
+
+        eventEmitter.on('clickCheck', this.clickCheck, this)
+        // eventEmitter.on('tokenFirstClicked', this.swapPrepare);
+        //eventEmitter.on('tokenSecondClicked', this.swapCheck);
 
         this.gridSize = gridSize;
         this.columns = [];
@@ -27,39 +32,79 @@ export class Grid extends Container {
             this.addChild(newColumn);
         }
         
-        this.position.set(this.columns[0].tokens[0].width/2, this.columns[0].tokens[0].height/2);
+        this.position.set(this.getToken(0,0).width/2, this.getToken(0,0).height/2);
 
     }
 
     private clickCheck(tokenX: number, tokenY: number): void {
         //on first click, despite being defined in the constructor, activeToken appears undefined
         if(this.activeToken === undefined) {this.activeToken = 0;}
-        console.log("tokenX: ", tokenX, "tokenY", tokenY, "ActiveToken: ", this.activeToken);
+        //console.log("tokenX: ", tokenX, "tokenY", tokenY, "ActiveToken: ", this.activeToken);
 
-        if(this.activeToken === 0) {
-            this.activeToken = 1; 
-            eventEmitter.emit('tokenFirstClicked', tokenX, tokenY); 
-            console.log("FirstClick", this.activeToken)
-            return;
-        }
+        const location = [tokenX, tokenY];
+        this.matchCheck(location);
 
-        if(this.activeToken === 1) {
-            this.activeToken = 2; 
-            eventEmitter.emit('tokenSecondClicked', tokenX, tokenY); 
-            console.log("SecondClick", this.activeToken)
-            return; 
-        }
+
+        // if(this.activeToken === 0) {
+        //     this.activeToken = 1; 
+        //     eventEmitter.emit('tokenFirstClicked', tokenX, tokenY);
+        //     console.log("FirstClick", this.activeToken)
+        //     return;
+        // }
+
+        // if(this.activeToken === 1) {
+        //     this.activeToken = 2; 
+        //     eventEmitter.emit('tokenSecondClicked', tokenX, tokenY); 
+        //     console.log("SecondClick", this.activeToken)
+        //     return; 
+        // }
     }
 
     private swapPrepare(): void {
 
     }
 
-    private swapCheck(): void {
-        //checkMatch
+    private matchCheck(inputCoords: number[]): void {
 
-        //emit swap passed
-        //emit swap failed
+        const originX = inputCoords[0];
+        const originY = inputCoords[1];
+        const origin = this.getToken(originX, originY);
+        let xMatches = []; xMatches.push(origin);
+        let yMatches = []; yMatches.push(origin);
+
+        //check token's right
+        for(let i = originX+1; i <= this.gridSize-1; i++) {
+            if(!this.isMatch(origin, this.getToken(i, originY))) {break;}
+            xMatches.push(this.getToken(i, originY))
+        }
+
+        //token's left
+        for(let i = originX-1; i >= 0; i--) {
+            if(!this.isMatch(origin, this.getToken(i, originY))) {break;}
+            xMatches.push(this.getToken(i, originY))
+        }
+
+        //beneath token
+        for(let i = originY+1; i <= this.gridSize-1; i++) {
+            if(!this.isMatch(origin, this.getToken(originX, i))) {break;}
+            yMatches.push(this.getToken(originX, i))
+        }
+
+        //above token
+        for(let i = originY-1; i >= 0; i--) {
+            if(!this.isMatch(origin, this.getToken(originX, i))) {break;}
+            yMatches.push(this.getToken(originX, i))
+        }
+
+    }
+
+    private getToken(X: number, Y: number): Token {
+        return this.columns[X].getToken(Y);
+    }
+
+    private isMatch(originToken: Token, comparisonToken: Token): boolean {
+        if(originToken.getSkIndex() === comparisonToken.getSkIndex()) {return true;}
+        else return false;
     }
 
     // private checkMatch(): void {

@@ -4,7 +4,7 @@ import { Token } from "./token";
 
 export class Column extends Container{
 
-    public tokens: Token[];
+    private tokens: Token[];
     private columnID: number;
     private columnSize: number;
     // private viewWidth: number;
@@ -31,7 +31,10 @@ export class Column extends Container{
             this.tokens.push(newToken);
             this.addChild(newToken);
         }
+    }
 
+    public getToken(Y: number) {
+        return this.tokens[Y];
     }
 
 }

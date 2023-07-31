@@ -41,6 +41,15 @@ export class Token extends Container {
     public onTokenReveal(arg: number): void {
     }
 
+    public getLocation(): number[] {
+        const location = [this.parentID, this.locationIndex];
+        return location;
+    }
+
+    public getSkIndex(): number {
+        return this.skIndex;
+    }
+
     // private wobble(): void {
     //     if(this.skIndex === 1){
     //         gsap.to(this, {
