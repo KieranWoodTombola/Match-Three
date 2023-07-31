@@ -26,7 +26,6 @@ export class Token extends Container {
         this.locationIndex = locationIndex;
         this.skIndex = skIndex;
         this.skin = new Spine(Assets.get('symbols').spineData);
-        this.skin.skeleton.setSkinByName('1');
         this.skin.skeleton.setSkinByName(`${this.skIndex}`);
         this.width = Math.ceil(this.skin.width)
         this.scale.set(0.4);

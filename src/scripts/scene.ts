@@ -15,15 +15,19 @@ export class Scene extends Container {
         this.viewHeight = height;
 
         this.gridWidth = 0;
-        if(this.viewWidth <= this.height){this.gridWidth = this.viewWidth;}
-        else {this.gridWidth = this.viewHeight}
+        if (this.viewWidth <= this.height) { 
+            this.gridWidth = this.viewWidth; 
+        }
+        else { 
+            this.gridWidth = this.viewHeight; 
+        }
 
     }
 
-    public async load(): Promise <void> {
+    public async load(): Promise<void> {
         const assetList = [
-            { key:'logo', url: 'assets/images/logo.png'},
-            { key:'symbols', url: 'assets/animations/symbols/symbol.json'}
+            { key: 'logo', url: 'assets/images/logo.png' },
+            { key: 'symbols', url: 'assets/animations/symbols/symbol.json' }
         ]
 
         for (const asset of assetList) {
