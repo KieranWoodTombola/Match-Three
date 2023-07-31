@@ -44,7 +44,7 @@ export class Grid extends Container {
         //console.log("tokenX: ", tokenX, "tokenY", tokenY, "ActiveToken: ", this.activeToken);
 
         const location = [tokenX, tokenY];
-
+        this.matchCheck(location);
 
         // if(this.activeToken === 0) {
         //     this.activeToken = 1; 
@@ -97,6 +97,8 @@ export class Grid extends Container {
             yMatches.push(this.getToken(originX, i))
         }
 
+        console.log(xMatches, yMatches);
+
         if(xMatches.length >= 3) {this.purgeTokens(xMatches)}
         if(yMatches.length >= 3) {this.purgeTokens(yMatches)}
         if( (xMatches.length >= 3) || (yMatches.length >= 3)) {this.nukeBoard();}
@@ -124,7 +126,6 @@ export class Grid extends Container {
     }
 
     private nukeBoard(): void {
-        console.log("KABOOM");
 
         function isMatched(token: Token) {
             return (token.matched);
@@ -150,9 +151,10 @@ export class Grid extends Container {
             });
             for(var i = 0; i <= 5; i++){
                 const randomNumber = Math.round(Math.random() * (9 - 1) + 1);
-                newColumn[i].setSkIndex(randomNumber);
             }
         });
+
+        console.log("KABOOM");
 
     }
 
