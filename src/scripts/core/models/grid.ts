@@ -96,15 +96,59 @@ export class Grid extends Container {
             yMatches.push(this.getToken(originX, i))
         }
 
+        if(xMatches.length >= 3) {this.purgeTokens(xMatches)}
+        if(yMatches.length >= 3) {this.purgeTokens(yMatches)}
+        if( (xMatches.length >= 3) || (yMatches.length >= 3)) {this.nukeBoard();}
+
     }
 
     private getToken(X: number, Y: number): Token {
         return this.columns[X].getToken(Y);
     }
 
+    private purgeTokens(inputTokens: Token[]): void {
+        inputTokens.forEach(element => {
+            element.matched = true;
+            console.log(element.matched)
+        });
+    }
+
     private isMatch(originToken: Token, comparisonToken: Token): boolean {
         if(originToken.getSkIndex() === comparisonToken.getSkIndex()) {return true;}
         else return false;
+    }
+
+    private nukeBoard(): void {
+        console.log("KABOOM");
+
+        function isMatched(token: Token) {
+            return (token.matched);
+        }
+
+        function isNotMatched(token: Token) {
+            return (!token.matched);
+        }
+
+        this.columns.forEach(column => {
+            let unmatched = column.getAllTokens().filter(isNotMatched);
+            let matched = column.getAllTokens().filter(isMatched);
+            matched.forEach(token => {
+                token.shuffleSkin();
+            });
+            let newColumn: Token [];
+            newColumn = [];
+            matched.forEach(token => {
+                newColumn.push(token);
+            });
+            unmatched.forEach(token => {
+                newColumn.push(token);
+            });
+            for(var i = 0; i <= 5; i++){
+                const randomNumber = Math.round(Math.random() * (9 - 1) + 1);
+                newColumn[i].setSkIndex(randomNumber);
+            }
+        });
+
     }
 
     // private checkMatch(): void {

@@ -33,6 +33,10 @@ export class Column extends Container{
         }
     }
 
+    public getAllTokens(): Token[] {
+        return this.tokens;
+    }
+
     public getToken(Y: number) {
         return this.tokens[Y];
     }
