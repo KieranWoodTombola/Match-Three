@@ -32,17 +32,18 @@ export class Grid extends Container {
             this.addChild(newColumn);
         }
         
-        this.position.set(this.getToken(0,0).width/2, this.getToken(0,0).height/2);
+        this.position.set(this.getToken(0,0).width * 0.5, this.getToken(0,0).height * 0.5);
 
     }
 
     private clickCheck(tokenX: number, tokenY: number): void {
         //on first click, despite being defined in the constructor, activeToken appears undefined
-        if(this.activeToken === undefined) {this.activeToken = 0;}
+        if(this.activeToken === undefined) {
+            this.activeToken = 0;
+        }
         //console.log("tokenX: ", tokenX, "tokenY", tokenY, "ActiveToken: ", this.activeToken);
 
         const location = [tokenX, tokenY];
-        this.matchCheck(location);
 
 
         // if(this.activeToken === 0) {
@@ -64,52 +65,17 @@ export class Grid extends Container {
 
     }
 
-    private matchCheck(inputCoords: number[]): void {
-
-        const originX = inputCoords[0];
-        const originY = inputCoords[1];
-        const origin = this.getToken(originX, originY);
-        let xMatches = []; xMatches.push(origin);
-        let yMatches = []; yMatches.push(origin);
-
-        //check token's right
-        for(let i = originX+1; i <= this.gridSize-1; i++) {
-            if(!this.isMatch(origin, this.getToken(i, originY))) {break;}
-            xMatches.push(this.getToken(i, originY))
-        }
-
-        //token's left
-        for(let i = originX-1; i >= 0; i--) {
-            if(!this.isMatch(origin, this.getToken(i, originY))) {break;}
-            xMatches.push(this.getToken(i, originY))
-        }
-
-        //beneath token
-        for(let i = originY+1; i <= this.gridSize-1; i++) {
-            if(!this.isMatch(origin, this.getToken(originX, i))) {break;}
-            yMatches.push(this.getToken(originX, i))
-        }
-
-        //above token
-        for(let i = originY-1; i >= 0; i--) {
-            if(!this.isMatch(origin, this.getToken(originX, i))) {break;}
-            yMatches.push(this.getToken(originX, i))
-        }
-
-    }
-
     private getToken(X: number, Y: number): Token {
         return this.columns[X].getToken(Y);
     }
 
     private isMatch(originToken: Token, comparisonToken: Token): boolean {
-        if(originToken.getSkIndex() === comparisonToken.getSkIndex()) {return true;}
-        else return false;
+        if(originToken.getSkIndex() === comparisonToken.getSkIndex()) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-
-    // private checkMatch(): void {
-
-    // }
-
 
 }
