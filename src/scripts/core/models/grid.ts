@@ -32,10 +32,23 @@ export class Grid extends Container {
     }
 
     private clickCheck(tokenX: number, tokenY: number): void {
-        console.log("tokenX: ", tokenX, "tokenY", tokenY);
+        //on first click, despite being defined in the constructor, activeToken appears undefined
+        if(this.activeToken === undefined) {this.activeToken = 0;}
+        console.log("tokenX: ", tokenX, "tokenY", tokenY, "ActiveToken: ", this.activeToken);
 
-        if(this.activeToken === 0) { this.activeToken = 1; eventEmitter.emit('tokenFirstClicked', tokenX, tokenY)}
-        if(this.activeToken === 1) {this.activeToken = 2; eventEmitter.emit('tokenSecondClicked', tokenX, tokenY);}
+        if(this.activeToken === 0) {
+            this.activeToken = 1; 
+            eventEmitter.emit('tokenFirstClicked', tokenX, tokenY); 
+            console.log("FirstClick", this.activeToken)
+            return;
+        }
+
+        if(this.activeToken === 1) {
+            this.activeToken = 2; 
+            eventEmitter.emit('tokenSecondClicked', tokenX, tokenY); 
+            console.log("SecondClick", this.activeToken)
+            return; 
+        }
     }
 
     private swapPrepare(): void {

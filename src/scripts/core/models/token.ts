@@ -16,8 +16,8 @@ export class Token extends Container {
         super();
 
         this.on('pointerdown', this.onClicked)
-        eventEmitter.on('tokenFirstClicked', this.onClicked);
-        eventEmitter.on('tokenSecondClicked', this.onClicked);
+        //eventEmitter.on('tokenFirstClicked', this.onClicked);
+        //eventEmitter.on('tokenSecondClicked', this.onClicked);
 
 
         this.interactive = true;
