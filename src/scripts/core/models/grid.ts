@@ -8,7 +8,7 @@ export class Grid extends Container {
     private gridSize: number;
     private columns: Column[];
     private activeToken: number;
-
+    private firstToken: Token;
 
     constructor (gridSize: number, availWidth: number) {
         super ()
@@ -24,6 +24,7 @@ export class Grid extends Container {
         this.gridSize = gridSize;
         this.columns = [];
         this.activeToken = 0;
+        this.firstToken = new Token(-1, -1, -1, 1, 0);
 
         for(var i = 0; i < this.gridSize; i++) {
             const newColumn = new Column(i, this.gridSize, availWidth, availWidth);
@@ -36,29 +37,52 @@ export class Grid extends Container {
 
     }
 
-    private clickCheck(tokenX: number, tokenY: number): void {
+    private clickCheck(targetToken: Token): void {
+
+        const targetCoords = targetToken.getLocation();
+        const targetX = targetCoords[0];
+        const targetY = targetCoords[1];
+        const targetSkIndex = targetToken.getSkIndex();
+
+        //on SecondClick
+        if(this.activeToken === 1) {
+            console.log("second token selected at:", targetX, targetY);
+
+            this.activeToken = 2
+            const secondToken = targetToken;
+            if(this.firstToken === secondToken) {
+                this.activeToken = 0;
+                return;
+            }
+            const previousCoords = this.firstToken.getLocation();
+            const previousX = previousCoords[0];
+            const previousY = previousCoords[1];
+            const previousSkIndex = this.firstToken.getSkIndex();
+
+            this.getToken(previousX, previousY).setToken(targetX, targetY, targetSkIndex);
+            targetToken.setToken(previousX, previousY, previousSkIndex);
+
+            console.log(this.firstToken.getSkIndex(), targetToken.getSkIndex());
+
+            this.matchCheck(previousCoords);
+            this.matchCheck(targetCoords);
+            this.activeToken = 0;
+            return;
+        }
+
+        //on FirstClick
+        if(this.activeToken === 0) {
+            this.activeToken = 1;
+            this.firstToken = targetToken
+            console.log("first token selected at:", targetX, targetY);
+            return;
+        }
+
         //on first click, despite being defined in the constructor, activeToken appears undefined
         if(this.activeToken === undefined) {
             this.activeToken = 0;
+            return;
         }
-        //console.log("tokenX: ", tokenX, "tokenY", tokenY, "ActiveToken: ", this.activeToken);
-
-        const location = [tokenX, tokenY];
-        this.matchCheck(location);
-
-        // if(this.activeToken === 0) {
-        //     this.activeToken = 1; 
-        //     eventEmitter.emit('tokenFirstClicked', tokenX, tokenY);
-        //     console.log("FirstClick", this.activeToken)
-        //     return;
-        // }
-
-        // if(this.activeToken === 1) {
-        //     this.activeToken = 2; 
-        //     eventEmitter.emit('tokenSecondClicked', tokenX, tokenY); 
-        //     console.log("SecondClick", this.activeToken)
-        //     return; 
-        // }
     }
 
     private swapPrepare(): void {
@@ -126,7 +150,6 @@ export class Grid extends Container {
     }
 
     private nukeBoard(): void {
-
         function isMatched(token: Token) {
             return (token.matched);
         }

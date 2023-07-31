@@ -33,12 +33,23 @@ export class Token extends Container {
         this.addChild(this.skin);
     }
 
+    setToken(parentID: number, locationIndex: number, skIndex: number) {
+        this.skIndex = skIndex;
+        this.parentID = parentID;
+        this.locationIndex = locationIndex;
+        this.skin.skeleton.setSkinByName(`${this.skIndex}`);
+    }
+
     //onClicked
     public onClicked(): void {
-        eventEmitter.emit('clickCheck', this.parentID, this.locationIndex);
+        eventEmitter.emit('clickCheck', this);
     }
 
     public onTokenReveal(arg: number): void {
+    }
+
+    public getParentID(): number {
+        return this.parentID;
     }
 
     public getLocation(): number[] {

@@ -1,10 +1,11 @@
 import { EventEmitter } from 'eventemitter3';
+import { Token } from './scripts/core/models/token';
 
 interface Events {
     empty: () => void
 
     //grid events
-    clickCheck: (tokenX: number, tokenY: number) => void
+    clickCheck: (token: Token) => void
     //column events
 
     //token events
