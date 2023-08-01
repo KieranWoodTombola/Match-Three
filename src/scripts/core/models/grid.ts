@@ -13,13 +13,7 @@ export class Grid extends Container {
     constructor (gridSize: number, availWidth: number) {
         super ()
 
-        //for fixing context issues
-        //eventEmitter.on('clickCheck', this.clickCheck.bind(this))
-        //eventEmitter.on('clickCheck', this.clickCheck, this)
-
         eventEmitter.on('clickCheck', this.clickCheck, this)
-        // eventEmitter.on('tokenFirstClicked', this.swapPrepare);
-        //eventEmitter.on('tokenSecondClicked', this.swapCheck);
 
         this.gridSize = gridSize;
         this.columns = [];
@@ -41,7 +35,6 @@ export class Grid extends Container {
     private clickCheck(targetToken: Token): void {
         //on first click, despite being defined in the constructor, activeToken appears undefined
         if(this.activeToken === undefined) {
-            
             this.activeToken = 0;
         }
 
@@ -75,8 +68,8 @@ export class Grid extends Container {
             
 
             //Swapping isn't working as expected
-            let targetFirst = this.getToken(firstX, firstY); //get the Token at the stored coordinates of the Token clicked first
-            targetFirst.setToken(secondSkIndex); //set the skin of the first token
+            let targetFirst = this.getToken(firstX, firstY);
+            targetFirst.setToken(secondSkIndex);
             let targetSecond = this.getToken(secondX, secondY);
             targetSecond.setToken(firstSkIndex);
 
@@ -93,7 +86,6 @@ export class Grid extends Container {
     }
 
     /**
-     * 
      * Using target token, search horizontally and vertically for adjacent matching tokens
      * Add those tokens to arrays and mark the tokens for later removal
      */
@@ -146,8 +138,6 @@ export class Grid extends Container {
         if(yMatches.length >= 3) {
             this.markMatchedTokens(yMatches);
         }
-        if((xMatches.length < 3) && (yMatches.length < 3)) {
-        }
 
     }
 
@@ -171,12 +161,10 @@ export class Grid extends Container {
     }
 
     /**
-     * 
      * search the board for tokens found to be in a matching position
      * reassemble the column
      * Unmatches tokens shoud be at the bottom of the column
      * Matching tokens should be at the top of the column with randomised skins.
-     * 
      */
     private nukeBoard(): void {
         function isMatched(token: Token) {
