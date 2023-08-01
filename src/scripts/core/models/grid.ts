@@ -103,8 +103,10 @@ export class Grid extends Container {
         const origin = inputToken;
         const originX = origin.getLocation()[0];
         const originY = origin.getLocation()[1];
-        let xMatches = []; xMatches.push(origin);
-        let yMatches = []; yMatches.push(origin);
+        let xMatches = []; 
+        xMatches.push(origin);
+        let yMatches = []; 
+        yMatches.push(origin);
 
         //check token's right
         for(let i = originX+1; i <= this.gridSize-1; i++) {
