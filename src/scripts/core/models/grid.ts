@@ -41,7 +41,6 @@ export class Grid extends Container {
         if(this.activeToken === undefined) {
             this.activeToken = 0;
         }
-        //console.log("tokenX: ", tokenX, "tokenY", tokenY, "ActiveToken: ", this.activeToken);
 
         const location = [tokenX, tokenY];
         this.matchCheck(location);
@@ -75,33 +74,45 @@ export class Grid extends Container {
 
         //check token's right
         for(let i = originX+1; i <= this.gridSize-1; i++) {
-            if(!this.isMatch(origin, this.getToken(i, originY))) {break;}
+            if(!this.isMatch(origin, this.getToken(i, originY))) {
+                break;
+            }
             xMatches.push(this.getToken(i, originY))
         }
 
         //token's left
         for(let i = originX-1; i >= 0; i--) {
-            if(!this.isMatch(origin, this.getToken(i, originY))) {break;}
+            if(!this.isMatch(origin, this.getToken(i, originY))) {
+                break;
+            }
             xMatches.push(this.getToken(i, originY))
         }
 
         //beneath token
         for(let i = originY+1; i <= this.gridSize-1; i++) {
-            if(!this.isMatch(origin, this.getToken(originX, i))) {break;}
+            if(!this.isMatch(origin, this.getToken(originX, i))) {
+                break;
+            }
             yMatches.push(this.getToken(originX, i))
         }
 
         //above token
         for(let i = originY-1; i >= 0; i--) {
-            if(!this.isMatch(origin, this.getToken(originX, i))) {break;}
+            if(!this.isMatch(origin, this.getToken(originX, i))) {
+                break;
+            }
             yMatches.push(this.getToken(originX, i))
         }
 
-        console.log(xMatches, yMatches);
-
-        if(xMatches.length >= 3) {this.purgeTokens(xMatches)}
-        if(yMatches.length >= 3) {this.purgeTokens(yMatches)}
-        if( (xMatches.length >= 3) || (yMatches.length >= 3)) {this.nukeBoard();}
+        if(xMatches.length >= 3) {
+            this.purgeTokens(xMatches)
+        }
+        if(yMatches.length >= 3) {
+            this.purgeTokens(yMatches)
+        }
+        if( (xMatches.length >= 3) || (yMatches.length >= 3)) {
+            this.nukeBoard();
+        }
 
     }
 
@@ -112,7 +123,6 @@ export class Grid extends Container {
     private purgeTokens(inputTokens: Token[]): void {
         inputTokens.forEach(element => {
             element.matched = true;
-            console.log(element.matched)
         });
     }
 
@@ -136,25 +146,19 @@ export class Grid extends Container {
         }
 
         this.columns.forEach(column => {
-            let unmatched = column.getAllTokens().filter(isNotMatched);
-            let matched = column.getAllTokens().filter(isMatched);
+            const unmatched = column.getAllTokens().filter(isNotMatched);
+            const matched = column.getAllTokens().filter(isMatched);
             matched.forEach(token => {
                 token.shuffleSkin();
             });
-            let newColumn: Token [];
-            newColumn = [];
+            const newColumn = column.getAllTokens();
             matched.forEach(token => {
                 newColumn.push(token);
             });
             unmatched.forEach(token => {
                 newColumn.push(token);
             });
-            for(var i = 0; i <= 5; i++){
-                const randomNumber = Math.round(Math.random() * (9 - 1) + 1);
-            }
         });
-
-        console.log("KABOOM");
 
     }
 
