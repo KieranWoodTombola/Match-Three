@@ -6,6 +6,7 @@ import { eventEmitter } from "../../../event-emitter";
 
 export class Token extends Container {
 
+    public matched: boolean;
     private parentID: number;
     private locationIndex;
     private skin: Spine;
@@ -19,7 +20,7 @@ export class Token extends Container {
         //eventEmitter.on('tokenFirstClicked', this.onClicked);
         //eventEmitter.on('tokenSecondClicked', this.onClicked);
 
-
+        this.matched = false;
         this.interactive = true;
         this.parentID = parentID;
         this.locationIndex = locationIndex;
@@ -47,6 +48,16 @@ export class Token extends Container {
 
     public getSkIndex(): number {
         return this.skIndex;
+    }
+
+    public setSkIndex(newSkIndex: number): void {
+        this.skIndex = newSkIndex;
+    }
+
+    public shuffleSkin(): void {
+        const randomNumber = Math.round(Math.random() * (9 - 1) + 1);
+        this.skIndex = randomNumber;
+        this.skin.skeleton.setSkinByName(`${this.skIndex}`);
     }
 
     // private wobble(): void {

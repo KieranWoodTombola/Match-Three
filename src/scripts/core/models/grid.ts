@@ -41,10 +41,9 @@ export class Grid extends Container {
         if(this.activeToken === undefined) {
             this.activeToken = 0;
         }
-        //console.log("tokenX: ", tokenX, "tokenY", tokenY, "ActiveToken: ", this.activeToken);
 
         const location = [tokenX, tokenY];
-
+        this.matchCheck(location);
 
         // if(this.activeToken === 0) {
         //     this.activeToken = 1; 
@@ -65,8 +64,66 @@ export class Grid extends Container {
 
     }
 
+    private matchCheck(inputCoords: number[]): void {
+
+        const originX = inputCoords[0];
+        const originY = inputCoords[1];
+        const origin = this.getToken(originX, originY);
+        let xMatches = []; xMatches.push(origin);
+        let yMatches = []; yMatches.push(origin);
+
+        //check token's right
+        for(let i = originX+1; i <= this.gridSize-1; i++) {
+            if(!this.isMatch(origin, this.getToken(i, originY))) {
+                break;
+            }
+            xMatches.push(this.getToken(i, originY))
+        }
+
+        //token's left
+        for(let i = originX-1; i >= 0; i--) {
+            if(!this.isMatch(origin, this.getToken(i, originY))) {
+                break;
+            }
+            xMatches.push(this.getToken(i, originY))
+        }
+
+        //beneath token
+        for(let i = originY+1; i <= this.gridSize-1; i++) {
+            if(!this.isMatch(origin, this.getToken(originX, i))) {
+                break;
+            }
+            yMatches.push(this.getToken(originX, i))
+        }
+
+        //above token
+        for(let i = originY-1; i >= 0; i--) {
+            if(!this.isMatch(origin, this.getToken(originX, i))) {
+                break;
+            }
+            yMatches.push(this.getToken(originX, i))
+        }
+
+        if(xMatches.length >= 3) {
+            this.purgeTokens(xMatches)
+        }
+        if(yMatches.length >= 3) {
+            this.purgeTokens(yMatches)
+        }
+        if( (xMatches.length >= 3) || (yMatches.length >= 3)) {
+            this.nukeBoard();
+        }
+
+    }
+
     private getToken(X: number, Y: number): Token {
         return this.columns[X].getToken(Y);
+    }
+
+    private purgeTokens(inputTokens: Token[]): void {
+        inputTokens.forEach(element => {
+            element.matched = true;
+        });
     }
 
     private isMatch(originToken: Token, comparisonToken: Token): boolean {
@@ -77,5 +134,37 @@ export class Grid extends Container {
             return false;
         }
     }
+
+    private nukeBoard(): void {
+
+        function isMatched(token: Token) {
+            return (token.matched);
+        }
+
+        function isNotMatched(token: Token) {
+            return (!token.matched);
+        }
+
+        this.columns.forEach(column => {
+            const unmatched = column.getAllTokens().filter(isNotMatched);
+            const matched = column.getAllTokens().filter(isMatched);
+            matched.forEach(token => {
+                token.shuffleSkin();
+            });
+            const newColumn = column.getAllTokens();
+            matched.forEach(token => {
+                newColumn.push(token);
+            });
+            unmatched.forEach(token => {
+                newColumn.push(token);
+            });
+        });
+
+    }
+
+    // private checkMatch(): void {
+
+    // }
+
 
 }
