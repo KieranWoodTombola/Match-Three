@@ -8,7 +8,7 @@ export class Grid extends Container {
     private gridSize: number;
     private columns: Column[];
     private activeToken: number;
-    private firstToken: Token;
+    private firstTokenLocation: number[];
 
     constructor (gridSize: number, availWidth: number) {
         super ()
@@ -24,7 +24,8 @@ export class Grid extends Container {
         this.gridSize = gridSize;
         this.columns = [];
         this.activeToken = 0;
-        this.firstToken = new Token(-1, -1, -1, 1, 0);
+        const firstTokenLocation = [-1, -1];
+        this.firstTokenLocation = firstTokenLocation;
 
         for(var i = 0; i < this.gridSize; i++) {
             const newColumn = new Column(i, this.gridSize, availWidth, availWidth);
@@ -38,94 +39,113 @@ export class Grid extends Container {
     }
 
     private clickCheck(targetToken: Token): void {
-
-        const targetCoords = targetToken.getLocation();
-        const targetX = targetCoords[0];
-        const targetY = targetCoords[1];
-        const targetSkIndex = targetToken.getSkIndex();
-
-        //on SecondClick
-        if(this.activeToken === 1) {
-            console.log("second token selected at:", targetX, targetY);
-
-            this.activeToken = 2
-            const secondToken = targetToken;
-            if(this.firstToken === secondToken) {
-                this.activeToken = 0;
-                return;
-            }
-            const previousCoords = this.firstToken.getLocation();
-            const previousX = previousCoords[0];
-            const previousY = previousCoords[1];
-            const previousSkIndex = this.firstToken.getSkIndex();
-
-            this.getToken(previousX, previousY).setToken(targetX, targetY, targetSkIndex);
-            targetToken.setToken(previousX, previousY, previousSkIndex);
-
-            console.log(this.firstToken.getSkIndex(), targetToken.getSkIndex());
-
-            this.matchCheck(previousCoords);
-            this.matchCheck(targetCoords);
+        //on first click, despite being defined in the constructor, activeToken appears undefined
+        if(this.activeToken === undefined) {
+            
             this.activeToken = 0;
-            return;
         }
 
         //on FirstClick
-        if(this.activeToken === 0) {
+        if((this.activeToken === 0) && (this.firstTokenLocation[0] === -1) && (this.firstTokenLocation[0] === -1)) {
+            targetToken.highLight();
             this.activeToken = 1;
-            this.firstToken = targetToken
-            console.log("first token selected at:", targetX, targetY);
+            this.firstTokenLocation = targetToken.getLocation();
             return;
         }
 
-        //on first click, despite being defined in the constructor, activeToken appears undefined
-        if(this.activeToken === undefined) {
+        //on SecondClick
+        if(this.activeToken === 1) {
+            targetToken.highLight();
+            this.activeToken = 2;
+
+            //Identify first Token
+            const firstX = this.firstTokenLocation[0];
+            const firstY = this.firstTokenLocation[1];
+            const firstTokenCopy = this.getToken(firstX, firstY);
+            const firstSkIndex = firstTokenCopy.getSkIndex();
+
+            //Identify second Token
+            const secondX = targetToken.getLocation()[0];
+            const secondY = targetToken.getLocation()[1];
+            const secondSkIndex = this.getToken(secondX, secondY).getSkIndex();
+
+            // //Swap Tokens
+            const tempFirstToken = this.getToken(firstX, firstY);
+            const tempSecondToken = this.getToken(secondX, secondY);
+            
+
+            //Swapping isn't working as expected
+            let targetFirst = this.getToken(firstX, firstY); //get the Token at the stored coordinates of the Token clicked first
+            targetFirst.setToken(secondSkIndex); //set the skin of the first token
+            let targetSecond = this.getToken(secondX, secondY);
+            targetSecond.setToken(firstSkIndex);
+
+            this.matchCheck(this.getToken(firstX, firstY));
+            this.matchCheck(this.getToken(secondX, secondY));
+
+            this.nukeBoard();
+
+            this.firstTokenLocation = [-1, -1];
             this.activeToken = 0;
             return;
         }
-    }
-
-    private swapPrepare(): void {
 
     }
 
-    private matchCheck(inputCoords: number[]): void {
+    /**
+     * 
+     * Using target token, search horizontally and vertically for adjacent matching tokens
+     * Add those tokens to arrays and mark the tokens for later removal
+     */
 
-        const originX = inputCoords[0];
-        const originY = inputCoords[1];
-        const origin = this.getToken(originX, originY);
+    private matchCheck(inputToken: Token): void {
+
+        const origin = inputToken;
+        const originX = origin.getLocation()[0];
+        const originY = origin.getLocation()[1];
         let xMatches = []; xMatches.push(origin);
         let yMatches = []; yMatches.push(origin);
 
         //check token's right
         for(let i = originX+1; i <= this.gridSize-1; i++) {
-            if(!this.isMatch(origin, this.getToken(i, originY))) {break;}
+            if(!this.isMatch(origin, this.getToken(i, originY))) {
+                break;
+            }
             xMatches.push(this.getToken(i, originY))
         }
 
         //token's left
         for(let i = originX-1; i >= 0; i--) {
-            if(!this.isMatch(origin, this.getToken(i, originY))) {break;}
+            if(!this.isMatch(origin, this.getToken(i, originY))) {
+                break;
+            }
             xMatches.push(this.getToken(i, originY))
         }
 
         //beneath token
         for(let i = originY+1; i <= this.gridSize-1; i++) {
-            if(!this.isMatch(origin, this.getToken(originX, i))) {break;}
+            if(!this.isMatch(origin, this.getToken(originX, i))) {
+                break;
+            }
             yMatches.push(this.getToken(originX, i))
         }
 
         //above token
         for(let i = originY-1; i >= 0; i--) {
-            if(!this.isMatch(origin, this.getToken(originX, i))) {break;}
+            if(!this.isMatch(origin, this.getToken(originX, i))) {
+                break;
+            }
             yMatches.push(this.getToken(originX, i))
         }
 
-        console.log(xMatches, yMatches);
-
-        if(xMatches.length >= 3) {this.purgeTokens(xMatches)}
-        if(yMatches.length >= 3) {this.purgeTokens(yMatches)}
-        if( (xMatches.length >= 3) || (yMatches.length >= 3)) {this.nukeBoard();}
+        if(xMatches.length >= 3) {
+            this.markMatchedTokens(xMatches);
+        }
+        if(yMatches.length >= 3) {
+            this.markMatchedTokens(yMatches);
+        }
+        if((xMatches.length < 3) && (yMatches.length < 3)) {
+        }
 
     }
 
@@ -133,10 +153,9 @@ export class Grid extends Container {
         return this.columns[X].getToken(Y);
     }
 
-    private purgeTokens(inputTokens: Token[]): void {
+    private markMatchedTokens(inputTokens: Token[]): void {
         inputTokens.forEach(element => {
             element.matched = true;
-            console.log(element.matched)
         });
     }
 
@@ -149,6 +168,14 @@ export class Grid extends Container {
         }
     }
 
+    /**
+     * 
+     * search the board for tokens found to be in a matching position
+     * reassemble the column
+     * Unmatches tokens shoud be at the bottom of the column
+     * Matching tokens should be at the top of the column with randomised skins.
+     * 
+     */
     private nukeBoard(): void {
         function isMatched(token: Token) {
             return (token.matched);
@@ -158,32 +185,29 @@ export class Grid extends Container {
             return (!token.matched);
         }
 
-        this.columns.forEach(column => {
-            let unmatched = column.getAllTokens().filter(isNotMatched);
-            let matched = column.getAllTokens().filter(isMatched);
+        this.columns.forEach(targetColumn => {
+            
+            const newTokenArray = targetColumn.getAllTokens();
+
+            const matched = targetColumn.getAllTokens().filter(isMatched);
             matched.forEach(token => {
                 token.shuffleSkin();
+                token.highLight();
+                newTokenArray.push(token);
             });
-            let newColumn: Token [];
-            newColumn = [];
-            matched.forEach(token => {
-                newColumn.push(token);
-            });
+
+            const unmatched = targetColumn.getAllTokens().filter(isNotMatched);
             unmatched.forEach(token => {
-                newColumn.push(token);
+                newTokenArray.push(token);
             });
-            for(var i = 0; i <= 5; i++){
-                const randomNumber = Math.round(Math.random() * (9 - 1) + 1);
-            }
+
+            newTokenArray.forEach(token => {
+                token.matched = false;
+            })
+
+            targetColumn.replaceAllTokens(newTokenArray);
         });
 
-        console.log("KABOOM");
-
     }
-
-    // private checkMatch(): void {
-
-    // }
-
 
 }

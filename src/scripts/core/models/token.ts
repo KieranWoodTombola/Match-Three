@@ -1,7 +1,7 @@
 import { Spine } from "pixi-spine";
 import { Assets, Container } from "pixi.js";
 import { eventEmitter } from "../../../event-emitter";
-//import { gsap } from 'gsap';
+import { gsap } from 'gsap';
 
 
 export class Token extends Container {
@@ -33,11 +33,9 @@ export class Token extends Container {
         this.addChild(this.skin);
     }
 
-    setToken(parentID: number, locationIndex: number, skIndex: number) {
+    setToken(skIndex: number) {
         this.skIndex = skIndex;
-        this.parentID = parentID;
-        this.locationIndex = locationIndex;
-        this.skin.skeleton.setSkinByName(`${this.skIndex}`);
+        this.skin.skeleton.setSkinByName(`${skIndex}`);
     }
 
     //onClicked
@@ -69,6 +67,15 @@ export class Token extends Container {
         const randomNumber = Math.round(Math.random() * (9 - 1) + 1);
         this.skIndex = randomNumber;
         this.skin.skeleton.setSkinByName(`${this.skIndex}`);
+    }
+
+    public highLight(): void {
+        gsap.to(this, {
+            alpha: 0.5,
+            repeat: 3,
+            yoyo: true,
+            duration: 0.3
+        });
     }
 
     // private wobble(): void {

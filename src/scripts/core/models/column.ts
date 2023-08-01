@@ -37,6 +37,17 @@ export class Column extends Container{
         return this.tokens;
     }
 
+    public removeAllTokens(): void {
+        this.tokens = [];
+    }
+
+    public replaceAllTokens(newTokens: Token[]): void {
+        if(newTokens.length != this.tokens.length) {
+            console.log("error on replaceAllTokens: input length does not match");
+            return;
+        }
+    }
+
     public getToken(Y: number) {
         return this.tokens[Y];
     }
