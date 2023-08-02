@@ -135,4 +135,59 @@ export class Grid extends Container {
         return this.columns[X].getToken(Y);
     }
 
+    private markMatchedTokens(inputTokens: Token[]): void {
+        inputTokens.forEach(element => {
+            element.matched = true;
+        });
+    }
+
+    private isMatch(originToken: Token, comparisonToken: Token): boolean {
+        if(originToken.getSkIndex() === comparisonToken.getSkIndex()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * search the board for tokens found to be in a matching position
+     * reassemble the column
+     * Unmatches tokens shoud be at the bottom of the column
+     * Matching tokens should be at the top of the column with randomised skins.
+     */
+    private nukeBoard(): void {
+        function isMatched(token: Token) {
+            return (token.matched);
+        }
+
+        function isNotMatched(token: Token) {
+            return (!token.matched);
+        }
+
+        this.columns.forEach(targetColumn => {
+            
+            const newTokenArray = targetColumn.getAllTokens();
+
+            const matched = targetColumn.getAllTokens().filter(isMatched);
+            matched.forEach(token => {
+                token.shuffleSkin();
+                token.highLight();
+                newTokenArray.push(token);
+            });
+
+            const unmatched = targetColumn.getAllTokens().filter(isNotMatched);
+            unmatched.forEach(token => {
+                newTokenArray.push(token);
+            });
+
+            newTokenArray.forEach(token => {
+                token.matched = false;
+            })
+
+            targetColumn.replaceAllTokens(newTokenArray);
+        });
+
+    }
+
 }
