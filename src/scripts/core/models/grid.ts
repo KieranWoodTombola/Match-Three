@@ -38,7 +38,7 @@ export class Grid extends Container {
         }
 
         //on FirstClick
-        if (!this.selectedTokens[0]) {
+        if(!this.selectedTokens[0]) {
             this.selectedTokens[0] = targetToken;
             return;
         }
@@ -146,7 +146,7 @@ export class Grid extends Container {
         // this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
 
-   /**
+    /**
      * Identifies rows/columns of tokens where there are at least
      * 3 adjacent to eachother.
      * 
