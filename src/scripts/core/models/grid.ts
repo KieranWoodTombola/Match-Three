@@ -167,36 +167,9 @@ export class Grid extends Container {
      * Matching tokens should be at the top of the column with randomised skins.
      */
     private nukeBoard(): void {
-        function isMatched(token: Token) {
-            return (token.matched);
-        }
-
-        function isNotMatched(token: Token) {
-            return (!token.matched);
-        }
-
-        this.columns.forEach(targetColumn => {
-            
-            const newTokenArray = targetColumn.getAllTokens();
-
-            const matched = targetColumn.getAllTokens().filter(isMatched);
-            matched.forEach(token => {
-                token.shuffleSkin();
-                token.highLight();
-                newTokenArray.push(token);
-            });
-
-            const unmatched = targetColumn.getAllTokens().filter(isNotMatched);
-            unmatched.forEach(token => {
-                newTokenArray.push(token);
-            });
-
-            newTokenArray.forEach(token => {
-                token.matched = false;
-            })
-
-            targetColumn.replaceAllTokens(newTokenArray);
-        });
+        this.columns.forEach(column => {
+            column.veryCoolTokenReplacement();
+        })
 
     }
 

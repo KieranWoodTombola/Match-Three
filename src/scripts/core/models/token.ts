@@ -78,6 +78,13 @@ export class Token extends Container {
         });
     }
 
+    public hide(): void {
+        gsap.to(this, {
+            alpha: 0,
+            duration: 0.3
+        });
+    }
+
     // private wobble(): void {
     //     if(this.skIndex === 1){
     //         gsap.to(this, {

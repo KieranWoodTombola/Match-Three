@@ -52,4 +52,41 @@ export class Column extends Container{
         return this.tokens[Y];
     }
 
+    public veryCoolTokenReplacement(): void {
+
+        this.tokens.forEach(token => {
+            if(token.matched) {
+                token.hide();
+            }
+        })
+
+
+        function isMatched(token: Token) {
+            return (token.matched);
+        }
+
+        function isNotMatched(token: Token) {
+            return (!token.matched);
+        }
+        
+        const newTokenArray = this.getAllTokens();
+
+        const matched = this.getAllTokens().filter(isMatched);
+        matched.forEach(token => {
+            token.shuffleSkin();
+            newTokenArray.push(token);
+        });
+
+        const unmatched = this.getAllTokens().filter(isNotMatched);
+        unmatched.forEach(token => {
+            newTokenArray.push(token);
+        });
+
+        newTokenArray.forEach(token => {
+            token.matched = false;
+        })
+
+        this.replaceAllTokens(newTokenArray);
+}
+
 }
