@@ -3,7 +3,7 @@ import { Token } from "./token";
 
 export class Column extends Container{
 
-    public tokens: Token[] = [];
+    public tokens: Token[];
     private columnID: number;
     private columnSize: number;
     private availHeight: number;
@@ -92,67 +92,8 @@ export class Column extends Container{
         return this.tokens[Y];
     }
 
-    public processMatches(): void {
-            const matchedTokens: Token [] = [];
-            const unmatchedTokens: Token [] = [];
-
-            //this.hideMatches();
-            
-            //build an array of matched tokens and an array of unmatched tokens
-            for(let i = 0; i < this.tokens.length; i++) {
-                const target = this.tokens[i]
-                if(target.matched) {
-                    target.shuffleSkin();
-                    target.hide();
-                    matchedTokens.push(target);
-                }
-
-                if(!target.matched) {
-                    unmatchedTokens.push(target);
-                }
-            }
-
-            //the unmatched tokens on the screen
-            //find coordinate of the place to move to
-            for(let columnInspector: number = 0; columnInspector < this.tokens.length-1; columnInspector++) {
-
-                if(//columnInspector+1 <= this.tokens.length-1 
-                     !this.tokens[columnInspector].matched 
-                    ) {
-                        console.log("columnInspector: ", columnInspector);
-                        let combo = columnInspector+1;
-                        for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
-                            if(!this.tokens[combo].matched) { 
-                                break; 
-                            }
-                            else 
-                                console.log("combo: ", combo);
-                                this.tokens[columnInspector].moveTo(combo);
-                        }
-                }
-            }
-            //tween there
-
-            this.tokens.forEach(token => {
-                token.matched = false;
-            })
-
-            // this.tokens = [...matchedTokens, ...unmatchedTokens];
-            // console.log(this.tokens);
-            // for(var i = 0; i < this.columnSize; i++) {
-            //     this.tokens[i].y = (this.availHeight / (this.columnSize/i));
-            //     this.tokens[i]._verticalIndex = i;
-            // }
-
-            //this.revealMatches();
-    }
-
-    public hideMatches(): void {
-        this.tokens.forEach(token => {
-            if(token.matched) {
-                token.hide()
-            }
-        });
+    public removeAllTokens(): void {
+        this.tokens = [];
     }
 
     public replaceAllTokens(newTokens: Token[]): void {
@@ -161,50 +102,7 @@ export class Column extends Container{
         }
     }
 
-    private rebuildTokens(): void {
-        const matchedTokens: Token [] = [];
-        const unmatchedTokens: Token [] = [];
-        for(let i = 0; i < this.tokens.length; i++) {
-            const target = this.tokens[i]
-            if(target.matched) {
-                target.hide();
-                target.interactive = false;
-                matchedTokens.push(target);
-            }
-
-            if(!target.matched) {
-                unmatchedTokens.push(target);
-            }
-        }
-        const newTokens = [...matchedTokens, ...unmatchedTokens]
-        for(var i = 0; i < this.columnSize; i++) {
-            newTokens[i]._verticalIndex = i;
-        }
-        this.tokens = newTokens;
-    }
-
-    public hideMatches(): void {
-        this.tokens.forEach(token => {
-            if(token.matched) {
-                token.hide()
-            }
-        });
-    }
-
-    public deactivateAllTokens(): void {
-        this.tokens.forEach(token => { token.interactive = false });
-    }
-
-    public activateUnMatchedTokens(): void {
-        this.tokens.forEach(token => {
-            if(!token.matched) {
-                token.interactive = true;
-            }
-        });
-    }
-
     public getToken(Y: number) {
         return this.tokens[Y];
     }
-
 }
