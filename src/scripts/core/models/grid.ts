@@ -32,10 +32,21 @@ export class Grid extends Container {
         //on FirstClick
         if(!this.selectedTokens[0]) {
             this.selectedTokens[0] = targetToken;
+        if(!this.selectedTokens[0]) {
+            this.selectedTokens[0] = targetToken;
             return;
         }
 
         //on SecondClick
+        if(this.selectedTokens[0] && !this.selectedTokens[1]) {
+            this.selectedTokens[1] = targetToken;
+            const firstSkIndex = this.selectedTokens[0].skIndex;
+            const secondSkIndex = this.selectedTokens[1].skIndex;
+            this.selectedTokens[0].setToken(secondSkIndex);
+            this.selectedTokens[1].setToken(firstSkIndex);
+            this.selectedTokens = [undefined, undefined];
+            this.resolveMatches();
+            this.selectedTokens[0], this.selectedTokens[1] = undefined;
         if(this.selectedTokens[0] && !this.selectedTokens[1]) {
             this.selectedTokens[1] = targetToken;
             const firstSkIndex = this.selectedTokens[0].skIndex;
@@ -52,23 +63,24 @@ export class Grid extends Container {
 
     /**
      * Use the matchLine function to find matches on columns and then rows
+     * Use the matchLine function to find matches on columns and then rows
      */
     private resolveMatches(): void {
         //Y Matches
         this.columns.forEach(column => {
-            column.tokens = this.matchLine(column.tokens);
+            this.matchLine(column.tokens);
         })
         //X Matches
         for(var i = 0; i < this.gridSize; i++) {
-            let horizontalArray: Token [] = [];
+            const horizontalArray: Token [] = [];
             this.columns.forEach(column => {
                 horizontalArray.push (column.tokens[i]);
             })
-            horizontalArray = this.matchLine(horizontalArray);
+            this.matchLine(horizontalArray);
         }
     }
 
-   /**
+    /**
      * Identifies rows/columns of tokens where there are at least
      * 3 adjacent to eachother.
      * 
@@ -77,117 +89,58 @@ export class Grid extends Container {
      * 
      * @param Token[] - Array of Tokens to be searched for matches
      */
-   private matchLine(tokens: Token[]): Token [] {
-    let cacheSkIndex: number | undefined = undefined;
-    let currentComboTokens: Token[] = [];
-    const totalComboTokens: Token[] = [];
+    private matchLine(tokens: Token[]) {
+        let cacheSkIndex: number | undefined = undefined;
+        let currentComboTokens: Token[] = [];
+        const totalComboTokens: Token[] = [];
 
-    function checkForCombo(): void {
-        if(currentComboTokens.length >= 3 ){
-            currentComboTokens.forEach(comboToken => {
-                totalComboTokens.push(comboToken);
-            })
-        }
-    }
-
-    tokens.forEach(token => {
-        //new token
-        if(!cacheSkIndex) {
-            cacheSkIndex = token.skIndex;
-            currentComboTokens.push(token);
-            return;
+        function checkForCombo(): void {
+            if(currentComboTokens.length >= 3 ){
+                currentComboTokens.forEach(comboToken => {
+                    totalComboTokens.push(comboToken);
+                })
+            }
         }
 
-        //matching token
-        if(token.skIndex === cacheSkIndex) {
-            currentComboTokens.push(token);
-        }
+        tokens.forEach(token => {
+            //new token
+            if(!cacheSkIndex) {
+                cacheSkIndex = token.skIndex;
+                currentComboTokens.push(token);
+                return;
+            }
 
-        //last token in the array
-        if(token === tokens[this.gridSize-1]) {
-            checkForCombo();
-            return;
-        }
+            //matching token
+            if(token.skIndex === cacheSkIndex) {
+                currentComboTokens.push(token);
+                return;
+            }
 
-        //cache defined but match failed
-        if(token.skIndex !== cacheSkIndex){
-            checkForCombo();
-            currentComboTokens = [];
-            cacheSkIndex = token.skIndex;
-            currentComboTokens.push(token);
-            return;
-        }
-    });
+            //last token in the array
+            if(token === tokens[this.gridSize-1]) {
+                checkForCombo();
+                return;
+            }
 
-    tokens.forEach(token => {
-        totalComboTokens.forEach(comboToken => {
-            if(token === comboToken) {
-                token.matched = true;
+            //cache defined but match failed
+            if(token.skIndex !== cacheSkIndex){
+                checkForCombo();
+                currentComboTokens = [];
+                cacheSkIndex = token.skIndex;
+                currentComboTokens.push(token);
+                return;
             }
         });
-    });
 
-    return tokens;
-    
-}
+        totalComboTokens.forEach(matchedToken => {
+            matchedToken.highLight();
+            matchedToken.matched = true;
+        })
+        
+    }
 
     private getToken(X: number, Y: number): Token {
         return this.columns[X].getToken(Y);
-    }
-
-    private markMatchedTokens(inputTokens: Token[]): void {
-        inputTokens.forEach(element => {
-            element.matched = true;
-        });
-    }
-
-    private isMatch(originToken: Token, comparisonToken: Token): boolean {
-        if(originToken.getSkIndex() === comparisonToken.getSkIndex()) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    /**
-     * search the board for tokens found to be in a matching position
-     * reassemble the column
-     * Unmatches tokens shoud be at the bottom of the column
-     * Matching tokens should be at the top of the column with randomised skins.
-     */
-    private nukeBoard(): void {
-        function isMatched(token: Token) {
-            return (token.matched);
-        }
-
-        function isNotMatched(token: Token) {
-            return (!token.matched);
-        }
-
-        this.columns.forEach(targetColumn => {
-            
-            const newTokenArray = targetColumn.getAllTokens();
-
-            const matched = targetColumn.getAllTokens().filter(isMatched);
-            matched.forEach(token => {
-                token.shuffleSkin();
-                token.highLight();
-                newTokenArray.push(token);
-            });
-
-            const unmatched = targetColumn.getAllTokens().filter(isNotMatched);
-            unmatched.forEach(token => {
-                newTokenArray.push(token);
-            });
-
-            newTokenArray.forEach(token => {
-                token.matched = false;
-            })
-
-            targetColumn.replaceAllTokens(newTokenArray);
-        });
-
     }
 
 }
