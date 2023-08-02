@@ -13,6 +13,7 @@ export class Grid extends Container {
     private availWidth: number;
     private gridSize: number;
     private columns: Column[] = [];
+    private tokensSelected: number = 0;
     private selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
 
     constructor(gridSize: number, availWidth: number) {
@@ -33,45 +34,27 @@ export class Grid extends Container {
     }
 
     private clickCheck(targetToken: Token): void {
-        if (targetToken.matched) {
-            return;
-        }
+        //on first click, despite being defined in the constructor, activeToken appears undefined
+        this.tokensSelected++;
 
         //on FirstClick
-        if(!this.selectedTokens[0]) {
-            targetToken.highLight();
+        if(this.tokensSelected === 1) {
             this.selectedTokens[0] = targetToken;
             return;
         }
 
         //on SecondClick
-        if(this.selectedTokens[0] && !this.selectedTokens[1]) {
-            targetToken.highLight();
+        if(this.tokensSelected === 2 && this.selectedTokens[0] !== undefined) {
             this.selectedTokens[1] = targetToken;
-            this.selectedTokens.forEach(token => {
-                if (token) {
-                    token.setParent(this);
-                    token.interactive = true;
-                }
-            });
-            //snap the tokens to their destination
-            const firstX = (this.availWidth / (this.gridSize / this.selectedTokens[0].parentID));
-            const firstY = (this.availWidth / (this.gridSize / this.selectedTokens[0]._verticalIndex));
-            const secondX = (this.availWidth / (this.gridSize / this.selectedTokens[1].parentID));
-            const secondY = (this.availWidth / (this.gridSize / this.selectedTokens[1]._verticalIndex));
-            this.selectedTokens[0].position = { x: secondX, y: secondY }
-            this.selectedTokens[1].position = { x: firstX, y: firstY }
 
-            //set the tokens' skins
             const firstSkIndex = this.selectedTokens[0].skIndex;
             const secondSkIndex = this.selectedTokens[1].skIndex;
             this.selectedTokens[0].setToken(secondSkIndex);
             this.selectedTokens[1].setToken(firstSkIndex);
+            this.tokensSelected = 0;
             this.selectedTokens = [undefined, undefined];
-            this.selectedTokens[0], this.selectedTokens[1] = undefined;
-            this.selectedTokens[0], this.selectedTokens[1] = undefined;
-
             this.resolveMatches();
+
             return;
         }
     }
@@ -90,26 +73,17 @@ export class Grid extends Container {
     private resolveMatches(): void {
         //Y Matches
         this.columns.forEach(column => {
-            column.tokens = this.matchLine(column.tokens);
+            this.matchLine(column.tokens);
         })
+
         //X Matches
         for(var i = 0; i < this.gridSize; i++) {
-            let horizontalArray: Token [] = [];
+            const horizontalArray: Token [] = [];
             this.columns.forEach(column => {
                 horizontalArray.push (column.tokens[i]);
             })
-            horizontalArray = this.matchLine(horizontalArray);
+            this.matchLine(horizontalArray);
         }
-
-        //Animate the board using detected matches
-        this.columns.forEach(column => {
-            column.processMatches();
-        })
-
-        //Only use the first Column for testing
-        // this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
-        // this.columns[0].processMatches();
-        // this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
 
     /**
@@ -121,7 +95,7 @@ export class Grid extends Container {
      * 
      * @param Token[] - Array of Tokens to be searched for matches
      */
-    private matchLine(tokens: Token[]): Token [] {
+    private matchLine(tokens: Token[]) {
         let cacheSkIndex: number | undefined = undefined;
         let currentComboTokens: Token[] = [];
         const totalComboTokens: Token[] = [];
@@ -145,6 +119,8 @@ export class Grid extends Container {
             //matching token
             if(token.skIndex === cacheSkIndex) {
                 currentComboTokens.push(token);
+                console.log(tokens.indexOf(token));
+                return;
             }
 
             //last token in the array
@@ -163,15 +139,10 @@ export class Grid extends Container {
             }
         });
 
-        tokens.forEach(token => {
-            totalComboTokens.forEach(comboToken => {
-                if(token === comboToken) {
-                    token.matched = true;
-                }
-            });
-        });
-
-        return tokens;
+        totalComboTokens.forEach(matchedToken => {
+            matchedToken.highLight();
+            matchedToken.matched = true;
+        })
         
     }
 
