@@ -4,7 +4,7 @@ import { Token } from "./token";
 
 export class Column extends Container{
 
-    private tokens: Token[];
+    public tokens: Token[];
     private columnID: number;
     private columnSize: number;
     // private viewWidth: number;
@@ -33,17 +33,12 @@ export class Column extends Container{
         }
     }
 
-    public getAllTokens(): Token[] {
-        return this.tokens;
-    }
-
     public removeAllTokens(): void {
         this.tokens = [];
     }
 
     public replaceAllTokens(newTokens: Token[]): void {
         if(newTokens.length != this.tokens.length) {
-            console.log("error on replaceAllTokens: input length does not match");
             return;
         }
     }
@@ -51,5 +46,4 @@ export class Column extends Container{
     public getToken(Y: number) {
         return this.tokens[Y];
     }
-
 }
