@@ -65,48 +65,13 @@ export class Grid extends Container {
             //set the tokens' skins
             const firstSkIndex = this.selectedTokens[0].skIndex;
             const secondSkIndex = this.selectedTokens[1].skIndex;
-            this.selectedTokens[0].setSkin(secondSkIndex);
-            this.selectedTokens[1].setSkin(firstSkIndex);
+            this.selectedTokens[0].setToken(secondSkIndex);
+            this.selectedTokens[1].setToken(firstSkIndex);
+            this.selectedTokens = [undefined, undefined];
+            this.selectedTokens[0], this.selectedTokens[1] = undefined;
+            this.selectedTokens[0], this.selectedTokens[1] = undefined;
 
-            //THE TOKENS SWAP POSITIONS FIRST!
-            const tweenCurve = new Curve(
-                [this.selectedTokens[0].x, this.selectedTokens[0].y],
-                [this.selectedTokens[1].x, this.selectedTokens[1].y]
-            );
-
-            const rotateFirst = tweenCurve.rotate90(this.selectedTokens[0].x, this.selectedTokens[0].y);
-            const rotateSecond = tweenCurve.rotate90(this.selectedTokens[1].x, this.selectedTokens[1].y);
-
-            //tween the tokens from their DESTINATION to their ORIGIN
-            const swapTween = gsap.timeline({
-                ease: "back",
-                onStart: this.onSwapStart.bind(this),
-                onComplete: this.onSwapComplete.bind(this)
-            });
-
-            swapTween.to(this.selectedTokens[0],
-                {
-                    motionPath: {
-                        curviness: 2,
-                        path: [
-                            { x: rotateFirst[0], y: rotateFirst[1] },
-                            { x: firstX, y: firstY }
-                        ]
-                    },
-                    duration: 1.5
-                }, 0);
-
-            swapTween.to(this.selectedTokens[1],
-                {
-                    motionPath: {
-                        curviness: 2,
-                        path: [
-                            { x: rotateSecond[0], y: rotateSecond[1] },
-                            { x: secondX, y: secondY }
-                        ]
-                    },
-                    duration: 1.5
-                }, 0);
+            this.resolveMatches();
             return;
         }
     }
@@ -123,28 +88,27 @@ export class Grid extends Container {
     }
 
     private resolveMatches(): void {
-        //Y Matches
-        this.columns.forEach(column => {
-            this.matchLine(column.tokens);
-        });
-        //X Matches
-        for (var i = 0; i < this.gridSize; i++) {
-            let horizontalArray: Token[] = [];
-            this.columns.forEach(column => {
-                horizontalArray.push(column.tokens[i]);
-            });
-            this.matchLine(horizontalArray);
-        }
+        // //Y Matches
+        // this.columns.forEach(column => {
+        //     column.tokens = this.matchLine(column.tokens);
+        // })
+        // //X Matches
+        // for(var i = 0; i < this.gridSize; i++) {
+        //     let horizontalArray: Token [] = [];
+        //     this.columns.forEach(column => {
+        //         horizontalArray.push (column.tokens[i]);
+        //     })
+        //     horizontalArray = this.matchLine(horizontalArray);
+        // }
 
-        //Animate the board using detected matches
-        this.columns.forEach(column => {
-            column.processMatches();
-        });
+        // //Animate the board using detected matches
+        // this.columns.forEach(column => {
+        //     column.processMatches();
+        // })
 
-        //Only use the first Column for testing
-        // this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
-        // this.columns[0].processMatches();
-        // this.columns[0].tokens.forEach(token => {token.matched = false;})
+        this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
+        this.columns[0].processMatches();
+        this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
 
     /**
@@ -156,7 +120,7 @@ export class Grid extends Container {
      * 
      * @param Token[] - Array of Tokens to be searched for matches
      */
-    private matchLine(tokens: Token[]): void {
+    private matchLine(tokens: Token[]): Token [] {
         let cacheSkIndex: number | undefined = undefined;
         let currentComboTokens: Token[] = [];
         const totalComboTokens: Token[] = [];
@@ -180,7 +144,6 @@ export class Grid extends Container {
             //matching token
             if(token.skIndex === cacheSkIndex) {
                 currentComboTokens.push(token);
-                return;
             }
 
             //last token in the array
@@ -201,11 +164,14 @@ export class Grid extends Container {
 
         tokens.forEach(token => {
             totalComboTokens.forEach(comboToken => {
-                if (token === comboToken) {
+                if(token === comboToken) {
                     token.matched = true;
                 }
             });
         });
+
+        return tokens;
+        
     }
 
     private getToken(X: number, Y: number): Token {
