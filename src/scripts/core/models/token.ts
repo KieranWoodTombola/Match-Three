@@ -1,29 +1,27 @@
 import { Spine } from "pixi-spine";
 import { Assets, Container } from "pixi.js";
 import { eventEmitter } from "../../../event-emitter";
-//import { gsap } from 'gsap';
+import { gsap } from 'gsap';
 
 
 export class Token extends Container {
 
     public matched: boolean;
-    private parentID: number;
-    private locationIndex;
+    public parentID: number;
+    public horizontalIndex;
     private skin: Spine;
-    private skIndex: number;
+    public skIndex: number;
 
 
-    constructor (parentID: number, locationIndex: number, size: number, skIndex: number, availWidth: number) {
+    constructor (parentID: number, horizontalIndex: number, size: number, skIndex: number, availWidth: number) {
         super();
 
         this.on('pointerdown', this.onClicked)
-        //eventEmitter.on('tokenFirstClicked', this.onClicked);
-        //eventEmitter.on('tokenSecondClicked', this.onClicked);
 
         this.matched = false;
         this.interactive = true;
         this.parentID = parentID;
-        this.locationIndex = locationIndex;
+        this.horizontalIndex = horizontalIndex;
         this.skIndex = skIndex;
         this.skin = new Spine(Assets.get('symbols').spineData);
         this.skin.skeleton.setSkinByName(`${this.skIndex}`);
@@ -33,25 +31,21 @@ export class Token extends Container {
         this.addChild(this.skin);
     }
 
-    //onClicked
     public onClicked(): void {
-        eventEmitter.emit('clickCheck', this.parentID, this.locationIndex);
+        eventEmitter.emit('clickCheck', this);
+    }
+
+    public setToken(skIndex: number) {
+        this.skIndex = skIndex;
+        this.skin.skeleton.setSkinByName(`${skIndex}`);
     }
 
     public onTokenReveal(arg: number): void {
     }
 
     public getLocation(): number[] {
-        const location = [this.parentID, this.locationIndex];
+        const location = [this.parentID, this.horizontalIndex];
         return location;
-    }
-
-    public getSkIndex(): number {
-        return this.skIndex;
-    }
-
-    public setSkIndex(newSkIndex: number): void {
-        this.skIndex = newSkIndex;
     }
 
     public shuffleSkin(): void {
@@ -60,24 +54,13 @@ export class Token extends Container {
         this.skin.skeleton.setSkinByName(`${this.skIndex}`);
     }
 
-    // private wobble(): void {
-    //     if(this.skIndex === 1){
-    //         gsap.to(this, {
-    //            rotation: 2,
-    //            repeat: -1,
-    //             yoyo: true,
-    //             duration: 1
-    //         })
-    //     }
-    // }
-
-    // private fade(): void {
-    //     gsap.to(this, {
-    //         alpha: 0.1,
-    //         repeat: -1,
-    //          yoyo: true,
-    //          duration: 1
-    //      })
-    // }
+    public highLight(): void {
+        gsap.to(this, {
+            alpha: 0.5,
+            repeat: 3,
+            yoyo: true,
+            duration: 0.3
+        });
+    }
 
 }

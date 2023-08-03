@@ -6,24 +6,15 @@ import { Token } from "./token";
 export class Grid extends Container {
 
     private gridSize: number;
-    private columns: Column[];
-    private activeToken: number;
-
+    private columns: Column[] = [];
+    private selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
 
     constructor (gridSize: number, availWidth: number) {
         super ()
 
-        //for fixing context issues
-        //eventEmitter.on('clickCheck', this.clickCheck.bind(this))
-        //eventEmitter.on('clickCheck', this.clickCheck, this)
-
         eventEmitter.on('clickCheck', this.clickCheck, this)
-        // eventEmitter.on('tokenFirstClicked', this.swapPrepare);
-        //eventEmitter.on('tokenSecondClicked', this.swapCheck);
 
         this.gridSize = gridSize;
-        this.columns = [];
-        this.activeToken = 0;
 
         for(var i = 0; i < this.gridSize; i++) {
             const newColumn = new Column(i, this.gridSize, availWidth, availWidth);
@@ -36,135 +27,112 @@ export class Grid extends Container {
 
     }
 
-    private clickCheck(tokenX: number, tokenY: number): void {
-        //on first click, despite being defined in the constructor, activeToken appears undefined
-        if(this.activeToken === undefined) {
-            this.activeToken = 0;
+    private clickCheck(targetToken: Token): void {
+
+        //on FirstClick
+        if(!this.selectedTokens[0]) {
+            this.selectedTokens[0] = targetToken;
+            return;
         }
 
-        const location = [tokenX, tokenY];
-        this.matchCheck(location);
-
-        // if(this.activeToken === 0) {
-        //     this.activeToken = 1; 
-        //     eventEmitter.emit('tokenFirstClicked', tokenX, tokenY);
-        //     console.log("FirstClick", this.activeToken)
-        //     return;
-        // }
-
-        // if(this.activeToken === 1) {
-        //     this.activeToken = 2; 
-        //     eventEmitter.emit('tokenSecondClicked', tokenX, tokenY); 
-        //     console.log("SecondClick", this.activeToken)
-        //     return; 
-        // }
-    }
-
-    private swapPrepare(): void {
-
-    }
-
-    private matchCheck(inputCoords: number[]): void {
-
-        const originX = inputCoords[0];
-        const originY = inputCoords[1];
-        const origin = this.getToken(originX, originY);
-        let xMatches = []; xMatches.push(origin);
-        let yMatches = []; yMatches.push(origin);
-
-        //check token's right
-        for(let i = originX+1; i <= this.gridSize-1; i++) {
-            if(!this.isMatch(origin, this.getToken(i, originY))) {
-                break;
-            }
-            xMatches.push(this.getToken(i, originY))
-        }
-
-        //token's left
-        for(let i = originX-1; i >= 0; i--) {
-            if(!this.isMatch(origin, this.getToken(i, originY))) {
-                break;
-            }
-            xMatches.push(this.getToken(i, originY))
-        }
-
-        //beneath token
-        for(let i = originY+1; i <= this.gridSize-1; i++) {
-            if(!this.isMatch(origin, this.getToken(originX, i))) {
-                break;
-            }
-            yMatches.push(this.getToken(originX, i))
-        }
-
-        //above token
-        for(let i = originY-1; i >= 0; i--) {
-            if(!this.isMatch(origin, this.getToken(originX, i))) {
-                break;
-            }
-            yMatches.push(this.getToken(originX, i))
-        }
-
-        if(xMatches.length >= 3) {
-            this.purgeTokens(xMatches)
-        }
-        if(yMatches.length >= 3) {
-            this.purgeTokens(yMatches)
-        }
-        if( (xMatches.length >= 3) || (yMatches.length >= 3)) {
-            this.nukeBoard();
+        //on SecondClick
+        if(this.selectedTokens[0] && !this.selectedTokens[1]) {
+            this.selectedTokens[1] = targetToken;
+            const firstSkIndex = this.selectedTokens[0].skIndex;
+            const secondSkIndex = this.selectedTokens[1].skIndex;
+            this.selectedTokens[0].setToken(secondSkIndex);
+            this.selectedTokens[1].setToken(firstSkIndex);
+            this.selectedTokens = [undefined, undefined];
+            this.resolveMatches();
+            this.selectedTokens[0], this.selectedTokens[1] = undefined;
+            return;
         }
 
     }
+
+    /**
+     * Use the matchLine function to find matches on columns and then rows
+     */
+    private resolveMatches(): void {
+        //Y Matches
+        this.columns.forEach(column => {
+            column.tokens = this.matchLine(column.tokens);
+        })
+        //X Matches
+        for(var i = 0; i < this.gridSize; i++) {
+            let horizontalArray: Token [] = [];
+            this.columns.forEach(column => {
+                horizontalArray.push (column.tokens[i]);
+            })
+            horizontalArray = this.matchLine(horizontalArray);
+        }
+    }
+
+   /**
+     * Identifies rows/columns of tokens where there are at least
+     * 3 adjacent to eachother.
+     * 
+     * Identified tokens are marked with highLight()
+     * and their matched status is set
+     * 
+     * @param Token[] - Array of Tokens to be searched for matches
+     */
+   private matchLine(tokens: Token[]): Token [] {
+    let cacheSkIndex: number | undefined = undefined;
+    let currentComboTokens: Token[] = [];
+    const totalComboTokens: Token[] = [];
+
+    function checkForCombo(): void {
+        if(currentComboTokens.length >= 3 ){
+            currentComboTokens.forEach(comboToken => {
+                totalComboTokens.push(comboToken);
+            })
+        }
+    }
+
+    tokens.forEach(token => {
+        //new token
+        if(!cacheSkIndex) {
+            cacheSkIndex = token.skIndex;
+            currentComboTokens.push(token);
+            return;
+        }
+
+        //matching token
+        if(token.skIndex === cacheSkIndex) {
+            currentComboTokens.push(token);
+        }
+
+        //last token in the array
+        if(token === tokens[this.gridSize-1]) {
+            checkForCombo();
+            return;
+        }
+
+        //cache defined but match failed
+        if(token.skIndex !== cacheSkIndex){
+            checkForCombo();
+            currentComboTokens = [];
+            cacheSkIndex = token.skIndex;
+            currentComboTokens.push(token);
+            return;
+        }
+    });
+
+    tokens.forEach(token => {
+        totalComboTokens.forEach(comboToken => {
+            if(token === comboToken) {
+                token.matched = true;
+            }
+        });
+    });
+
+    return tokens;
+    
+}
 
     private getToken(X: number, Y: number): Token {
         return this.columns[X].getToken(Y);
     }
-
-    private purgeTokens(inputTokens: Token[]): void {
-        inputTokens.forEach(element => {
-            element.matched = true;
-        });
-    }
-
-    private isMatch(originToken: Token, comparisonToken: Token): boolean {
-        if(originToken.getSkIndex() === comparisonToken.getSkIndex()) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    private nukeBoard(): void {
-
-        function isMatched(token: Token) {
-            return (token.matched);
-        }
-
-        function isNotMatched(token: Token) {
-            return (!token.matched);
-        }
-
-        this.columns.forEach(column => {
-            const unmatched = column.getAllTokens().filter(isNotMatched);
-            const matched = column.getAllTokens().filter(isMatched);
-            matched.forEach(token => {
-                token.shuffleSkin();
-            });
-            const newColumn = column.getAllTokens();
-            matched.forEach(token => {
-                newColumn.push(token);
-            });
-            unmatched.forEach(token => {
-                newColumn.push(token);
-            });
-        });
-
-    }
-
-    // private checkMatch(): void {
-
-    // }
-
 
 }
