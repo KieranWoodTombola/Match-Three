@@ -56,22 +56,19 @@ export class Grid extends Container {
     private resolveMatches(): void {
         //Y Matches
         this.columns.forEach(column => {
-            this.matchLine(column.tokens);
+            column.tokens = this.matchLine(column.tokens);
         })
-
-
-
         //X Matches
         for(var i = 0; i < this.gridSize; i++) {
-            const horizontalArray: Token [] = [];
+            let horizontalArray: Token [] = [];
             this.columns.forEach(column => {
                 horizontalArray.push (column.tokens[i]);
             })
-            this.matchLine(horizontalArray);
+            horizontalArray = this.matchLine(horizontalArray);
         }
     }
 
-    /**
+   /**
      * Identifies rows/columns of tokens where there are at least
      * 3 adjacent to eachother.
      * 
@@ -80,55 +77,59 @@ export class Grid extends Container {
      * 
      * @param Token[] - Array of Tokens to be searched for matches
      */
-    private matchLine(tokens: Token[]) {
-        let cacheSkIndex: number | undefined = undefined;
-        let currentComboTokens: Token[] = [];
-        const totalComboTokens: Token[] = [];
+   private matchLine(tokens: Token[]): Token [] {
+    let cacheSkIndex: number | undefined = undefined;
+    let currentComboTokens: Token[] = [];
+    const totalComboTokens: Token[] = [];
 
-        function checkForCombo(): void {
-            if(currentComboTokens.length >= 3 ){
-                currentComboTokens.forEach(comboToken => {
-                    totalComboTokens.push(comboToken);
-                })
-            }
+    function checkForCombo(): void {
+        if(currentComboTokens.length >= 3 ){
+            currentComboTokens.forEach(comboToken => {
+                totalComboTokens.push(comboToken);
+            })
+        }
+    }
+
+    tokens.forEach(token => {
+        //new token
+        if(!cacheSkIndex) {
+            cacheSkIndex = token.skIndex;
+            currentComboTokens.push(token);
+            return;
         }
 
-        tokens.forEach(token => {
-            //new token
-            if(!cacheSkIndex) {
-                cacheSkIndex = token.skIndex;
-                currentComboTokens.push(token);
-                return;
-            }
+        //matching token
+        if(token.skIndex === cacheSkIndex) {
+            currentComboTokens.push(token);
+        }
 
-            //matching token
-            if(token.skIndex === cacheSkIndex) {
-                currentComboTokens.push(token);
-                return;
-            }
+        //last token in the array
+        if(token === tokens[this.gridSize-1]) {
+            checkForCombo();
+            return;
+        }
 
-            //last token in the array
-            if(token === tokens[this.gridSize-1]) {
-                checkForCombo();
-                return;
-            }
+        //cache defined but match failed
+        if(token.skIndex !== cacheSkIndex){
+            checkForCombo();
+            currentComboTokens = [];
+            cacheSkIndex = token.skIndex;
+            currentComboTokens.push(token);
+            return;
+        }
+    });
 
-            //cache defined but match failed
-            if(token.skIndex !== cacheSkIndex){
-                checkForCombo();
-                currentComboTokens = [];
-                cacheSkIndex = token.skIndex;
-                currentComboTokens.push(token);
-                return;
+    tokens.forEach(token => {
+        totalComboTokens.forEach(comboToken => {
+            if(token === comboToken) {
+                token.matched = true;
             }
         });
+    });
 
-        totalComboTokens.forEach(matchedToken => {
-            matchedToken.highLight();
-            matchedToken.matched = true;
-        })
-        
-    }
+    return tokens;
+    
+}
 
     private getToken(X: number, Y: number): Token {
         return this.columns[X].getToken(Y);
