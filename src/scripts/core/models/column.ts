@@ -3,10 +3,10 @@ import { Token } from "./token";
 
 export class Column extends Container{
 
-    public tokens: Token[];
+    public tokens: Token[] = [];
     private columnID: number;
     private columnSize: number;
-    private availHeight: number;
+
 
     constructor(columnID: number, columnSize: number, availWidth: number, availHeight: number) {
         super()
@@ -23,6 +23,9 @@ export class Column extends Container{
             this.addChild(newToken);
         }
     }
+
+
+
 
     public removeAllTokens(): void {
         this.tokens = [];
