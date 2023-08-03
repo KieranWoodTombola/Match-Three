@@ -1,11 +1,9 @@
-//import { Spine } from 'pixi-spine';
 import { Assets, Container } from 'pixi.js'
 import { Grid } from './core/models/grid';
 
 export class Scene extends Container {
     private viewWidth: number;
     private viewHeight: number;
-    //private spine!: Spine;
     private assets: any[] = [];
     private gridWidth: number;
 
@@ -21,7 +19,6 @@ export class Scene extends Container {
         else { 
             this.gridWidth = this.viewHeight; 
         }
-
     }
 
     public async load(): Promise<void> {
@@ -35,18 +32,9 @@ export class Scene extends Container {
             const loadedAsset = await Assets.load(asset.key);
             this.assets.push(loadedAsset);
         }
-
     }
 
     public initialise(): void {
-        // this.spine = new Spine(Assets.get('symbols').spineData);
-        // this.spine.skeleton.setSkinByName('1');
-        // this.spine.x = this.viewWidth * 0.5;
-        // this.spine.y = this.viewHeight * 0.5;
-        // this.addChild(this.spine);
-
-        // discern portrait/landscape
-
         const grid = new Grid(6, this.gridWidth);
         this.addChild(grid);
     }
