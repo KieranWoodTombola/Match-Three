@@ -7,21 +7,29 @@ import { gsap } from 'gsap';
 export class Token extends Container {
 
     public matched: boolean;
-    public parentID: number;
-    public horizontalIndex;
+    private _parentID: number;
+    private _verticalIndex: number;
     private skin: Spine;
     public skIndex: number;
 
+    public get parentID() {
+        return this._parentID;
+    }
 
-    constructor (parentID: number, horizontalIndex: number, size: number, skIndex: number, availWidth: number) {
+    public get verticalIndex() {
+        return this._verticalIndex;
+    }
+
+
+    constructor (parentID: number, verticalIndex: number, size: number, skIndex: number, availWidth: number) {
         super();
 
         this.on('pointerdown', this.onClicked)
 
         this.matched = false;
         this.interactive = true;
-        this.parentID = parentID;
-        this.horizontalIndex = horizontalIndex;
+        this._parentID = parentID;
+        this._verticalIndex = verticalIndex;
         this.skIndex = skIndex;
         this.skin = new Spine(Assets.get('symbols').spineData);
         this.skin.skeleton.setSkinByName(`${this.skIndex}`);
@@ -44,7 +52,7 @@ export class Token extends Container {
     }
 
     public getLocation(): number[] {
-        const location = [this.parentID, this.horizontalIndex];
+        const location = [this.parentID, this._verticalIndex];
         return location;
     }
 
@@ -69,25 +77,5 @@ export class Token extends Container {
             duration: 0.3
         });
     }
-
-    // private wobble(): void {
-    //     if(this.skIndex === 1){
-    //         gsap.to(this, {
-    //            rotation: 2,
-    //            repeat: -1,
-    //             yoyo: true,
-    //             duration: 1
-    //         })
-    //     }
-    // }
-
-    // private fade(): void {
-    //     gsap.to(this, {
-    //         alpha: 0.1,
-    //         repeat: -1,
-    //          yoyo: true,
-    //          duration: 1
-    //      })
-    // }
 
 }
