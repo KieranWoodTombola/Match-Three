@@ -22,9 +22,8 @@ export class Column extends Container{
         }
     }
 
-    public processMatches(): void {
-            this.columnTweens();
-            this.rebuildTokens();
+    public removeAllTokens(): void {
+        this.tokens = [];
     }
 
     private columnTweens(): void {
