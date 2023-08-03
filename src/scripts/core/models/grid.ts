@@ -39,13 +39,14 @@ export class Grid extends Container {
 
         //on FirstClick
         if(!this.selectedTokens[0]) {
+            targetToken.highLight();
             this.selectedTokens[0] = targetToken;
             return;
         }
 
         //on SecondClick
-        if (this.selectedTokens[0] && !this.selectedTokens[1]) {
-
+        if(this.selectedTokens[0] && !this.selectedTokens[1]) {
+            targetToken.highLight();
             this.selectedTokens[1] = targetToken;
             this.selectedTokens.forEach(token => {
                 if (token) {
