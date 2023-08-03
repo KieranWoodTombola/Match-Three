@@ -31,11 +31,13 @@ export class Grid extends Container {
 
         //on FirstClick
         if(!this.selectedTokens[0]) {
+        if(!this.selectedTokens[0]) {
             this.selectedTokens[0] = targetToken;
             return;
         }
 
         //on SecondClick
+        if(this.selectedTokens[0] && !this.selectedTokens[1]) {
         if(this.selectedTokens[0] && !this.selectedTokens[1]) {
             this.selectedTokens[1] = targetToken;
             const firstSkIndex = this.selectedTokens[0].skIndex;
@@ -44,6 +46,7 @@ export class Grid extends Container {
             this.selectedTokens[1].setToken(firstSkIndex);
             this.selectedTokens = [undefined, undefined];
             this.resolveMatches();
+            this.selectedTokens[0], this.selectedTokens[1] = undefined;
             this.selectedTokens[0], this.selectedTokens[1] = undefined;
             return;
         }
@@ -58,6 +61,9 @@ export class Grid extends Container {
         this.columns.forEach(column => {
             this.matchLine(column.tokens);
         })
+
+
+
         //X Matches
         for(var i = 0; i < this.gridSize; i++) {
             const horizontalArray: Token [] = [];
