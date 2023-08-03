@@ -32,6 +32,7 @@ export class Grid extends Container {
         //on FirstClick
         if(!this.selectedTokens[0]) {
         if(!this.selectedTokens[0]) {
+            targetToken.highLight();
             this.selectedTokens[0] = targetToken;
             return;
         }
@@ -39,6 +40,7 @@ export class Grid extends Container {
         //on SecondClick
         if(this.selectedTokens[0] && !this.selectedTokens[1]) {
         if(this.selectedTokens[0] && !this.selectedTokens[1]) {
+            targetToken.highLight();
             this.selectedTokens[1] = targetToken;
             const firstSkIndex = this.selectedTokens[0].skIndex;
             const secondSkIndex = this.selectedTokens[1].skIndex;
