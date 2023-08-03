@@ -7,7 +7,6 @@ export class Grid extends Container {
 
     private gridSize: number;
     private columns: Column[] = [];
-    private tokensSelected: number = 0;
     private selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
 
     constructor (gridSize: number, availWidth: number) {
@@ -29,27 +28,23 @@ export class Grid extends Container {
     }
 
     private clickCheck(targetToken: Token): void {
-        //on first click, despite being defined in the constructor, activeToken appears undefined
-        this.tokensSelected++;
 
         //on FirstClick
-        if(this.tokensSelected === 1) {
+        if(!this.selectedTokens[0]) {
             this.selectedTokens[0] = targetToken;
             return;
         }
 
         //on SecondClick
-        if(this.tokensSelected === 2 && this.selectedTokens[0] !== undefined) {
+        if(this.selectedTokens[0] && !this.selectedTokens[1]) {
             this.selectedTokens[1] = targetToken;
-
             const firstSkIndex = this.selectedTokens[0].skIndex;
             const secondSkIndex = this.selectedTokens[1].skIndex;
             this.selectedTokens[0].setToken(secondSkIndex);
             this.selectedTokens[1].setToken(firstSkIndex);
-            this.tokensSelected = 0;
             this.selectedTokens = [undefined, undefined];
             this.resolveMatches();
-
+            this.selectedTokens[0], this.selectedTokens[1] = undefined;
             return;
         }
 
@@ -63,6 +58,8 @@ export class Grid extends Container {
         this.columns.forEach(column => {
             this.matchLine(column.tokens);
         })
+
+
 
         //X Matches
         for(var i = 0; i < this.gridSize; i++) {
@@ -107,7 +104,6 @@ export class Grid extends Container {
             //matching token
             if(token.skIndex === cacheSkIndex) {
                 currentComboTokens.push(token);
-                console.log(tokens.indexOf(token));
                 return;
             }
 
