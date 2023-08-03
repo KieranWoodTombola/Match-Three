@@ -4,11 +4,9 @@ import { Token } from "./token";
 
 export class Column extends Container{
 
-    public tokens: Token[];
+    public tokens: Token[] = [];
     private columnID: number;
     private columnSize: number;
-    // private viewWidth: number;
-    // private viewHeight: number;
 
 
     constructor(columnID: number, columnSize: number, availWidth: number, availHeight: number) {
@@ -19,7 +17,6 @@ export class Column extends Container{
         // this.viewWidth = viewWidth;
         // this.viewHeight = viewHeight;
 
-        this.tokens = [];
         for(var i = 0; i < this.columnSize; i++) {
             const randomNumber = Math.round(Math.random() * (9 - 1) + 1);
 
@@ -32,6 +29,9 @@ export class Column extends Container{
             this.addChild(newToken);
         }
     }
+
+
+
 
     public removeAllTokens(): void {
         this.tokens = [];
