@@ -25,6 +25,9 @@ export class Column extends Container{
         }
     }
 
+
+
+
     public removeAllTokens(): void {
         this.tokens = [];
     }
