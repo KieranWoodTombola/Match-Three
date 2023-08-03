@@ -8,7 +8,6 @@ export class Column extends Container{
     private columnID: number;
     private columnSize: number;
 
-
     constructor(columnID: number, columnSize: number, availWidth: number, availHeight: number) {
         super()
 
@@ -25,9 +24,6 @@ export class Column extends Container{
             this.addChild(newToken);
         }
     }
-
-
-
 
     public removeAllTokens(): void {
         this.tokens = [];
