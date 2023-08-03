@@ -8,7 +8,10 @@ export class Token extends Container {
 
     public matched: boolean;
     private _parentID: number;
-    private _verticalIndex: number;
+    private parentSize: number;
+    public _verticalIndex: number;
+    private availWidth: number;
+    private availHeight: number;
     private skin: Spine;
     public skIndex: number;
 
@@ -16,12 +19,7 @@ export class Token extends Container {
         return this._parentID;
     }
 
-    public get verticalIndex() {
-        return this._verticalIndex;
-    }
-
-
-    constructor (parentID: number, verticalIndex: number, size: number, skIndex: number, availWidth: number) {
+    constructor (parentID: number, verticalIndex: number, size: number, skIndex: number, availWidth: number, availHeight: number) {
         super();
 
         this.on('pointerdown', this.onClicked)
@@ -29,7 +27,10 @@ export class Token extends Container {
         this.matched = false;
         this.interactive = true;
         this._parentID = parentID;
+        this.parentSize = size;
         this._verticalIndex = verticalIndex;
+        this.availWidth = availWidth;
+        this.availHeight = availHeight;
         this.skIndex = skIndex;
         this.skin = new Spine(Assets.get('symbols').spineData);
         this.skin.skeleton.setSkinByName(`${this.skIndex}`);
@@ -63,19 +64,43 @@ export class Token extends Container {
     }
 
     public highLight(): void {
-        gsap.to(this, {
-            alpha: 0.5,
-            repeat: 3,
-            yoyo: true,
-            duration: 0.3
-        });
+        let highLight = gsap.timeline({repeat: 2, yoyo: true});
+        const cacheWidth = this.width;
+        highLight.to(this, {
+            width: 0
+        })
+        highLight.to(this, {
+            width: cacheWidth
+        })
     }
 
     public hide(): void {
         gsap.to(this, {
-            alpha: 0,
+            alpha: 0.001,
             duration: 0.3
         });
+    }
+
+    public reveal(): void {
+        gsap.to(this, {
+            alpha: 1,
+            duration: 0.3
+        });
+    }
+
+    public moveTo(desiredArrayPosition: number): void {
+        const TargetLocation = (this.availHeight / (this.parentSize/desiredArrayPosition));
+        gsap.to(this, {
+            y: TargetLocation,
+            duration: 1
+        })
+    }
+
+    public testMoveTo(): void {
+        gsap.to(this, {
+        y: this.height,
+        duration: 1  
+        })
     }
 
 }
