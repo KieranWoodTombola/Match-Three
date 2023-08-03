@@ -45,9 +45,10 @@ export class Grid extends Container {
             this.selectedTokens[0].setToken(secondSkIndex);
             this.selectedTokens[1].setToken(firstSkIndex);
             this.selectedTokens = [undefined, undefined];
+            this.selectedTokens[0], this.selectedTokens[1] = undefined;
+            this.selectedTokens[0], this.selectedTokens[1] = undefined;
+
             this.resolveMatches();
-            this.selectedTokens[0], this.selectedTokens[1] = undefined;
-            this.selectedTokens[0], this.selectedTokens[1] = undefined;
             return;
         }
 
@@ -57,21 +58,27 @@ export class Grid extends Container {
      * Use the matchLine function to find matches on columns and then rows
      */
     private resolveMatches(): void {
-        //Y Matches
-        this.columns.forEach(column => {
-            this.matchLine(column.tokens);
-        })
+        // //Y Matches
+        // this.columns.forEach(column => {
+        //     column.tokens = this.matchLine(column.tokens);
+        // })
+        // //X Matches
+        // for(var i = 0; i < this.gridSize; i++) {
+        //     let horizontalArray: Token [] = [];
+        //     this.columns.forEach(column => {
+        //         horizontalArray.push (column.tokens[i]);
+        //     })
+        //     horizontalArray = this.matchLine(horizontalArray);
+        // }
 
+        // //Animate the board using detected matches
+        // this.columns.forEach(column => {
+        //     column.processMatches();
+        // })
 
-
-        //X Matches
-        for(var i = 0; i < this.gridSize; i++) {
-            const horizontalArray: Token [] = [];
-            this.columns.forEach(column => {
-                horizontalArray.push (column.tokens[i]);
-            })
-            this.matchLine(horizontalArray);
-        }
+        this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
+        this.columns[0].processMatches();
+        this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
 
     /**
@@ -83,7 +90,7 @@ export class Grid extends Container {
      * 
      * @param Token[] - Array of Tokens to be searched for matches
      */
-    private matchLine(tokens: Token[]) {
+    private matchLine(tokens: Token[]): Token [] {
         let cacheSkIndex: number | undefined = undefined;
         let currentComboTokens: Token[] = [];
         const totalComboTokens: Token[] = [];
@@ -107,7 +114,6 @@ export class Grid extends Container {
             //matching token
             if(token.skIndex === cacheSkIndex) {
                 currentComboTokens.push(token);
-                return;
             }
 
             //last token in the array
@@ -126,10 +132,15 @@ export class Grid extends Container {
             }
         });
 
-        totalComboTokens.forEach(matchedToken => {
-            matchedToken.highLight();
-            matchedToken.matched = true;
-        })
+        tokens.forEach(token => {
+            totalComboTokens.forEach(comboToken => {
+                if(token === comboToken) {
+                    token.matched = true;
+                }
+            });
+        });
+
+        return tokens;
         
     }
 
