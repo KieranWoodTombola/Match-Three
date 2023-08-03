@@ -146,7 +146,7 @@ export class Grid extends Container {
         // this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
 
-    /**
+   /**
      * Identifies rows/columns of tokens where there are at least
      * 3 adjacent to eachother.
      * 
@@ -170,22 +170,26 @@ export class Grid extends Container {
 
         tokens.forEach(token => {
             //new token
-            if (!cacheSkIndex) {
+            if(!cacheSkIndex) {
                 cacheSkIndex = token.skIndex;
                 currentComboTokens.push(token);
                 return;
             }
+
             //matching token
-            if (token.skIndex === cacheSkIndex) {
+            if(token.skIndex === cacheSkIndex) {
                 currentComboTokens.push(token);
+                return;
             }
+
             //last token in the array
-            if (token === tokens[this.gridSize - 1]) {
+            if(token === tokens[this.gridSize-1]) {
                 checkForCombo();
                 return;
             }
+
             //cache defined but match failed
-            if (token.skIndex !== cacheSkIndex) {
+            if(token.skIndex !== cacheSkIndex){
                 checkForCombo();
                 currentComboTokens = [];
                 cacheSkIndex = token.skIndex;
