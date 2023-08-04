@@ -29,8 +29,6 @@ export class Column extends Container{
     public processMatches(): void {
             const matchedTokens: Token [] = [];
             const unmatchedTokens: Token [] = [];
-
-            //this.hideMatches();
             
             //build an array of matched tokens and an array of unmatched tokens
             for(let i = 0; i < this.tokens.length; i++) {
@@ -46,39 +44,25 @@ export class Column extends Container{
                 }
             }
 
-            //the unmatched tokens on the screen
-            //find coordinate of the place to move to
+            //move tokens from original positions in to the furthest matched token position
             for(let columnInspector: number = 0; columnInspector < this.tokens.length-1; columnInspector++) {
-
-                if(//columnInspector+1 <= this.tokens.length-1 
-                     !this.tokens[columnInspector].matched 
-                    ) {
-                        console.log("columnInspector: ", columnInspector);
-                        let combo = columnInspector+1;
-                        for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
-                            if(!this.tokens[combo].matched) { 
-                                break; 
-                            }
-                            else 
-                                console.log("combo: ", combo);
-                                this.tokens[columnInspector].moveTo(combo);
+                if(!this.tokens[columnInspector].matched) {
+                    let combo = columnInspector+1;
+                    for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
+                        if(!this.tokens[combo].matched) { 
+                            break; 
                         }
+                        else {
+                            console.log("combo: ", combo);
+                            this.tokens[columnInspector].moveTo(combo);
+                        }
+                    }
                 }
             }
-            //tween there
 
             this.tokens.forEach(token => {
                 token.matched = false;
             })
-
-            // this.tokens = [...matchedTokens, ...unmatchedTokens];
-            // console.log(this.tokens);
-            // for(var i = 0; i < this.columnSize; i++) {
-            //     this.tokens[i].y = (this.availHeight / (this.columnSize/i));
-            //     this.tokens[i]._verticalIndex = i;
-            // }
-
-            //this.revealMatches();
     }
 
     public hideMatches(): void {
