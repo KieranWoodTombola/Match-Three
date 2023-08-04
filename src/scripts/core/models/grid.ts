@@ -58,27 +58,28 @@ export class Grid extends Container {
      * Use the matchLine function to find matches on columns and then rows
      */
     private resolveMatches(): void {
-        // //Y Matches
-        // this.columns.forEach(column => {
-        //     column.tokens = this.matchLine(column.tokens);
-        // })
-        // //X Matches
-        // for(var i = 0; i < this.gridSize; i++) {
-        //     let horizontalArray: Token [] = [];
-        //     this.columns.forEach(column => {
-        //         horizontalArray.push (column.tokens[i]);
-        //     })
-        //     horizontalArray = this.matchLine(horizontalArray);
-        // }
+        //Y Matches
+        this.columns.forEach(column => {
+            column.tokens = this.matchLine(column.tokens);
+        })
+        //X Matches
+        for(var i = 0; i < this.gridSize; i++) {
+            let horizontalArray: Token [] = [];
+            this.columns.forEach(column => {
+                horizontalArray.push (column.tokens[i]);
+            })
+            horizontalArray = this.matchLine(horizontalArray);
+        }
 
-        // //Animate the board using detected matches
-        // this.columns.forEach(column => {
-        //     column.processMatches();
-        // })
+        //Animate the board using detected matches
+        this.columns.forEach(column => {
+            column.processMatches();
+        })
 
-        this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
-        this.columns[0].processMatches();
-        this.columns[0].tokens.forEach(token => {token.matched = false;})
+        //Only use the first Column for testing
+        // this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
+        // this.columns[0].processMatches();
+        // this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
 
     /**
