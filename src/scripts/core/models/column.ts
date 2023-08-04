@@ -16,9 +16,7 @@ export class Column extends Container{
         this.availHeight = availHeight;
 
         for(var i = 0; i < this.columnSize; i++) {
-            const randomNumber = Math.round(Math.random() * (9 - 1) + 1);
-
-            const newToken = new Token(this.columnID, i, this.columnSize, randomNumber, availWidth, availHeight)
+            const newToken = new Token(this.columnID, i, this.columnSize, availWidth, availHeight)
             newToken.y = (availHeight / (this.columnSize/i));
 
             this.tokens.push(newToken);
@@ -27,42 +25,55 @@ export class Column extends Container{
     }
 
     public processMatches(): void {
-            const matchedTokens: Token [] = [];
-            const unmatchedTokens: Token [] = [];
-            
-            //build an array of matched tokens and an array of unmatched tokens
-            for(let i = 0; i < this.tokens.length; i++) {
-                const target = this.tokens[i]
-                if(target.matched) {
-                    target.shuffleSkin();
-                    target.hide();
-                    matchedTokens.push(target);
-                }
-
-                if(!target.matched) {
-                    unmatchedTokens.push(target);
-                }
-            }
-
             //move tokens from original positions in to the furthest matched token position
-            for(let columnInspector: number = 0; columnInspector < this.tokens.length-1; columnInspector++) {
-                if(!this.tokens[columnInspector].matched) {
-                    let combo = columnInspector+1;
-                    for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
-                        if(!this.tokens[combo].matched) { 
-                            break; 
+            this.columnTweens();
+
+            //rebuild and reset the column's tokens
+            this.rebuildTokens();
+
+    }
+
+    private columnTweens(): void {
+        const nonMatchCombo: Token [] = [];
+        for(let columnInspector: number = 0; columnInspector < this.tokens.length-1; columnInspector++) {
+            const target = this.tokens[columnInspector];
+            if(!target.matched) {
+                nonMatchCombo.unshift(target);
+                for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
+                    if(this.tokens[combo].matched) { 
+                        for(let i = 0; i < nonMatchCombo.length; i++){
+                            nonMatchCombo[i].moveTo(combo-i);
                         }
-                        else {
-                            console.log("combo: ", combo);
-                            this.tokens[columnInspector].moveTo(combo);
-                        }
+                    }
+                    else {
+                        break;
                     }
                 }
             }
+        }
+    }
 
-            this.tokens.forEach(token => {
-                token.matched = false;
-            })
+    private rebuildTokens(): void {
+        const matchedTokens: Token [] = [];
+        const unmatchedTokens: Token [] = [];
+        for(let i = 0; i < this.tokens.length; i++) {
+            const target = this.tokens[i]
+            if(target.matched) {
+                target.hide();
+                target.interactive = false;
+                matchedTokens.push(target);
+            }
+
+            if(!target.matched) {
+                unmatchedTokens.push(target);
+            }
+        }
+        const newTokens = [...matchedTokens, ...unmatchedTokens]
+        for(var i = 0; i < this.columnSize; i++) {
+            newTokens[i]._verticalIndex = i;
+            newTokens[i].matched = false;
+        }
+        this.tokens = newTokens;
     }
 
     public hideMatches(): void {
