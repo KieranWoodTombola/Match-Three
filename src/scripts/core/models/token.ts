@@ -19,7 +19,7 @@ export class Token extends Container {
         return this._parentID;
     }
 
-    constructor (parentID: number, verticalIndex: number, size: number, skIndex: number, availWidth: number, availHeight: number) {
+    constructor (parentID: number, verticalIndex: number, size: number, availWidth: number, availHeight: number) {
         super();
 
         this.on('pointerdown', this.onClicked)
@@ -31,7 +31,7 @@ export class Token extends Container {
         this._verticalIndex = verticalIndex;
         this.availWidth = availWidth;
         this.availHeight = availHeight;
-        this.skIndex = skIndex;
+        this.skIndex = Math.round(Math.random() * (9 - 1) + 1);;
         this.skin = new Spine(Assets.get('symbols').spineData);
         this.shuffleSkin();
         this.width = Math.ceil(this.skin.width)
