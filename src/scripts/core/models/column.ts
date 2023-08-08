@@ -40,13 +40,11 @@ export class Column extends Container{
             if(!target.matched) {
                 nonMatchCombo.unshift(target);
                 for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
+                    if(this.tokens[combo].matched){ break; }
                     if(this.tokens[combo].matched) { 
                         for(let i = 0; i < nonMatchCombo.length; i++){
                             nonMatchCombo[i].moveTo(combo-i);
                         }
-                    }
-                    else {
-                        break;
                     }
                 }
             }
@@ -64,7 +62,7 @@ export class Column extends Container{
                 matchedTokens.push(target);
             }
 
-            if(!target.matched) {
+            else {
                 unmatchedTokens.push(target);
             }
         }
@@ -88,7 +86,6 @@ export class Column extends Container{
         this.tokens.forEach(token => {
             if(token.matched) {
                 token.reveal()
-                token.matched = false;
             }
         });
     }
