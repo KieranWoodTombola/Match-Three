@@ -14,23 +14,17 @@ export class Column extends Container{
         this.columnID = columnID;
         this.columnSize = columnSize;
         this.availHeight = availHeight;
-
         for(var i = 0; i < this.columnSize; i++) {
             const newToken = new Token(this.columnID, i, this.columnSize, availWidth, availHeight)
             newToken.y = (availHeight / (this.columnSize/i));
-
             this.tokens.push(newToken);
             this.addChild(newToken);
         }
     }
 
     public processMatches(): void {
-            //move tokens from original positions in to the furthest matched token position
             this.columnTweens();
-
-            //rebuild and reset the column's tokens
             this.rebuildTokens();
-
     }
 
     private columnTweens(): void {
@@ -84,13 +78,16 @@ export class Column extends Container{
         });
     }
 
-    public revealMatches(): void {
+    public deactivateAllTokens(): void {
+        this.tokens.forEach(token => { token.interactive = false });
+    }
+
+    public activateUnMatchedTokens(): void {
         this.tokens.forEach(token => {
-            if(token.matched) {
-                token.reveal()
-                token.matched = false;
+            if(!token.matched) {
+                token.interactive = true;
             }
-        });
+        })
     }
 
     public getToken(Y: number) {
@@ -106,5 +103,7 @@ export class Column extends Container{
             return;
         }
     }
+
+
 
 }
