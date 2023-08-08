@@ -6,6 +6,8 @@ interface Events {
 
     //grid events
     clickCheck: (token: Token) => void
+    lazyCallbackFirst: (firstSwapToken: Token, secondSwapToken: Token) => void
+    lazyCallbackLast: (firstSwapToken: Token, secondSwapToken: Token) => void
     //column events
 
     //token events
