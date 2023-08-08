@@ -41,10 +41,8 @@ export class Column extends Container{
                 nonMatchCombo.unshift(target);
                 for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
                     if(!this.tokens[combo].matched){ break; }
-                    if(this.tokens[combo].matched) { 
-                        for(let i = 0; i < nonMatchCombo.length; i++){
-                            nonMatchCombo[i].moveTo(combo-i);
-                        }
+                    for(let i = 0; i < nonMatchCombo.length; i++){
+                        nonMatchCombo[i].moveTo(combo-i);
                     }
                 }
             }
