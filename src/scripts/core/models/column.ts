@@ -18,7 +18,6 @@ export class Column extends Container{
         for(var i = 0; i < this.columnSize; i++) {
             const newToken = new Token(this.columnID, i, this.columnSize, availWidth, availHeight)
             newToken.y = (availHeight / (this.columnSize/i));
-
             this.tokens.push(newToken);
             this.addChild(newToken);
         }
@@ -102,4 +101,7 @@ export class Column extends Container{
         }
     }
 
+    public getToken(Y: number) {
+        return this.tokens[Y];
+    }
 }

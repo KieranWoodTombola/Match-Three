@@ -51,7 +51,6 @@ export class Grid extends Container {
             this.resolveMatches();
             return;
         }
-
     }
 
     /**
@@ -81,8 +80,8 @@ export class Grid extends Container {
         // this.columns[0].processMatches();
         // this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
-
-    /**
+  
+  /**
      * Identifies rows/columns of tokens where there are at least
      * 3 adjacent to eachother.
      * 
@@ -150,3 +149,7 @@ export class Grid extends Container {
     }
 
 }
+    
+  
+
+    
