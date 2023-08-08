@@ -100,8 +100,4 @@ export class Column extends Container{
             return;
         }
     }
-
-    public getToken(Y: number) {
-        return this.tokens[Y];
-    }
 }

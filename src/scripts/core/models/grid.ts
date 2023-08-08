@@ -22,9 +22,7 @@ export class Grid extends Container {
             this.columns.push(newColumn);
             this.addChild(newColumn);
         }
-        
         this.position.set(this.getToken(0,0).width * 0.5, this.getToken(0,0).height * 0.5);
-
     }
 
     private clickCheck(targetToken: Token): void {
@@ -47,7 +45,6 @@ export class Grid extends Container {
             this.selectedTokens = [undefined, undefined];
             this.selectedTokens[0], this.selectedTokens[1] = undefined;
             this.selectedTokens[0], this.selectedTokens[1] = undefined;
-
             this.resolveMatches();
             return;
         }
@@ -110,18 +107,15 @@ export class Grid extends Container {
                 currentComboTokens.push(token);
                 return;
             }
-
             //matching token
             if(token.skIndex === cacheSkIndex) {
                 currentComboTokens.push(token);
             }
-
             //last token in the array
             if(token === tokens[this.gridSize-1]) {
                 checkForCombo();
                 return;
             }
-
             //cache defined but match failed
             if(token.skIndex !== cacheSkIndex){
                 checkForCombo();
@@ -141,15 +135,9 @@ export class Grid extends Container {
         });
 
         return tokens;
-        
     }
 
     private getToken(X: number, Y: number): Token {
         return this.columns[X].getToken(Y);
     }
-
-}
-    
-  
-
-    
+}    
