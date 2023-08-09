@@ -3,12 +3,14 @@ import { Column } from "./column";
 import { eventEmitter } from "../../../event-emitter";
 import { Token } from "./token";
 import { gsap } from "gsap";
+import { MotionPathPlugin } from "gsap/all";
+gsap.registerPlugin(MotionPathPlugin);
+
 
 export class Grid extends Container {
 
     private availWidth: number;
     private gridSize: number;
-    private swapTweenPair: [Token, Token];
     private columns: Column[] = [];
     private selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
 
@@ -16,16 +18,11 @@ export class Grid extends Container {
         super ()
 
         eventEmitter.on('clickCheck', this.clickCheck, this)
-        eventEmitter.on('lazyCallbackFirst', this.lazyCallbackFirst, this);
-        eventEmitter.on('lazyCallbackLast', this.lazyCallbackLast, this);
+        eventEmitter.on('onSwapStart', this.onSwapStart, this);
+        eventEmitter.on('onSwapComplete', this.onSwapComplete, this);
 
         this.availWidth = availWidth;
         this.gridSize = gridSize;
-        this.swapTweenPair = [new Token(-1, -1, gridSize, availWidth, availWidth), new Token(-1, -1, gridSize, availWidth, availWidth)];
-        this.swapTweenPair.forEach(token => {
-            token.alpha = 0;
-            this.addChild(token)
-        });
         
         for(var i = 0; i < this.gridSize; i++) {
             const newColumn = new Column(i, this.gridSize, this.availWidth, this.availWidth);
@@ -34,7 +31,6 @@ export class Grid extends Container {
             this.addChild(newColumn);
         }
         this.position.set(this.getToken(0,0).width * 0.5, this.getToken(0,0).height * 0.5);
-
     }
 
     private clickCheck(targetToken: Token): void {
@@ -45,7 +41,6 @@ export class Grid extends Container {
         //on FirstClick
         if(!this.selectedTokens[0]) {
             this.selectedTokens[0] = targetToken;
-            this.swapTweenPair[1] = targetToken;
             return;
         }
 
@@ -53,80 +48,72 @@ export class Grid extends Container {
         if(this.selectedTokens[0] && !this.selectedTokens[1]) {
 
             this.selectedTokens[1] = targetToken;
-            this.swapTweenPair[0] = targetToken;
-
-            const origin = new Point(0, 0);
-            this.swapTweenPair.forEach(token => {
-                token.setParent(this);
-                token.position.set(0,0);
-                token.interactive = true;
+            this.selectedTokens.forEach(token => {
+                if(token){
+                    token.setParent(this);
+                    token.interactive = true;
+                }
             });
+            //snap the tokens to their destination
+            const firstX = (this.availWidth / (this.gridSize/this.selectedTokens[0].parentID))
+            const firstY = (this.availWidth / (this.gridSize/this.selectedTokens[0]._verticalIndex))
+            const secondX = (this.availWidth / (this.gridSize/this.selectedTokens[1].parentID))
+            const secondY = (this.availWidth / (this.gridSize/this.selectedTokens[1]._verticalIndex))
+            this.selectedTokens[0].position = {x: secondX, y: secondY}
+            this.selectedTokens[1].position = {x: firstX, y: firstY}
 
-            this.veryCoolTween(this.selectedTokens[0], this.selectedTokens[1], this.swapTweenPair[0], this.swapTweenPair[1]);
+            //set the tokens' skins
+            const firstSkIndex = this.selectedTokens[0].skIndex;
+            const secondSkIndex = this.selectedTokens[1].skIndex;
+            this.selectedTokens[0].setSkin(secondSkIndex);
+            this.selectedTokens[1].setSkin(firstSkIndex);
+
+            //tween the tokens from their DESTINATION to their ORIGIN
+            const swapTween = gsap.timeline( {
+                ease: "back",
+                onStart: function(): void {
+                    eventEmitter.emit('onSwapStart');
+                },
+                onComplete: function(): void {
+                    eventEmitter.emit('onSwapComplete');
+                }
+            } );
+
+            swapTween.to(this.selectedTokens[0],
+                {
+                    motionPath: {
+                        curviness: 2,
+                        path: [{x: secondX, y: secondY}, {x: secondX, y: firstY}, {x: firstX, y: firstY}]
+                    },
+                    duration: 1.5
+                }, 0)
+            swapTween.to(this.selectedTokens[1],
+                {
+                    motionPath: {
+                        curviness: 2,
+                        path: [{x: firstX, y: firstY}, {x: firstX, y: secondY}, {x: secondX, y: secondY}]
+                    },
+                    duration: 1.5
+                }, 0)
+
             return;
         }
     }
 
-    private veryCoolTween(firstSwapToken: Token, secondSwapToken: Token, firstTweeningToken: Token, secondTweeningToken: Token): void {
-        let swapTween = gsap.timeline( {
-            duration: 2,
-            ease: "back",
-            onStart: function(): void {
-                eventEmitter.emit('lazyCallbackFirst', firstSwapToken, secondSwapToken);
-            },
-            onComplete: function(): void {
-                eventEmitter.emit('lazyCallbackLast', firstSwapToken, secondSwapToken);
-            }
-        } );
-        swapTween.fromTo(firstTweeningToken,
-            {
-                x:  (this.availWidth / (this.gridSize/firstSwapToken.parentID)) ,
-                y: (this.availWidth / (this.gridSize/firstSwapToken._verticalIndex))
-            },
-            {
-                ease: "back",
-                x: (this.availWidth / (this.gridSize/secondSwapToken.parentID)),
-                y: (this.availWidth / (this.gridSize/secondSwapToken._verticalIndex))
-            }, 0);
-        swapTween.fromTo(secondTweeningToken,
-            {
-                x:  (this.availWidth / (this.gridSize/secondSwapToken.parentID)) ,
-                y: (this.availWidth / (this.gridSize/secondSwapToken._verticalIndex)) 
-            },
-            {
-                ease: "back",
-                x: (this.availWidth / (this.gridSize/firstSwapToken.parentID)),
-                y: (this.availWidth / (this.gridSize/firstSwapToken._verticalIndex))
-            }, 0)
-    }
-
-    private lazyCallbackFirst(firstSwapToken: Token, secondSwapToken: Token): void {
-        firstSwapToken.alpha = 0;
-        secondSwapToken.alpha = 0;
-        this.swapTweenPair.forEach(token => {token.alpha = 1;})
-        const firstSkIndex = firstSwapToken.skIndex;
-        const secondSkIndex = secondSwapToken.skIndex;
-        firstSwapToken.setToken(secondSkIndex);
-        secondSwapToken.setToken(firstSkIndex);
+    private onSwapStart(): void {
         this.columns.forEach( column => {column.deactivateAllTokens()});
     }
 
-    private lazyCallbackLast(firstSwapToken: Token, secondSwapToken: Token): void {
-        this.swapTweenPair.forEach(token => {token.alpha = 0;});
-        firstSwapToken.alpha = 1;
-        secondSwapToken.alpha = 1;
-        this.columns.forEach( column => {column.activateUnMatchedTokens()});
+    private onSwapComplete(): void {
         this.selectedTokens = [undefined, undefined];
         this.resolveMatches();
+        this.columns.forEach( column => {column.activateUnMatchedTokens()});
     }
 
-    /**
-     * Use the matchLine function to find matches on columns and then rows
-     */
     private resolveMatches(): void {
         //Y Matches
         this.columns.forEach(column => {
-            column.tokens = this.matchLine(column.tokens);
+            this.matchLine(column.tokens);
         })
         //X Matches
         for(var i = 0; i < this.gridSize; i++) {
@@ -134,7 +121,7 @@ export class Grid extends Container {
             this.columns.forEach(column => {
                 horizontalArray.push (column.tokens[i]);
             })
-            horizontalArray = this.matchLine(horizontalArray);
+            this.matchLine(horizontalArray);
         }
 
         //Animate the board using detected matches
@@ -157,7 +144,7 @@ export class Grid extends Container {
      * 
      * @param Token[] - Array of Tokens to be searched for matches
      */
-    private matchLine(tokens: Token[]): Token [] {
+    private matchLine(tokens: Token[]): void{
         let cacheSkIndex: number | undefined = undefined;
         let currentComboTokens: Token[] = [];
         const totalComboTokens: Token[] = [];
@@ -177,18 +164,15 @@ export class Grid extends Container {
                 currentComboTokens.push(token);
                 return;
             }
-
             //matching token
             if(token.skIndex === cacheSkIndex) {
                 currentComboTokens.push(token);
             }
-
             //last token in the array
             if(token === tokens[this.gridSize-1]) {
                 checkForCombo();
                 return;
             }
-
             //cache defined but match failed
             if(token.skIndex !== cacheSkIndex){
                 checkForCombo();
@@ -206,13 +190,9 @@ export class Grid extends Container {
                 }
             });
         });
-
-        return tokens;
-        
     }
 
     private getToken(X: number, Y: number): Token {
         return this.columns[X].getToken(Y);
     }
-
 }
