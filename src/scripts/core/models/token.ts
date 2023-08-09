@@ -44,7 +44,7 @@ export class Token extends Container {
         eventEmitter.emit('clickCheck', this);
     }
 
-    public setToken(skIndex: number) {
+    public setSkin(skIndex: number) {
         this.skIndex = skIndex;
         this.skin.skeleton.setSkinByName(`${skIndex}`);
     }
