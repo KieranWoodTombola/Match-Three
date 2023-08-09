@@ -82,16 +82,24 @@ export class Grid extends Container {
             swapTween.to(this.selectedTokens[0],
                 {
                     motionPath: {
-                        curviness: 2,
-                        path: [{x: secondX, y: secondY}, {x: secondX, y: firstY}, {x: firstX, y: firstY}]
+                        curviness: 1,
+                        path: [
+                            {x: secondX, y: secondY},
+                            {x: secondX, y: firstY}, 
+                            {x: firstX, y: firstY}
+                        ]
                     },
                     duration: 1.5
                 }, 0)
             swapTween.to(this.selectedTokens[1],
                 {
                     motionPath: {
-                        curviness: 2,
-                        path: [{x: firstX, y: firstY}, {x: firstX, y: secondY}, {x: secondX, y: secondY}]
+                        curviness: 1,
+                        path: [
+                            {x: firstX, y: firstY}, 
+                            {x: firstX , y: secondY}, 
+                            {x: secondX, y: secondY}
+                        ]
                     },
                     duration: 1.5
                 }, 0)
