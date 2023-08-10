@@ -1,10 +1,11 @@
-import { Container, Point } from "pixi.js";
+import { Container, IPointData } from "pixi.js";
 import { Column } from "./column";
 import { eventEmitter } from "../../../event-emitter";
 import { Token } from "./token";
 import { gsap } from "gsap";
 import { MotionPathPlugin } from "gsap/all";
 gsap.registerPlugin(MotionPathPlugin);
+import { Curve } from "../services/curve"
 
 
 export class Grid extends Container {
@@ -68,6 +69,15 @@ export class Grid extends Container {
             this.selectedTokens[0].setSkin(secondSkIndex);
             this.selectedTokens[1].setSkin(firstSkIndex);
 
+            //THE TOKENS SWAP POSITIONS FIRST!
+            const tweenCurve = new Curve(
+                [this.selectedTokens[0].x, this.selectedTokens[0].y],
+                [this.selectedTokens[1].x, this.selectedTokens[1].y]
+                );
+            
+            const rotateFirst = tweenCurve.rotate90(this.selectedTokens[0].x, this.selectedTokens[0].y);
+            const rotateSecond = tweenCurve.rotate90(this.selectedTokens[1].x, this.selectedTokens[1].y);
+
             //tween the tokens from their DESTINATION to their ORIGIN
             const swapTween = gsap.timeline( {
                 ease: "back",
@@ -78,26 +88,25 @@ export class Grid extends Container {
                     eventEmitter.emit('onSwapComplete');
                 }
             } );
-
+            
             swapTween.to(this.selectedTokens[0],
                 {
                     motionPath: {
-                        curviness: 1,
+                        curviness: 2,
                         path: [
-                            {x: secondX, y: secondY},
-                            {x: secondX, y: firstY}, 
+                            {x: rotateFirst[0], y: rotateFirst[1]},
                             {x: firstX, y: firstY}
                         ]
                     },
                     duration: 1.5
                 }, 0)
+
             swapTween.to(this.selectedTokens[1],
                 {
                     motionPath: {
-                        curviness: 1,
+                        curviness: 2,
                         path: [
-                            {x: firstX, y: firstY}, 
-                            {x: firstX , y: secondY}, 
+                            {x: rotateSecond[0], y: rotateSecond[1]},
                             {x: secondX, y: secondY}
                         ]
                     },

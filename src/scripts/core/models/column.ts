@@ -65,7 +65,6 @@ export class Column extends Container{
         const newTokens = [...matchedTokens, ...unmatchedTokens]
         for(var i = 0; i < this.columnSize; i++) {
             newTokens[i]._verticalIndex = i;
-            newTokens[i].matched = false;
         }
         this.tokens = newTokens;
     }
@@ -94,15 +93,7 @@ export class Column extends Container{
         return this.tokens[Y];
     }
 
-    public removeAllTokens(): void {
-        this.tokens = [];
-    }
 
-    public replaceAllTokens(newTokens: Token[]): void {
-        if(newTokens.length != this.tokens.length) {
-            return;
-        }
-    }
 
 
 
