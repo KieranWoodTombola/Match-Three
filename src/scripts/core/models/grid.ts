@@ -1,4 +1,4 @@
-import { Container, IPointData } from "pixi.js";
+import { Container } from "pixi.js";
 import { Column } from "./column";
 import { eventEmitter } from "../../../event-emitter";
 import { Token } from "./token";
