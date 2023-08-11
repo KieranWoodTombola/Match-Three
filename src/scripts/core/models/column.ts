@@ -9,13 +9,13 @@ export class Column extends Container{
     private availHeight: number;
 
     constructor(columnID: number, columnSize: number, availWidth: number, availHeight: number) {
-        super()
+        super();
 
         this.columnID = columnID;
         this.columnSize = columnSize;
         this.availHeight = availHeight;
         for(var i = 0; i < this.columnSize; i++) {
-            const newToken = new Token(this.columnID, i, this.columnSize, availWidth, availHeight)
+            const newToken = new Token(this.columnID, i, this.columnSize, availWidth, availHeight);
             newToken.y = (availHeight / (this.columnSize/i));
             this.tokens.push(newToken);
             this.addChild(newToken);
@@ -34,13 +34,11 @@ export class Column extends Container{
             if(!target.matched) {
                 nonMatchCombo.unshift(target);
                 for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
-                    if(this.tokens[combo].matched) { 
-                        for(let i = 0; i < nonMatchCombo.length; i++){
-                            nonMatchCombo[i].moveTo(combo-i);
-                        }
-                    }
-                    else {
+                    if(!this.tokens[combo].matched) { 
                         break;
+                    }
+                    for(let i = 0; i < nonMatchCombo.length; i++){
+                        nonMatchCombo[i].moveTo(combo-i);
                     }
                 }
             }
@@ -86,15 +84,10 @@ export class Column extends Container{
             if(!token.matched) {
                 token.interactive = true;
             }
-        })
+        });
     }
 
     public getToken(Y: number) {
         return this.tokens[Y];
     }
-
-
-
-
-
 }

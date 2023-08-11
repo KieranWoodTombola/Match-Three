@@ -13,11 +13,11 @@ export class Curve {
     }
 
     public getFirst(): [number, number] {
-        return [this.firstX, this.firstY]
+        return [this.firstX, this.firstY];
     }
 
     public getSecond(): [number, number] {
-        return [this.secondX, this.secondY]
+        return [this.secondX, this.secondY];
     }
 
     public getHighNoon(): [number, number] {
@@ -28,7 +28,7 @@ export class Curve {
     }
 
     public getMidpoint(): [number, number]{
-        return [((this.firstX + this.secondX) * 0.5), ((this.firstY + this.secondY) * 0.5)]
+        return [((this.firstX + this.secondX) * 0.5), ((this.firstY + this.secondY) * 0.5)];
     }
 
     public getDiameter(): number {
@@ -51,7 +51,7 @@ export class Curve {
         return [
             (Math.cos(radians) * this.getRadius()) + this.getMidpoint()[0],
             (Math.sin(radians) * this.getRadius()) + this.getMidpoint()[1]
-        ]
+        ];
     }
 
     public rotate90(firstX: number, firstY: number): [number, number] {
@@ -63,9 +63,7 @@ export class Curve {
         // newX = (newX === 0) ? newX :newX / length;
         // newY = (newY === 0) ? newY : newY / length;
 
-        newY * -1
-
-        return [newX + this.getMidpoint()[0], newY + this.getMidpoint()[1]]
+        return [newX + this.getMidpoint()[0], newY + this.getMidpoint()[1]];
     }
 
 }

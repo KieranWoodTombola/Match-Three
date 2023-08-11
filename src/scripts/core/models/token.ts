@@ -10,16 +10,15 @@ export class Token extends Container {
     private _parentID: number;
     private parentSize: number;
     public _verticalIndex: number;
-    private availWidth: number;
     private availHeight: number;
     private skin: Spine;
-    public skIndex: number;
+    public skIndex: number = -1;
 
     public get parentID() {
         return this._parentID;
     }
 
-    constructor (parentID: number, verticalIndex: number, size: number, availWidth: number, availHeight: number) {
+    constructor(parentID: number, verticalIndex: number, size: number, availWidth: number, availHeight: number) {
         super();
 
         this.on('pointerdown', this.onClicked)
@@ -29,11 +28,9 @@ export class Token extends Container {
         this._parentID = parentID;
         this.parentSize = size;
         this._verticalIndex = verticalIndex;
-        this.availWidth = availWidth;
         this.availHeight = availHeight;
-        this.skIndex = Math.round(Math.random() * (9 - 1) + 1);;
         this.skin = new Spine(Assets.get('symbols').spineData);
-        this.skin.skeleton.setSkinByName(`${this.skIndex}`);
+        this.shuffleSkin();
         this.width = Math.ceil(this.skin.width)
         this.scale.set(0.4);
         this.pivot.set(0.5);
@@ -49,9 +46,6 @@ export class Token extends Container {
         this.skin.skeleton.setSkinByName(`${skIndex}`);
     }
 
-    public onTokenReveal(arg: number): void {
-    }
-
     public getLocation(): number[] {
         const location = [this.parentID, this._verticalIndex];
         return location;
@@ -64,14 +58,14 @@ export class Token extends Container {
     }
 
     public highLight(): void {
-        let highLight = gsap.timeline({repeat: 2, yoyo: true});
+        let highLight = gsap.timeline({ repeat: 2, yoyo: true });
         const cacheWidth = this.width;
         highLight.to(this, {
             width: 0
-        })
+        });
         highLight.to(this, {
             width: cacheWidth
-        })
+        });
     }
 
     public hide(): void {
@@ -89,18 +83,17 @@ export class Token extends Container {
     }
 
     public moveTo(desiredArrayPosition: number): void {
-        const TargetLocation = (this.availHeight / (this.parentSize/desiredArrayPosition));
+        const TargetLocation = (this.availHeight / (this.parentSize / desiredArrayPosition));
         gsap.to(this, {
             y: TargetLocation,
             duration: 1
-        })
+        });
     }
 
     public testMoveTo(): void {
         gsap.to(this, {
-        y: this.height,
-        duration: 1  
-        })
+            y: this.height,
+            duration: 1
+        });
     }
-
 }
