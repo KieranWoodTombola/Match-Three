@@ -6,34 +6,54 @@ import { gsap } from 'gsap';
 
 export class Token extends Container {
 
-    public matched: boolean;
-    private _parentID: number;
-    private parentSize: number;
-    public _verticalIndex: number;
-    private availWidth: number;
-    private availHeight: number;
+    public matched: boolean = false;
+    private _parentID: number = -1;
+    private parentSize: number = -1;
+    public verticalIndex: number = -1;
+    private _availWidth: number = 0;
+    private _availHeight: number = 0;
     private skin: Spine;
-    public skIndex: number;
+    public skIndex: number = -1;
 
     public get parentID() {
         return this._parentID;
     }
 
-    constructor (parentID: number, verticalIndex: number, size: number, availWidth: number, availHeight: number) {
+    public get availWidth() {
+        return this._availWidth;
+    }
+
+    public get availHeight() {
+        return this._availHeight;
+    }
+
+    public constructor (availWidth: number, availHeight: number, skIndex: number );
+    public constructor (availWidth: number, availHeight: number, parentID: number, verticalIndex: number, parentSize: number);
+
+    public constructor (...arr: any[]) {
+
         super();
 
         this.on('pointerdown', this.onClicked)
 
-        this.matched = false;
-        this.interactive = true;
-        this._parentID = parentID;
-        this.parentSize = size;
-        this._verticalIndex = verticalIndex;
-        this.availWidth = availWidth;
-        this.availHeight = availHeight;
-        this.skIndex = Math.round(Math.random() * (9 - 1) + 1);;
+        if(arr[0]) this._availWidth = arr[0];
+        if(arr[1]) this._availHeight = arr[1];
         this.skin = new Spine(Assets.get('symbols').spineData);
-        this.skin.skeleton.setSkinByName(`${this.skIndex}`);
+
+        if(arr.length === 3) {
+            if(arr[2]) this.skIndex = arr[2];
+            this.setSkin(this.skIndex);
+        }
+
+        if(arr.length === 5) {
+            this.matched = false;
+            this.interactive = true;
+            if(arr[2]) this._parentID = arr[2];
+            if(arr[3]) this.verticalIndex = arr[3];
+            if(arr[4]) this.parentSize = arr[4];
+            this.shuffleSkin();
+        }
+
         this.width = Math.ceil(this.skin.width)
         this.scale.set(0.4);
         this.pivot.set(0.5);
@@ -53,7 +73,7 @@ export class Token extends Container {
     }
 
     public getLocation(): number[] {
-        const location = [this.parentID, this._verticalIndex];
+        const location = [this.parentID, this.verticalIndex];
         return location;
     }
 
