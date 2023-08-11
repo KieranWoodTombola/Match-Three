@@ -13,7 +13,6 @@ export class Grid extends Container {
     private availWidth: number;
     private gridSize: number;
     private columns: Column[] = [];
-    private tokensSelected: number = 0;
     private selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
 
     constructor(gridSize: number, availWidth: number) {
@@ -34,27 +33,79 @@ export class Grid extends Container {
     }
 
     private clickCheck(targetToken: Token): void {
-        //on first click, despite being defined in the constructor, activeToken appears undefined
-        this.tokensSelected++;
+        if (targetToken.matched) {
+            return;
+        }
 
         //on FirstClick
-        if(this.tokensSelected === 1) {
+        if (!this.selectedTokens[0]) {
             this.selectedTokens[0] = targetToken;
             return;
         }
 
         //on SecondClick
-        if(this.tokensSelected === 2 && this.selectedTokens[0] !== undefined) {
-            this.selectedTokens[1] = targetToken;
+        if (this.selectedTokens[0] && !this.selectedTokens[1]) {
 
+            this.selectedTokens[1] = targetToken;
+            this.selectedTokens.forEach(token => {
+                if (token) {
+                    token.setParent(this);
+                    token.interactive = true;
+                }
+            });
+            //snap the tokens to their destination
+            const firstX = (this.availWidth / (this.gridSize / this.selectedTokens[0].parentID));
+            const firstY = (this.availWidth / (this.gridSize / this.selectedTokens[0]._verticalIndex));
+            const secondX = (this.availWidth / (this.gridSize / this.selectedTokens[1].parentID));
+            const secondY = (this.availWidth / (this.gridSize / this.selectedTokens[1]._verticalIndex));
+            this.selectedTokens[0].position = { x: secondX, y: secondY }
+            this.selectedTokens[1].position = { x: firstX, y: firstY }
+
+            //set the tokens' skins
             const firstSkIndex = this.selectedTokens[0].skIndex;
             const secondSkIndex = this.selectedTokens[1].skIndex;
-            this.selectedTokens[0].setToken(secondSkIndex);
-            this.selectedTokens[1].setToken(firstSkIndex);
-            this.tokensSelected = 0;
-            this.selectedTokens = [undefined, undefined];
-            this.resolveMatches();
+            this.selectedTokens[0].setSkin(secondSkIndex);
+            this.selectedTokens[1].setSkin(firstSkIndex);
 
+            //THE TOKENS SWAP POSITIONS FIRST!
+            const tweenCurve = new Curve(
+                [this.selectedTokens[0].x, this.selectedTokens[0].y],
+                [this.selectedTokens[1].x, this.selectedTokens[1].y]
+            );
+
+            const rotateFirst = tweenCurve.rotate90(this.selectedTokens[0].x, this.selectedTokens[0].y);
+            const rotateSecond = tweenCurve.rotate90(this.selectedTokens[1].x, this.selectedTokens[1].y);
+
+            //tween the tokens from their DESTINATION to their ORIGIN
+            const swapTween = gsap.timeline({
+                ease: "back",
+                onStart: this.onSwapStart.bind(this),
+                onComplete: this.onSwapComplete.bind(this)
+            });
+
+            swapTween.to(this.selectedTokens[0],
+                {
+                    motionPath: {
+                        curviness: 2,
+                        path: [
+                            { x: rotateFirst[0], y: rotateFirst[1] },
+                            { x: firstX, y: firstY }
+                        ]
+                    },
+                    duration: 1.5
+                }, 0);
+
+            swapTween.to(this.selectedTokens[1],
+                {
+                    motionPath: {
+                        curviness: 2,
+                        path: [
+                            { x: rotateSecond[0], y: rotateSecond[1] },
+                            { x: secondX, y: secondY }
+                        ]
+                    },
+                    duration: 1.5
+                }, 0);
             return;
         }
     }
@@ -74,16 +125,25 @@ export class Grid extends Container {
         //Y Matches
         this.columns.forEach(column => {
             this.matchLine(column.tokens);
-        })
-
+        });
         //X Matches
-        for(var i = 0; i < this.gridSize; i++) {
-            const horizontalArray: Token [] = [];
+        for (var i = 0; i < this.gridSize; i++) {
+            let horizontalArray: Token[] = [];
             this.columns.forEach(column => {
-                horizontalArray.push (column.tokens[i]);
-            })
+                horizontalArray.push(column.tokens[i]);
+            });
             this.matchLine(horizontalArray);
         }
+
+        //Animate the board using detected matches
+        this.columns.forEach(column => {
+            column.processMatches();
+        });
+
+        //Only use the first Column for testing
+        // this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
+        // this.columns[0].processMatches();
+        // this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
 
     /**
@@ -95,7 +155,7 @@ export class Grid extends Container {
      * 
      * @param Token[] - Array of Tokens to be searched for matches
      */
-    private matchLine(tokens: Token[]) {
+    private matchLine(tokens: Token[]): void {
         let cacheSkIndex: number | undefined = undefined;
         let currentComboTokens: Token[] = [];
         const totalComboTokens: Token[] = [];
@@ -110,27 +170,22 @@ export class Grid extends Container {
 
         tokens.forEach(token => {
             //new token
-            if(!cacheSkIndex) {
+            if (!cacheSkIndex) {
                 cacheSkIndex = token.skIndex;
                 currentComboTokens.push(token);
                 return;
             }
-
             //matching token
-            if(token.skIndex === cacheSkIndex) {
+            if (token.skIndex === cacheSkIndex) {
                 currentComboTokens.push(token);
-                console.log(tokens.indexOf(token));
-                return;
             }
-
             //last token in the array
-            if(token === tokens[this.gridSize-1]) {
+            if (token === tokens[this.gridSize - 1]) {
                 checkForCombo();
                 return;
             }
-
             //cache defined but match failed
-            if(token.skIndex !== cacheSkIndex){
+            if (token.skIndex !== cacheSkIndex) {
                 checkForCombo();
                 currentComboTokens = [];
                 cacheSkIndex = token.skIndex;
@@ -139,11 +194,13 @@ export class Grid extends Container {
             }
         });
 
-        totalComboTokens.forEach(matchedToken => {
-            matchedToken.highLight();
-            matchedToken.matched = true;
-        })
-        
+        tokens.forEach(token => {
+            totalComboTokens.forEach(comboToken => {
+                if (token === comboToken) {
+                    token.matched = true;
+                }
+            });
+        });
     }
 
     private getToken(X: number, Y: number): Token {
