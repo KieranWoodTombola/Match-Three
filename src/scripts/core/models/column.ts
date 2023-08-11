@@ -56,7 +56,7 @@ export class Column extends Container{
                 matchedTokens.push(target);
             }
 
-            if(!target.matched) {
+            else {
                 unmatchedTokens.push(target);
             }
         }
@@ -89,5 +89,11 @@ export class Column extends Container{
 
     public getToken(Y: number) {
         return this.tokens[Y];
+    }
+
+    public replaceAllTokens(newTokens: Token[]): void {
+        if(newTokens.length != this.tokens.length) {
+            return;
+        }
     }
 }
