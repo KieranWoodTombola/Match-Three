@@ -8,6 +8,7 @@ interface Events {
     clickCheck: (token: Token) => void
     onSwapStart: () => void
     onSwapComplete: () => void
+    onMatch: (tokens: Token[]) => void
     //column events
 
     //token events
