@@ -57,9 +57,9 @@ export class Grid extends Container {
             });
             //snap the tokens to their destination
             const firstX = (this.availWidth / (this.gridSize/this.selectedTokens[0].parentID))
-            const firstY = (this.availWidth / (this.gridSize/this.selectedTokens[0]._verticalIndex))
+            const firstY = (this.availWidth / (this.gridSize/this.selectedTokens[0].verticalIndex))
             const secondX = (this.availWidth / (this.gridSize/this.selectedTokens[1].parentID))
-            const secondY = (this.availWidth / (this.gridSize/this.selectedTokens[1]._verticalIndex))
+            const secondY = (this.availWidth / (this.gridSize/this.selectedTokens[1].verticalIndex))
             this.selectedTokens[0].position = {x: secondX, y: secondY}
             this.selectedTokens[1].position = {x: firstX, y: firstY}
 
@@ -168,6 +168,7 @@ export class Grid extends Container {
 
         function checkForCombo(): void {
             if(currentComboTokens.length >= 3 ){
+                eventEmitter.emit('onMatch', currentComboTokens);
                 currentComboTokens.forEach(comboToken => {
                     totalComboTokens.push(comboToken);
                 })
