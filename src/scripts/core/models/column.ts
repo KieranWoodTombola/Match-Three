@@ -26,20 +26,13 @@ export class Column extends Container{
     public processMatches(): void {
             this.repositionOnScreen();     
             this.rebuildTokens();
-            //this.replaceTokens();
     }
 
     private repositionOnScreen(): void {
         const matchCombo: Token [] = [];
         const nonMatchCombo: Token [] = [];
         const sortTimeline = gsap.timeline({
-            paused: true,
-            onStart: () => {
-
-            },
-            onComplete: () => {
-
-            }
+            paused: true
         });
 
         for(let columnInspector: number = 0; columnInspector < this.tokens.length; columnInspector++) {
@@ -53,7 +46,7 @@ export class Column extends Container{
                 sortTimeline.add(() => target.hide(), 0);
                 sortTimeline.add(() => target.moveTo((0 - matchCount) + matchCombo.indexOf(target)), 1);
             }
-            if(!target.matched) {
+            else {
                 nonMatchCombo.unshift(target);
                 for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
                     if(!this.tokens[combo].matched) { 
@@ -65,13 +58,11 @@ export class Column extends Container{
                 }
             }
         }
-
         matchCombo.forEach(token => {
             sortTimeline.add(() => token.moveTo(matchCombo.indexOf(token)), 2);
             sortTimeline.add(() => token.reveal(), 2);
             sortTimeline.add(() => token.shuffleSkin(), 2);
         })
-
         sortTimeline.play();
     }
 
@@ -84,7 +75,6 @@ export class Column extends Container{
                 target.interactive = false;
                 matchedTokens.push(target);
             }
-
             else {
                 unmatchedTokens.push(target);
             }
