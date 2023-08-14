@@ -7,7 +7,7 @@ import { MotionPathPlugin } from "gsap/all";
 gsap.registerPlugin(MotionPathPlugin);
 import { Curve } from "../services/curve"
 
-
+//
 export class Grid extends Container {
 
     private availWidth: number;
