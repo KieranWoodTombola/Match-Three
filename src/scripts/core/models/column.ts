@@ -51,7 +51,7 @@ export class Column extends Container{
             if(target.matched) {
                 matchCombo.push(target);
                 sortTimeline.add(() => target.hide(), 0);
-                sortTimeline.add(() => target.moveTo((0 - matchCount)), 1);
+                sortTimeline.add(() => target.moveTo((0 - matchCount) + matchCombo.indexOf(target)), 1);
             }
             if(!target.matched) {
                 nonMatchCombo.unshift(target);
