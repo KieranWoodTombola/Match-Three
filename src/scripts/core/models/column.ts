@@ -9,14 +9,13 @@ export class Column extends Container{
     private availHeight: number;
 
     constructor(columnID: number, columnSize: number, availWidth: number, availHeight: number) {
-        super()
+        super();
 
         this.columnID = columnID;
         this.columnSize = columnSize;
         this.availHeight = availHeight;
-
         for(var i = 0; i < this.columnSize; i++) {
-            const newToken = new Token(this.columnID, i, this.columnSize, availWidth, availHeight)
+            const newToken = new Token(this.columnID, i, this.columnSize, availWidth, availHeight);
             newToken.y = (availHeight / (this.columnSize/i));
             this.tokens.push(newToken);
             this.addChild(newToken);
@@ -24,12 +23,8 @@ export class Column extends Container{
     }
 
     public processMatches(): void {
-            //move tokens from original positions in to the furthest matched token position
             this.columnTweens();
-
-            //rebuild and reset the column's tokens
             this.rebuildTokens();
-
     }
 
     private columnTweens(): void {
@@ -39,7 +34,9 @@ export class Column extends Container{
             if(!target.matched) {
                 nonMatchCombo.unshift(target);
                 for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
-                    if(!this.tokens[combo].matched){ break; }
+                    if(!this.tokens[combo].matched) { 
+                        break;
+                    }
                     for(let i = 0; i < nonMatchCombo.length; i++){
                         nonMatchCombo[i].moveTo(combo-i);
                     }
@@ -66,7 +63,6 @@ export class Column extends Container{
         const newTokens = [...matchedTokens, ...unmatchedTokens]
         for(var i = 0; i < this.columnSize; i++) {
             newTokens[i]._verticalIndex = i;
-            newTokens[i].matched = false;
         }
         this.tokens = newTokens;
     }
@@ -79,20 +75,20 @@ export class Column extends Container{
         });
     }
 
-    public revealMatches(): void {
+    public deactivateAllTokens(): void {
+        this.tokens.forEach(token => { token.interactive = false });
+    }
+
+    public activateUnMatchedTokens(): void {
         this.tokens.forEach(token => {
-            if(token.matched) {
-                token.reveal()
+            if(!token.matched) {
+                token.interactive = true;
             }
         });
     }
 
     public getToken(Y: number) {
         return this.tokens[Y];
-    }
-
-    public removeAllTokens(): void {
-        this.tokens = [];
     }
 
     public replaceAllTokens(newTokens: Token[]): void {
