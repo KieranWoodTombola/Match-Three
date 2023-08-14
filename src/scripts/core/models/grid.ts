@@ -14,6 +14,7 @@ export class Grid extends Container {
     private gridSize: number;
     private columns: Column[] = [];
     private selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
+    private matchedTokens: Token[] = [];
 
     constructor (gridSize: number, availWidth: number) {
         super ()
@@ -142,10 +143,13 @@ export class Grid extends Container {
         }
 
         //Animate the board using detected matches
+        console.log(this.matchedTokens);
+        eventEmitter.emit('onMatch', this.matchedTokens);
+        this.matchedTokens = [];
+        console.log(this.matchedTokens);
         this.columns.forEach(column => {
             column.processMatches();
         })
-
         //Only use the first Column for testing
         // this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
         // this.columns[0].processMatches();
@@ -168,7 +172,6 @@ export class Grid extends Container {
 
         function checkForCombo(): void {
             if(currentComboTokens.length >= 3 ){
-                eventEmitter.emit('onMatch', currentComboTokens);
                 currentComboTokens.forEach(comboToken => {
                     totalComboTokens.push(comboToken);
                 })
@@ -205,6 +208,7 @@ export class Grid extends Container {
             totalComboTokens.forEach(comboToken => {
                 if(token === comboToken) {
                     token.matched = true;
+                    this.matchedTokens.push(comboToken);
                 }
             });
         });

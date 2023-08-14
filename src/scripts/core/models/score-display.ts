@@ -2,6 +2,7 @@ import { gsap } from "gsap";
 import { Container, Graphics, Text as PixiText } from "pixi.js";
 import { Token } from "./token";
 import { eventEmitter } from "../../../event-emitter";
+import { ScoreMaths } from "../services/score-maths";
 
 export class ScoreDisplay extends Container {
 
@@ -58,14 +59,20 @@ export class ScoreDisplay extends Container {
     }
 
     private recordMatchedTokens(tokens: Token[]): void {
+        const processedTokens: Token[][] = ScoreMaths.orderMatchedTokens(tokens);
+        console.log(processedTokens);
+        processedTokens.forEach(array => {
+            const tokensContainer = this.positionTokens(array)
+            tokensContainer.y = tokensContainer.height * processedTokens.indexOf(array);
+            this.addChild(tokensContainer)
+        })
+    }
+
+    private positionTokens(tokens: Token[]): Container {
+
         const displayTokenContainer = new Container();
-        
+        this.trackedHeight ++;
         tokens.forEach(token => {
-            console.log( this.trackedSkin, this.trackedHeight );
-            if(token.skIndex !== this.trackedSkin) {
-                this.trackedSkin = token.skIndex;
-                this.trackedHeight++ ;
-            }
             const newToken = new Token (token.availWidth, token.availHeight, token.skIndex);
             newToken.scale.x = 0.3;
             newToken.scale.y = 0.3;
@@ -74,13 +81,12 @@ export class ScoreDisplay extends Container {
             newToken.y = (token.height/2 * this.trackedHeight) + (token.height * 0.4);
             displayTokenContainer.addChild(newToken);
         })
-        this.addChild(displayTokenContainer);
-        //displayTokenContainer.pivot.set(displayTokenContainer.width*0.5, displayTokenContainer.y * 0.5);
         displayTokenContainer.position = {
             x: (this.textContainer.width * 0.5) - (displayTokenContainer.width * 0.5), 
             y: this.textContainer.height
         };
 
+        return displayTokenContainer;
         // const square = new Graphics();
         // square.beginFill("white");
         // square.drawRect(0, 0, displayTokenContainer.width, displayTokenContainer.height);
