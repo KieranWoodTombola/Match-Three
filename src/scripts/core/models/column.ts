@@ -1,5 +1,6 @@
 import { Container } from "pixi.js";
 import { Token } from "./token";
+import { gsap } from "gsap";
 
 export class Column extends Container{
 
@@ -9,7 +10,7 @@ export class Column extends Container{
     private availHeight: number;
 
     constructor(columnID: number, columnSize: number, availWidth: number, availHeight: number) {
-        super()
+        super();
 
         this.columnID = columnID;
         this.columnSize = columnSize;
@@ -23,28 +24,46 @@ export class Column extends Container{
     }
 
     public processMatches(): void {
-            this.columnTweens();
+            this.repositionOnScreen();     
             this.rebuildTokens();
     }
 
-    private columnTweens(): void {
+    private repositionOnScreen(): void {
+        const matchCombo: Token [] = [];
         const nonMatchCombo: Token [] = [];
-        for(let columnInspector: number = 0; columnInspector < this.tokens.length-1; columnInspector++) {
+        const sortTimeline = gsap.timeline({
+            paused: true
+        });
+
+        for(let columnInspector: number = 0; columnInspector < this.tokens.length; columnInspector++) {
             const target = this.tokens[columnInspector];
-            if(!target.matched) {
+            let matchCount = 0;
+            this.tokens.forEach(token => {
+                if(token.matched) {matchCount ++;}
+            });
+            if(target.matched) {
+                matchCombo.push(target);
+                sortTimeline.add(() => target.hide(), 0);
+                sortTimeline.add(() => target.moveTo((0 - matchCount) + matchCombo.indexOf(target)), 1);
+            }
+            else {
                 nonMatchCombo.unshift(target);
                 for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
-                    if(this.tokens[combo].matched) { 
-                        for(let i = 0; i < nonMatchCombo.length; i++){
-                            nonMatchCombo[i].moveTo(combo-i);
-                        }
-                    }
-                    else {
+                    if(!this.tokens[combo].matched) { 
                         break;
+                    }
+                    for(let i = 0; i < nonMatchCombo.length; i++){
+                        nonMatchCombo[i].moveTo(combo-i);
                     }
                 }
             }
         }
+        matchCombo.forEach(token => {
+            sortTimeline.add(() => token.moveTo(matchCombo.indexOf(token)), 2);
+            sortTimeline.add(() => token.reveal(), 2);
+            sortTimeline.add(() => token.shuffleSkin(), 2);
+        })
+        sortTimeline.play();
     }
 
     private rebuildTokens(): void {
@@ -53,12 +72,10 @@ export class Column extends Container{
         for(let i = 0; i < this.tokens.length; i++) {
             const target = this.tokens[i]
             if(target.matched) {
-                target.hide();
                 target.interactive = false;
                 matchedTokens.push(target);
             }
-
-            if(!target.matched) {
+            else {
                 unmatchedTokens.push(target);
             }
         }
@@ -67,14 +84,6 @@ export class Column extends Container{
             newTokens[i].verticalIndex = i;
         }
         this.tokens = newTokens;
-    }
-
-    public hideMatches(): void {
-        this.tokens.forEach(token => {
-            if(token.matched) {
-                token.hide()
-            }
-        });
     }
 
     public deactivateAllTokens(): void {
@@ -86,15 +95,16 @@ export class Column extends Container{
             if(!token.matched) {
                 token.interactive = true;
             }
-        })
+        });
     }
 
     public getToken(Y: number) {
         return this.tokens[Y];
     }
 
-
-
-
-
+    public replaceAllTokens(newTokens: Token[]): void {
+        if(newTokens.length != this.tokens.length) {
+            return;
+        }
+    }
 }

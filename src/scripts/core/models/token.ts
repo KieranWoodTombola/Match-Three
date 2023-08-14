@@ -69,9 +69,6 @@ export class Token extends Container {
         this.skin.skeleton.setSkinByName(`${skIndex}`);
     }
 
-    public onTokenReveal(arg: number): void {
-    }
-
     public getLocation(): number[] {
         const location = [this.parentID, this.verticalIndex];
         return location;
@@ -81,17 +78,6 @@ export class Token extends Container {
         const randomNumber = Math.round(Math.random() * (9 - 1) + 1);
         this.skIndex = randomNumber;
         this.skin.skeleton.setSkinByName(`${this.skIndex}`);
-    }
-
-    public highLight(): void {
-        let highLight = gsap.timeline({repeat: 2, yoyo: true});
-        const cacheWidth = this.width;
-        highLight.to(this, {
-            width: 0
-        })
-        highLight.to(this, {
-            width: cacheWidth
-        })
     }
 
     public hide(): void {
@@ -109,18 +95,17 @@ export class Token extends Container {
     }
 
     public moveTo(desiredArrayPosition: number): void {
-        const TargetLocation = (this.availHeight / (this.parentSize/desiredArrayPosition));
+        const TargetLocation = (this.availHeight / (this.parentSize / desiredArrayPosition));
         gsap.to(this, {
             y: TargetLocation,
             duration: 1
-        })
+        });
     }
 
     public testMoveTo(): void {
         gsap.to(this, {
-        y: this.height,
-        duration: 1  
-        })
+            y: this.height,
+            duration: 1
+        });
     }
-
 }
