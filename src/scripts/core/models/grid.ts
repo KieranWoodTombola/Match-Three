@@ -14,6 +14,7 @@ export class Grid extends Container {
     private gridSize: number;
     private columns: Column[] = [];
     private selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
+    private matchedTokens: Token[] = [];
 
     constructor(gridSize: number, availWidth: number) {
         super()
@@ -54,12 +55,12 @@ export class Grid extends Container {
                 }
             });
             //snap the tokens to their destination
-            const firstX = (this.availWidth / (this.gridSize / this.selectedTokens[0].parentID));
-            const firstY = (this.availWidth / (this.gridSize / this.selectedTokens[0]._verticalIndex));
-            const secondX = (this.availWidth / (this.gridSize / this.selectedTokens[1].parentID));
-            const secondY = (this.availWidth / (this.gridSize / this.selectedTokens[1]._verticalIndex));
-            this.selectedTokens[0].position = { x: secondX, y: secondY }
-            this.selectedTokens[1].position = { x: firstX, y: firstY }
+            const firstX = (this.availWidth / (this.gridSize/this.selectedTokens[0].parentID))
+            const firstY = (this.availWidth / (this.gridSize/this.selectedTokens[0].verticalIndex))
+            const secondX = (this.availWidth / (this.gridSize/this.selectedTokens[1].parentID))
+            const secondY = (this.availWidth / (this.gridSize/this.selectedTokens[1].verticalIndex))
+            this.selectedTokens[0].position = {x: secondX, y: secondY}
+            this.selectedTokens[1].position = {x: firstX, y: firstY}
 
             //set the tokens' skins
             const firstSkIndex = this.selectedTokens[0].skIndex;
@@ -145,10 +146,14 @@ export class Grid extends Container {
         }
 
         //Animate the board using detected matches
+        console.log(this.matchedTokens);
+        eventEmitter.emit('onMatch', this.matchedTokens);
+        this.matchedTokens = [];
+        console.log(this.matchedTokens);
         this.columns.forEach(column => {
             column.processMatches();
         });
-
+      
         //Only use the first Column for testing
         // this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
         // this.columns[0].processMatches();
@@ -207,6 +212,7 @@ export class Grid extends Container {
             totalComboTokens.forEach(comboToken => {
                 if (token === comboToken) {
                     token.matched = true;
+                    this.matchedTokens.push(comboToken);
                 }
             });
         });

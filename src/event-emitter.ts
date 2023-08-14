@@ -6,8 +6,9 @@ interface Events {
 
     //grid events
     clickCheck: (token: Token) => void;
-    onSwapComplete: () => void;
-
+    onSwapComplete: () => void
+    onMatch: (tokens: Token[]) => void
+  
     //column events
 
     //token events

@@ -16,7 +16,7 @@ export class Column extends Container{
         this.columnSize = columnSize;
         this.availHeight = availHeight;
         for(var i = 0; i < this.columnSize; i++) {
-            const newToken = new Token(this.columnID, i, this.columnSize, availWidth, availHeight);
+            const newToken = new Token(availWidth, availHeight, this.columnID, i, this.columnSize)
             newToken.y = (availHeight / (this.columnSize/i));
             this.tokens.push(newToken);
             this.addChild(newToken);
@@ -81,8 +81,7 @@ export class Column extends Container{
         }
         const newTokens = [...matchedTokens, ...unmatchedTokens]
         for(var i = 0; i < this.columnSize; i++) {
-            newTokens[i].matched = false;
-            newTokens[i]._verticalIndex = i;
+            newTokens[i].verticalIndex = i;
         }
         this.tokens = newTokens;
     }
