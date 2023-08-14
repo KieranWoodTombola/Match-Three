@@ -1,5 +1,6 @@
 import { Container } from "pixi.js";
 import { Token } from "./token";
+import { gsap } from "gsap";
 
 export class Column extends Container{
 
@@ -23,14 +24,35 @@ export class Column extends Container{
     }
 
     public processMatches(): void {
-            this.columnTweens();
+            this.repositionOnScreen();     
             this.rebuildTokens();
+            //this.replaceTokens();
     }
 
-    private columnTweens(): void {
+    private repositionOnScreen(): void {
+        const matchCombo: Token [] = [];
         const nonMatchCombo: Token [] = [];
-        for(let columnInspector: number = 0; columnInspector < this.tokens.length-1; columnInspector++) {
+        const sortTimeline = gsap.timeline({
+            paused: true,
+            onStart: () => {
+
+            },
+            onComplete: () => {
+
+            }
+        });
+
+        for(let columnInspector: number = 0; columnInspector < this.tokens.length; columnInspector++) {
             const target = this.tokens[columnInspector];
+            let matchCount = 0;
+            this.tokens.forEach(token => {
+                if(token.matched) {matchCount ++;}
+            });
+            if(target.matched) {
+                matchCombo.push(target);
+                sortTimeline.add(() => target.hide(), 0);
+                sortTimeline.add(() => target.moveTo((0 - matchCount)), 1);
+            }
             if(!target.matched) {
                 nonMatchCombo.unshift(target);
                 for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
@@ -43,6 +65,14 @@ export class Column extends Container{
                 }
             }
         }
+
+        matchCombo.forEach(token => {
+            sortTimeline.add(() => token.moveTo(matchCombo.indexOf(token)), 2);
+            sortTimeline.add(() => token.reveal(), 2);
+            sortTimeline.add(() => token.shuffleSkin(), 2);
+        })
+
+        sortTimeline.play();
     }
 
     private rebuildTokens(): void {
@@ -51,7 +81,6 @@ export class Column extends Container{
         for(let i = 0; i < this.tokens.length; i++) {
             const target = this.tokens[i]
             if(target.matched) {
-                target.hide();
                 target.interactive = false;
                 matchedTokens.push(target);
             }
@@ -62,17 +91,10 @@ export class Column extends Container{
         }
         const newTokens = [...matchedTokens, ...unmatchedTokens]
         for(var i = 0; i < this.columnSize; i++) {
+            newTokens[i].matched = false;
             newTokens[i]._verticalIndex = i;
         }
         this.tokens = newTokens;
-    }
-
-    public hideMatches(): void {
-        this.tokens.forEach(token => {
-            if(token.matched) {
-                token.hide()
-            }
-        });
     }
 
     public deactivateAllTokens(): void {
