@@ -119,7 +119,7 @@ export class Grid extends Container {
     private onSwapComplete(): void {
         this.selectedTokens = [undefined, undefined];
         this.resolveMatches();
-        this.columns.forEach(column => { column.activateUnMatchedTokens() });
+        this.columns.forEach(column => { column.activateAllTokens() });
         eventEmitter.emit('onSwapComplete');
         if(!this.selectedTokens[0] || !this.selectedTokens[1]) { return; }
         const firstSkIndex = this.selectedTokens[0].skIndex;

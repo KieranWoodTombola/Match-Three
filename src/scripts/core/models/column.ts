@@ -72,7 +72,6 @@ export class Column extends Container{
         for(let i = 0; i < this.tokens.length; i++) {
             const target = this.tokens[i]
             if(target.matched) {
-                target.interactive = false;
                 matchedTokens.push(target);
             }
             else {
@@ -81,6 +80,7 @@ export class Column extends Container{
         }
         const newTokens = [...matchedTokens, ...unmatchedTokens]
         for(var i = 0; i < this.columnSize; i++) {
+            newTokens[i].matched = false;
             newTokens[i].verticalIndex = i;
         }
         this.tokens = newTokens;
@@ -90,12 +90,8 @@ export class Column extends Container{
         this.tokens.forEach(token => { token.interactive = false });
     }
 
-    public activateUnMatchedTokens(): void {
-        this.tokens.forEach(token => {
-            if(!token.matched) {
-                token.interactive = true;
-            }
-        });
+    public activateAllTokens(): void {
+        this.tokens.forEach(token => { token.interactive = true });
     }
 
     public getToken(Y: number) {
