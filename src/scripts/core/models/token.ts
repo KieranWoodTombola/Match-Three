@@ -7,9 +7,9 @@ import { gsap } from 'gsap';
 export class Token extends Container {
 
     public matched: boolean = false;
-    private _parentID: number = -1;
-    private parentSize: number = -1;
-    public verticalIndex: number = -1;
+    private _parentID: number = 0;
+    private parentSize: number = 0;
+    public verticalIndex: number = 0;
     private _availWidth: number = 0;
     private _availHeight: number = 0;
     private skin: Spine;

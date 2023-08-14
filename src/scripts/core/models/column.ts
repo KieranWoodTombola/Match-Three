@@ -15,9 +15,9 @@ export class Column extends Container{
         this.columnID = columnID;
         this.columnSize = columnSize;
         this.availHeight = availHeight;
-        for(var i = 0; i < this.columnSize; i++) {
-            const newToken = new Token(availWidth, availHeight, this.columnID, i, this.columnSize)
-            newToken.y = (availHeight / (this.columnSize/i));
+        for(var tokenIndex: number = 0; tokenIndex < this.columnSize; tokenIndex++) {
+            const newToken = new Token(this.availHeight, this.availHeight, this.columnID, tokenIndex, this.columnSize);
+            newToken.y = (availHeight / (this.columnSize/tokenIndex));
             this.tokens.push(newToken);
             this.addChild(newToken);
         }

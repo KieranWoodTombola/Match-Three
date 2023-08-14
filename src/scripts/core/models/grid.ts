@@ -34,6 +34,7 @@ export class Grid extends Container {
     }
 
     private clickCheck(targetToken: Token): void {
+
         if (targetToken.matched) {
             return;
         }
@@ -49,16 +50,16 @@ export class Grid extends Container {
 
             this.selectedTokens[1] = targetToken;
             this.selectedTokens.forEach(token => {
-                if (token) {
-                    token.setParent(this);
-                    token.interactive = true;
-                }
+                if(!token){ return; }
+                token.setParent(this);
+                token.interactive = true;
             });
             //snap the tokens to their destination
             const firstX = (this.availWidth / (this.gridSize/this.selectedTokens[0].parentID))
             const firstY = (this.availWidth / (this.gridSize/this.selectedTokens[0].verticalIndex))
             const secondX = (this.availWidth / (this.gridSize/this.selectedTokens[1].parentID))
             const secondY = (this.availWidth / (this.gridSize/this.selectedTokens[1].verticalIndex))
+            
             this.selectedTokens[0].position = {x: secondX, y: secondY}
             this.selectedTokens[1].position = {x: firstX, y: firstY}
 
@@ -117,15 +118,9 @@ export class Grid extends Container {
     }
 
     private onSwapComplete(): void {
-        this.selectedTokens = [undefined, undefined];
-        this.resolveMatches();
         this.columns.forEach(column => { column.activateAllTokens() });
         eventEmitter.emit('onSwapComplete');
         if(!this.selectedTokens[0] || !this.selectedTokens[1]) { return; }
-        const firstSkIndex = this.selectedTokens[0].skIndex;
-        const secondSkIndex = this.selectedTokens[1].skIndex;
-        this.selectedTokens[0].setSkin(secondSkIndex);
-        this.selectedTokens[1].setSkin(firstSkIndex);
         this.selectedTokens = [undefined, undefined];
         this.resolveMatches();
         return;
@@ -146,10 +141,8 @@ export class Grid extends Container {
         }
 
         //Animate the board using detected matches
-        console.log(this.matchedTokens);
         eventEmitter.emit('onMatch', this.matchedTokens);
         this.matchedTokens = [];
-        console.log(this.matchedTokens);
         this.columns.forEach(column => {
             column.processMatches();
         });
