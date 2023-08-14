@@ -120,14 +120,14 @@ export class Grid extends Container {
         this.resolveMatches();
         this.columns.forEach(column => { column.activateUnMatchedTokens() });
         eventEmitter.emit('onSwapComplete');
-            this.selectedTokens[0].setToken(secondSkIndex);
-            this.selectedTokens[1].setToken(firstSkIndex);
-            this.selectedTokens = [undefined, undefined];
-            this.selectedTokens[0], this.selectedTokens[1] = undefined;
-            this.selectedTokens[0], this.selectedTokens[1] = undefined;
-            this.resolveMatches();
-            return;
-        }
+        if(!this.selectedTokens[0] || !this.selectedTokens[1]) { return; }
+        const firstSkIndex = this.selectedTokens[0].skIndex;
+        const secondSkIndex = this.selectedTokens[1].skIndex;
+        this.selectedTokens[0].setSkin(secondSkIndex);
+        this.selectedTokens[1].setSkin(firstSkIndex);
+        this.selectedTokens = [undefined, undefined];
+        this.resolveMatches();
+        return;
     }
 
     private resolveMatches(): void {
@@ -210,8 +210,6 @@ export class Grid extends Container {
                 }
             });
         });
-
-        return tokens;
     }
 
     private getToken(X: number, Y: number): Token {
