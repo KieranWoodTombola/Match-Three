@@ -1,7 +1,7 @@
 import { Container } from "pixi.js";
 import { Token } from "./token";
 import { gsap } from "gsap";
-
+//
 export class Column extends Container{
 
     public tokens: Token[] = [];
