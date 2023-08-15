@@ -14,12 +14,6 @@ export class ScoreMaths {
         [9, 1000]
     ]);
 
-    //static tokens: Token[] = [];
-
-    constructor() {
-
-    }
-
     static getScore(skin: number): number | undefined {
         if(this.scoreMap.has(skin)) {return this.scoreMap.get(skin)}
         else return undefined;

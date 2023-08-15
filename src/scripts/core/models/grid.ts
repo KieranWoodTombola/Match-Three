@@ -9,24 +9,24 @@ import { Curve } from "../services/curve"
 
 export class Grid extends Container {
 
-    private availWidth: number;
-    private gridSize: number;
-    private columns: Column[] = [];
-    private selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
-    private matchedTokens: Token[] = [];
+    private _availWidth: number;
+    private _gridSize: number;
+    private _columns: Column[] = [];
+    private _selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
+    private _matchedTokens: Token[] = [];
 
     constructor(gridSize: number, availWidth: number) {
         super()
 
         eventEmitter.on('clickCheck', this.clickCheck, this);
 
-        this.availWidth = availWidth;
-        this.gridSize = gridSize;
+        this._availWidth = availWidth;
+        this._gridSize = gridSize;
 
-        for (var i = 0; i < this.gridSize; i++) {
-            const newColumn = new Column(i, this.gridSize, this.availWidth, this.availWidth);
+        for (let i = 0; i < this._gridSize; i++) {
+            const newColumn = new Column(i, this._gridSize, this._availWidth);
             newColumn.x = (availWidth / (gridSize / i));
-            this.columns.push(newColumn);
+            this._columns.push(newColumn);
             this.addChild(newColumn);
         }
         this.position.set(this.getToken(0, 0).width * 0.5, this.getToken(0, 0).height * 0.5);
@@ -34,49 +34,51 @@ export class Grid extends Container {
 
     private clickCheck(targetToken: Token): void {
 
+        console.log("clicked");
+
         if (targetToken.matched) {
             return;
         }
 
         //on FirstClick
-        if (!this.selectedTokens[0]) {
-            this.selectedTokens[0] = targetToken;
+        if (!this._selectedTokens[0]) {
+            this._selectedTokens[0] = targetToken;
             return;
         }
 
         //on SecondClick
-        if (this.selectedTokens[0] && !this.selectedTokens[1]) {
+        if (this._selectedTokens[0] && !this._selectedTokens[1]) {
 
-            this.selectedTokens[1] = targetToken;
-            this.selectedTokens.forEach(token => {
+            this._selectedTokens[1] = targetToken;
+            this._selectedTokens.forEach(token => {
                 if (!token) { return; }
                 token.setParent(this);
                 token.interactive = true;
             });
             //snap the tokens to their destination
-            const firstX = (this.availWidth / (this.gridSize / this.selectedTokens[0].parentID))
-            const firstY = (this.availWidth / (this.gridSize / this.selectedTokens[0].verticalIndex))
-            const secondX = (this.availWidth / (this.gridSize / this.selectedTokens[1].parentID))
-            const secondY = (this.availWidth / (this.gridSize / this.selectedTokens[1].verticalIndex))
+            const firstX = (this._availWidth / (this._gridSize / this._selectedTokens[0].parentID))
+            const firstY = (this._availWidth / (this._gridSize / this._selectedTokens[0].verticalIndex))
+            const secondX = (this._availWidth / (this._gridSize / this._selectedTokens[1].parentID))
+            const secondY = (this._availWidth / (this._gridSize / this._selectedTokens[1].verticalIndex))
 
-            this.selectedTokens[0].position = { x: secondX, y: secondY }
-            this.selectedTokens[1].position = { x: firstX, y: firstY }
+            this._selectedTokens[0].position = { x: secondX, y: secondY }
+            this._selectedTokens[1].position = { x: firstX, y: firstY }
 
             //set the tokens' skins
-            const firstSkIndex = this.selectedTokens[0].skIndex;
-            const secondSkIndex = this.selectedTokens[1].skIndex;
+            const firstSkIndex = this._selectedTokens[0].skIndex;
+            const secondSkIndex = this._selectedTokens[1].skIndex;
 
-            this.selectedTokens[0].setSkin(secondSkIndex);
-            this.selectedTokens[1].setSkin(firstSkIndex);
+            this._selectedTokens[0].setSkin(secondSkIndex);
+            this._selectedTokens[1].setSkin(firstSkIndex);
 
             //THE TOKENS SWAP POSITIONS FIRST!
             const tweenCurve = new Curve(
-                [this.selectedTokens[0].x, this.selectedTokens[0].y],
-                [this.selectedTokens[1].x, this.selectedTokens[1].y]
+                [this._selectedTokens[0].x, this._selectedTokens[0].y],
+                [this._selectedTokens[1].x, this._selectedTokens[1].y]
             );
 
-            const rotateFirst = tweenCurve.rotate90(this.selectedTokens[0].x, this.selectedTokens[0].y);
-            const rotateSecond = tweenCurve.rotate90(this.selectedTokens[1].x, this.selectedTokens[1].y);
+            const rotateFirst = tweenCurve.rotate90(this._selectedTokens[0].x, this._selectedTokens[0].y);
+            const rotateSecond = tweenCurve.rotate90(this._selectedTokens[1].x, this._selectedTokens[1].y);
 
             //tween the tokens from their DESTINATION to their ORIGIN
             const swapTween = gsap.timeline({
@@ -85,7 +87,7 @@ export class Grid extends Container {
                 onComplete: this.onSwapComplete.bind(this)
             });
 
-            swapTween.to(this.selectedTokens[0],
+            swapTween.to(this._selectedTokens[0],
                 {
                     motionPath: {
                         curviness: 2,
@@ -97,7 +99,7 @@ export class Grid extends Container {
                     duration: 1.5,
                 }, 0);
 
-            swapTween.to(this.selectedTokens[1],
+            swapTween.to(this._selectedTokens[1],
                 {
                     motionPath: {
                         curviness: 2,
@@ -113,36 +115,36 @@ export class Grid extends Container {
     }
 
     private onSwapStart(): void {
-        this.columns.forEach(column => { column.deactivateAllTokens() });
+        this._columns.forEach(column => { column.deactivateAllTokens() });
     }
 
     private onSwapComplete(): void {
-        this.columns.forEach(column => { column.activateAllTokens() });
+        this._columns.forEach(column => { column.activateAllTokens() });
         eventEmitter.emit('onSwapComplete');
-        if (!this.selectedTokens[0] || !this.selectedTokens[1]) { return; }
-        this.selectedTokens = [undefined, undefined];
+        if (!this._selectedTokens[0] || !this._selectedTokens[1]) { return; }
+        this._selectedTokens = [undefined, undefined];
         this.resolveMatches();
         return;
     }
 
     private resolveMatches(): void {
         //Y Matches
-        this.columns.forEach(column => {
+        this._columns.forEach(column => {
             this.matchLine(column.tokens);
         });
         //X Matches
-        for (var i = 0; i < this.gridSize; i++) {
+        for (let i = 0; i < this._gridSize; i++) {
             let horizontalArray: Token[] = [];
-            this.columns.forEach(column => {
+            this._columns.forEach(column => {
                 horizontalArray.push(column.tokens[i]);
             });
             this.matchLine(horizontalArray);
         }
 
         //Animate the board using detected matches
-        eventEmitter.emit('onMatch', this.matchedTokens);
-        this.matchedTokens = [];
-        this.columns.forEach(column => {
+        eventEmitter.emit('onMatch', this._matchedTokens);
+        this._matchedTokens = [];
+        this._columns.forEach(column => {
             column.processMatches();
         });
 
@@ -186,7 +188,7 @@ export class Grid extends Container {
                 currentComboTokens.push(token);
             }
             //last token in the array
-            if (token === tokens[this.gridSize - 1]) {
+            if (token === tokens[this._gridSize - 1]) {
                 checkForCombo();
                 return;
             }
@@ -204,13 +206,13 @@ export class Grid extends Container {
             totalComboTokens.forEach(comboToken => {
                 if (token === comboToken) {
                     token.matched = true;
-                    this.matchedTokens.push(comboToken);
+                    this._matchedTokens.push(comboToken);
                 }
             });
         });
     }
 
     private getToken(X: number, Y: number): Token {
-        return this.columns[X].getToken(Y);
+        return this._columns[X].getToken(Y);
     }
 }

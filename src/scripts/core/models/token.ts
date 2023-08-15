@@ -3,16 +3,24 @@ import { Assets, Container } from "pixi.js";
 import { eventEmitter } from "../../../event-emitter";
 import { gsap } from 'gsap';
 
+export interface IToken {
+    availWidth: number;
+    availHeight: number;
+    parentID?: number;
+    verticalIndex?: number;
+    parentSize?: number;
+    skIndex?: number;
+}
 
 export class Token extends Container {
 
     public matched: boolean = false;
     private _parentID: number = 0;
-    private parentSize: number = 0;
+    private _parentSize: number = 0;
     public verticalIndex: number = 0;
     private _availWidth: number = 0;
     private _availHeight: number = 0;
-    private skin: Spine;
+    private _skin: Spine;
     public skIndex: number = -1;
 
     public get parentID() {
@@ -27,46 +35,35 @@ export class Token extends Container {
         return this._availHeight;
     }
 
-    public constructor(availWidth: number, availHeight: number, skIndex: number);
-    public constructor(availWidth: number, availHeight: number, parentID: number, verticalIndex: number, parentSize: number);
-
-    public constructor(...arr: any[]) {
-
+    public constructor(args: IToken) {
         super();
 
-        this.on('pointerdown', this.onClicked)
+        this.on('pointerdown', this.onClicked);
 
-        if (arr[0]) this._availWidth = arr[0];
-        if (arr[1]) this._availHeight = arr[1];
-        this.skin = new Spine(Assets.get('symbols').spineData);
+        this.interactive = true;
+        this._availWidth = args.availWidth;
+        this._availHeight = args.availHeight;
+        if (args.parentID) { this._parentID = args.parentID }
+        if (args.verticalIndex) { this.verticalIndex = args.verticalIndex }
+        if (args.parentSize) { this._parentSize = args.parentSize }
+        this._skin = new Spine(Assets.get('symbols').spineData);
+        if (args.skIndex) { this.setSkin(args.skIndex) }
+        if (!args.skIndex) { this.shuffleSkin() }
 
-        if (arr.length === 3) {
-            if (arr[2]) this.skIndex = arr[2];
-            this.setSkin(this.skIndex);
-        }
-
-        if (arr.length === 5) {
-            this.matched = false;
-            this.interactive = true;
-            if (arr[2]) this._parentID = arr[2];
-            if (arr[3]) this.verticalIndex = arr[3];
-            if (arr[4]) this.parentSize = arr[4];
-            this.shuffleSkin();
-        }
-
-        this.width = Math.ceil(this.skin.width)
+        this.width = Math.ceil(this._skin.width)
         this.scale.set(0.4);
         this.pivot.set(0.5);
-        this.addChild(this.skin);
+        this.addChild(this._skin);
     }
 
     public onClicked(): void {
+        console.log("clicked");
         eventEmitter.emit('clickCheck', this);
     }
 
     public setSkin(skIndex: number) {
         this.skIndex = skIndex;
-        this.skin.skeleton.setSkinByName(`${skIndex}`);
+        this._skin.skeleton.setSkinByName(`${skIndex}`);
     }
 
     public getLocation(): number[] {
@@ -77,7 +74,7 @@ export class Token extends Container {
     public shuffleSkin(): void {
         const randomNumber = Math.round(Math.random() * (9 - 1) + 1);
         this.skIndex = randomNumber;
-        this.skin.skeleton.setSkinByName(`${this.skIndex}`);
+        this._skin.skeleton.setSkinByName(`${this.skIndex}`);
     }
 
     public hide(): void {
@@ -95,7 +92,7 @@ export class Token extends Container {
     }
 
     public moveTo(desiredArrayPosition: number): void {
-        const TargetLocation = (this.availHeight / (this.parentSize / desiredArrayPosition));
+        const TargetLocation = (this.availHeight / (this._parentSize / desiredArrayPosition));
         gsap.to(this, {
             y: TargetLocation,
             duration: 1

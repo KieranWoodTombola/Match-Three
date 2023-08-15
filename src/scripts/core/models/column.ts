@@ -1,23 +1,31 @@
 import { Container } from "pixi.js";
-import { Token } from "./token";
+import { IToken, Token } from "./token";
 import { gsap } from "gsap";
-//
+
 export class Column extends Container {
 
     public tokens: Token[] = [];
-    private columnID: number;
-    private columnSize: number;
-    private availHeight: number;
+    private _columnID: number;
+    private _columnSize: number;
+    private _availHeight: number;
 
-    constructor(columnID: number, columnSize: number, availWidth: number, availHeight: number) {
+    constructor(columnID: number, columnSize: number, availHeight: number) {
         super();
 
-        this.columnID = columnID;
-        this.columnSize = columnSize;
-        this.availHeight = availHeight;
-        for (var tokenIndex: number = 0; tokenIndex < this.columnSize; tokenIndex++) {
-            const newToken = new Token(this.availHeight, this.availHeight, this.columnID, tokenIndex, this.columnSize);
-            newToken.y = (availHeight / (this.columnSize / tokenIndex));
+        this._columnID = columnID;
+        this._columnSize = columnSize;
+        this._availHeight = availHeight;
+
+        const newIToken: IToken = {
+            availHeight: this._availHeight,
+            availWidth: this._availHeight,
+            parentID: this._columnID,
+            parentSize: this._columnSize
+        }
+        for (let tokenIndex: number = 0; tokenIndex < this._columnSize; tokenIndex++) {
+            newIToken.verticalIndex = tokenIndex;
+            const newToken = new Token(newIToken);
+            newToken.y = (availHeight / (this._columnSize / tokenIndex));
             this.tokens.push(newToken);
             this.addChild(newToken);
         }
@@ -78,7 +86,7 @@ export class Column extends Container {
             }
         }
         const newTokens = [...matchedTokens, ...unmatchedTokens]
-        for (var i = 0; i < this.columnSize; i++) {
+        for (let i = 0; i < this._columnSize; i++) {
             newTokens[i].matched = false;
             newTokens[i].verticalIndex = i;
         }
@@ -98,7 +106,7 @@ export class Column extends Container {
     }
 
     public replaceAllTokens(newTokens: Token[]): void {
-        if (newTokens.length != this.tokens.length) {
+        if (newTokens.length !== this.tokens.length) {
             return;
         }
     }
