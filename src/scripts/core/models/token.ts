@@ -48,7 +48,7 @@ export class Token extends Container {
         if (args.parentSize) { this._parentSize = args.parentSize }
         this._skin = new Spine(Assets.get('symbols').spineData);
         if (args.skIndex) { this.setSkin(args.skIndex) }
-        if (!args.skIndex) { this.shuffleSkin() }
+        else { this.shuffleSkin() }
 
         this.width = Math.ceil(this._skin.width)
         this.scale.set(0.4);
@@ -57,7 +57,6 @@ export class Token extends Container {
     }
 
     public onClicked(): void {
-        console.log("clicked");
         eventEmitter.emit('clickCheck', this);
     }
 

@@ -33,9 +33,6 @@ export class Grid extends Container {
     }
 
     private clickCheck(targetToken: Token): void {
-
-        console.log("clicked");
-
         if (targetToken.matched) {
             return;
         }
