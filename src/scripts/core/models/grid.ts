@@ -37,6 +37,8 @@ export class Grid extends Container {
             return;
         }
 
+        targetToken.animate(false);
+
         //on FirstClick
         if (!this._selectedTokens[0]) {
             this._selectedTokens[0] = targetToken;
