@@ -53,7 +53,7 @@ export class ScoreMaths {
                 return;
             }
             let newArray: Token[] = []
-            for(var i = 0; i < tokenArray.length; i++) {
+            for(let i = 0; i < tokenArray.length; i++) {
                 if(i % 3 === 0){
                     newArray.push(tokenArray[i])
                     orderedTokens.splice(orderedTokens.indexOf(tokenArray), 0, newArray);

@@ -134,7 +134,7 @@ export class Grid extends Container {
         });
         //X Matches
         for (let i = 0; i < this._gridSize; i++) {
-            let horizontalArray: Token[] = [];
+            const horizontalArray: Token[] = [];
             this._columns.forEach(column => {
                 horizontalArray.push(column.tokens[i]);
             });
