@@ -13,6 +13,8 @@ interface Events {
 
     //token events
     
+    //countdown events
+    countdown: () => void;
 }
 
 export const eventEmitter = new EventEmitter<Events>();

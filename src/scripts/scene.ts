@@ -1,6 +1,7 @@
 import { Assets, Container } from 'pixi.js'
 import { Grid } from './core/models/grid';
 import { ScoreDisplay } from './core/models/score-display';
+import { Timer } from './core/models/timer';
 
 export class Scene extends Container {
     private _viewWidth: number;
@@ -46,6 +47,10 @@ export class Scene extends Container {
             y: this._viewHeight * 0.3
         }
         this.addChild(scoreDisplay);
+
+        const timer = new Timer(100);
+        timer.x = this.width;
+        this.addChild(timer);
     }
 
     public update(delta: number): void {
