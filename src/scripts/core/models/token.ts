@@ -27,30 +27,30 @@ export class Token extends Container {
         return this._availHeight;
     }
 
-    public constructor (availWidth: number, availHeight: number, skIndex: number );
-    public constructor (availWidth: number, availHeight: number, parentID: number, verticalIndex: number, parentSize: number);
+    public constructor(availWidth: number, availHeight: number, skIndex: number);
+    public constructor(availWidth: number, availHeight: number, parentID: number, verticalIndex: number, parentSize: number);
 
-    public constructor (...arr: any[]) {
+    public constructor(...arr: any[]) {
 
         super();
 
         this.on('pointerdown', this.onClicked)
 
-        if(arr[0]) this._availWidth = arr[0];
-        if(arr[1]) this._availHeight = arr[1];
+        if (arr[0]) this._availWidth = arr[0];
+        if (arr[1]) this._availHeight = arr[1];
         this.skin = new Spine(Assets.get('symbols').spineData);
 
-        if(arr.length === 3) {
-            if(arr[2]) this.skIndex = arr[2];
+        if (arr.length === 3) {
+            if (arr[2]) this.skIndex = arr[2];
             this.setSkin(this.skIndex);
         }
 
-        if(arr.length === 5) {
+        if (arr.length === 5) {
             this.matched = false;
             this.interactive = true;
-            if(arr[2]) this._parentID = arr[2];
-            if(arr[3]) this.verticalIndex = arr[3];
-            if(arr[4]) this.parentSize = arr[4];
+            if (arr[2]) this._parentID = arr[2];
+            if (arr[3]) this.verticalIndex = arr[3];
+            if (arr[4]) this.parentSize = arr[4];
             this.shuffleSkin();
         }
 

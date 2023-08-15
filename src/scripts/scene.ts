@@ -14,11 +14,11 @@ export class Scene extends Container {
         this.viewHeight = height;
 
         this.gridWidth = 0;
-        if (this.viewWidth <= this.height) { 
-            this.gridWidth = this.viewWidth; 
+        if (this.viewWidth <= this.height) {
+            this.gridWidth = this.viewWidth;
         }
-        else { 
-            this.gridWidth = this.viewHeight; 
+        else {
+            this.gridWidth = this.viewHeight;
         }
     }
 

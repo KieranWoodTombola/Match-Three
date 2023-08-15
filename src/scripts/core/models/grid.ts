@@ -7,7 +7,6 @@ import { MotionPathPlugin } from "gsap/all";
 gsap.registerPlugin(MotionPathPlugin);
 import { Curve } from "../services/curve"
 
-//
 export class Grid extends Container {
 
     private availWidth: number;
@@ -50,18 +49,18 @@ export class Grid extends Container {
 
             this.selectedTokens[1] = targetToken;
             this.selectedTokens.forEach(token => {
-                if(!token){ return; }
+                if (!token) { return; }
                 token.setParent(this);
                 token.interactive = true;
             });
             //snap the tokens to their destination
-            const firstX = (this.availWidth / (this.gridSize/this.selectedTokens[0].parentID))
-            const firstY = (this.availWidth / (this.gridSize/this.selectedTokens[0].verticalIndex))
-            const secondX = (this.availWidth / (this.gridSize/this.selectedTokens[1].parentID))
-            const secondY = (this.availWidth / (this.gridSize/this.selectedTokens[1].verticalIndex))
-            
-            this.selectedTokens[0].position = {x: secondX, y: secondY}
-            this.selectedTokens[1].position = {x: firstX, y: firstY}
+            const firstX = (this.availWidth / (this.gridSize / this.selectedTokens[0].parentID))
+            const firstY = (this.availWidth / (this.gridSize / this.selectedTokens[0].verticalIndex))
+            const secondX = (this.availWidth / (this.gridSize / this.selectedTokens[1].parentID))
+            const secondY = (this.availWidth / (this.gridSize / this.selectedTokens[1].verticalIndex))
+
+            this.selectedTokens[0].position = { x: secondX, y: secondY }
+            this.selectedTokens[1].position = { x: firstX, y: firstY }
 
             //set the tokens' skins
             const firstSkIndex = this.selectedTokens[0].skIndex;
@@ -120,7 +119,7 @@ export class Grid extends Container {
     private onSwapComplete(): void {
         this.columns.forEach(column => { column.activateAllTokens() });
         eventEmitter.emit('onSwapComplete');
-        if(!this.selectedTokens[0] || !this.selectedTokens[1]) { return; }
+        if (!this.selectedTokens[0] || !this.selectedTokens[1]) { return; }
         this.selectedTokens = [undefined, undefined];
         this.resolveMatches();
         return;
@@ -146,22 +145,22 @@ export class Grid extends Container {
         this.columns.forEach(column => {
             column.processMatches();
         });
-      
+
         //Only use the first Column for testing
         // this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
         // this.columns[0].processMatches();
         // this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
-  
-  /**
-     * Identifies rows/columns of tokens where there are at least
-     * 3 adjacent to eachother.
-     * 
-     * Identified tokens are marked with highLight()
-     * and their matched status is set
-     * 
-     * @param Token[] - Array of Tokens to be searched for matches
-     */
+
+    /**
+       * Identifies rows/columns of tokens where there are at least
+       * 3 adjacent to eachother.
+       * 
+       * Identified tokens are marked with highLight()
+       * and their matched status is set
+       * 
+       * @param Token[] - Array of Tokens to be searched for matches
+       */
     private matchLine(tokens: Token[]): void {
         let cacheSkIndex: number | undefined = undefined;
         let currentComboTokens: Token[] = [];

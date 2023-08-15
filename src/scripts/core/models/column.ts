@@ -2,7 +2,7 @@ import { Container } from "pixi.js";
 import { Token } from "./token";
 import { gsap } from "gsap";
 //
-export class Column extends Container{
+export class Column extends Container {
 
     public tokens: Token[] = [];
     private columnID: number;
@@ -15,44 +15,44 @@ export class Column extends Container{
         this.columnID = columnID;
         this.columnSize = columnSize;
         this.availHeight = availHeight;
-        for(var tokenIndex: number = 0; tokenIndex < this.columnSize; tokenIndex++) {
+        for (var tokenIndex: number = 0; tokenIndex < this.columnSize; tokenIndex++) {
             const newToken = new Token(this.availHeight, this.availHeight, this.columnID, tokenIndex, this.columnSize);
-            newToken.y = (availHeight / (this.columnSize/tokenIndex));
+            newToken.y = (availHeight / (this.columnSize / tokenIndex));
             this.tokens.push(newToken);
             this.addChild(newToken);
         }
     }
 
     public processMatches(): void {
-            this.repositionOnScreen();     
-            this.rebuildTokens();
+        this.repositionOnScreen();
+        this.rebuildTokens();
     }
 
     private repositionOnScreen(): void {
-        const matchCombo: Token [] = [];
-        const nonMatchCombo: Token [] = [];
+        const matchCombo: Token[] = [];
+        const nonMatchCombo: Token[] = [];
         const sortTimeline = gsap.timeline({
             paused: true
         });
-        for(let columnInspector: number = 0; columnInspector < this.tokens.length; columnInspector++) {
+        for (let columnInspector: number = 0; columnInspector < this.tokens.length; columnInspector++) {
             const target = this.tokens[columnInspector];
             let matchCount = 0;
             this.tokens.forEach(token => {
-                if(token.matched) {matchCount ++;}
+                if (token.matched) { matchCount++; }
             });
-            if(target.matched) {
+            if (target.matched) {
                 matchCombo.push(target);
                 sortTimeline.add(() => target.hide(), 0);
                 sortTimeline.add(() => target.moveTo((0 - matchCount) + matchCombo.indexOf(target)), 1);
             }
             else {
                 nonMatchCombo.unshift(target);
-                for(let combo = columnInspector+1; combo <= this.tokens.length-1; combo++) {
-                    if(!this.tokens[combo].matched) { 
+                for (let combo = columnInspector + 1; combo <= this.tokens.length - 1; combo++) {
+                    if (!this.tokens[combo].matched) {
                         break;
                     }
-                    for(let i = 0; i < nonMatchCombo.length; i++){
-                        nonMatchCombo[i].moveTo(combo-i);
+                    for (let i = 0; i < nonMatchCombo.length; i++) {
+                        nonMatchCombo[i].moveTo(combo - i);
                     }
                 }
             }
@@ -66,11 +66,11 @@ export class Column extends Container{
     }
 
     private rebuildTokens(): void {
-        const matchedTokens: Token [] = [];
-        const unmatchedTokens: Token [] = [];
-        for(let i = 0; i < this.tokens.length; i++) {
+        const matchedTokens: Token[] = [];
+        const unmatchedTokens: Token[] = [];
+        for (let i = 0; i < this.tokens.length; i++) {
             const target = this.tokens[i]
-            if(target.matched) {
+            if (target.matched) {
                 matchedTokens.push(target);
             }
             else {
@@ -78,7 +78,7 @@ export class Column extends Container{
             }
         }
         const newTokens = [...matchedTokens, ...unmatchedTokens]
-        for(var i = 0; i < this.columnSize; i++) {
+        for (var i = 0; i < this.columnSize; i++) {
             newTokens[i].matched = false;
             newTokens[i].verticalIndex = i;
         }
@@ -98,7 +98,7 @@ export class Column extends Container{
     }
 
     public replaceAllTokens(newTokens: Token[]): void {
-        if(newTokens.length != this.tokens.length) {
+        if (newTokens.length != this.tokens.length) {
             return;
         }
     }
