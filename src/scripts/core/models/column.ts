@@ -34,7 +34,6 @@ export class Column extends Container{
         const sortTimeline = gsap.timeline({
             paused: true
         });
-
         for(let columnInspector: number = 0; columnInspector < this.tokens.length; columnInspector++) {
             const target = this.tokens[columnInspector];
             let matchCount = 0;

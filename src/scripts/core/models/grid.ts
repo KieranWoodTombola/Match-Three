@@ -95,7 +95,7 @@ export class Grid extends Container {
                             { x: firstX, y: firstY }
                         ]
                     },
-                    duration: 1.5
+                    duration: 1.5,
                 }, 0);
 
             swapTween.to(this.selectedTokens[1],
@@ -107,7 +107,7 @@ export class Grid extends Container {
                             { x: secondX, y: secondY }
                         ]
                     },
-                    duration: 1.5
+                    duration: 1.5,
                 }, 0);
             return;
         }
