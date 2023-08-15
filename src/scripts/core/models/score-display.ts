@@ -45,7 +45,11 @@ export class ScoreDisplay extends Container {
 
     private showScore(): void {
         if (!this._scoreText) { return; }
-        this._scoreText.text = Math.round(this._score);
+    
+        const score = Math.round(this._score);
+        if (this._score !== score) {
+            this._scoreText.text = score;
+        }
     }
 
     private recordMatchedTokens(tokens: Token[]): void {
