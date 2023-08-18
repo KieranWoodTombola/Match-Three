@@ -84,12 +84,11 @@ export class ScoreDisplay extends Container {
     private positionTokens(tokens: Token[]): Container {
         const displayTokenContainer = new Container();
         tokens.forEach(token => {
-            const copyIToken: IToken = {
+            const copyToken = new Token({
                 availWidth: token.availWidth,
                 availHeight: token.availHeight,
                 skIndex: token.skIndex
-            }
-            const copyToken = new Token(copyIToken);
+            });
             copyToken.scale.x = 0.3;
             copyToken.scale.y = 0.3;
             copyToken.width = Math.floor(copyToken.width);
