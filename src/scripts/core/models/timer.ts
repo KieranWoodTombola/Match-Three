@@ -40,7 +40,7 @@ export class Timer extends Container {
             _currentTime: this._currentTime - 1,
 
             onComplete: () => {
-                this.test(),
+                this.callBacks(),
                 this.formatTime()
                 if (this._currentTime > 0) { this.countdown() }
                 else {
@@ -50,7 +50,7 @@ export class Timer extends Container {
         })
     }
 
-    private test(): void {
+    private callBacks(): void {
         const time = this._currentTime;
         if (this._timeCallbacks) {
             const _timeCallbacks = this._timeCallbacks[time];
