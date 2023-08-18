@@ -16,18 +16,17 @@ export class Column extends Container {
         this._columnSize = columnSize;
         this._availHeight = availHeight;
 
-        const newIToken: IToken = {
-            availHeight: this._availHeight,
-            availWidth: this._availHeight,
-            parentID: this._columnID,
-            parentSize: this._columnSize
-        }
         for (let tokenIndex: number = 0; tokenIndex < this._columnSize; tokenIndex++) {
-            newIToken.verticalIndex = tokenIndex;
-            const newToken = new Token(newIToken);
-            newToken.y = (availHeight / (this._columnSize / tokenIndex));
-            this.tokens.push(newToken);
-            this.addChild(newToken);
+            const columnToken = new Token({
+                availHeight: this._availHeight,
+                availWidth: this._availHeight,
+                parentID: this._columnID,
+                parentSize: this._columnSize,
+                verticalIndex: tokenIndex
+            });
+            columnToken.y = (availHeight / (this._columnSize / tokenIndex));
+            this.tokens.push(columnToken);
+            this.addChild(columnToken);
         }
     }
 
