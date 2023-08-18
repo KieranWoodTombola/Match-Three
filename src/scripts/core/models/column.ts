@@ -11,11 +11,9 @@ export class Column extends Container {
 
     constructor(columnID: number, columnSize: number, availHeight: number) {
         super();
-
         this._columnID = columnID;
         this._columnSize = columnSize;
         this._availHeight = availHeight;
-
         for (let tokenIndex: number = 0; tokenIndex < this._columnSize; tokenIndex++) {
             const columnToken = new Token({
                 availHeight: this._availHeight,

@@ -49,7 +49,7 @@ export class Scene extends Container {
         const scoreDisplay = new ScoreDisplay();
         const remainingWidth = this._viewWidth - grid.width;
         scoreDisplay.position = {
-            x: this._gridPossibleWidth + remainingWidth * 0.5,
+            x: (this._gridPossibleWidth + remainingWidth * 0.5) - scoreDisplay.width * 0.5,
             y: this._viewHeight * 0.3
         }
         this.addChild(scoreDisplay);
