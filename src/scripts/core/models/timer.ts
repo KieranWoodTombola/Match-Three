@@ -7,12 +7,13 @@ export class Timer extends Container {
     private _totalTime: number;
     private _currentTime: number;
     private _timeText: PixiText = new PixiText;
+    private _timeCallbacks: Record <number, (() => void) | undefined> | undefined;
 
     public get totalTime() {
         return this._totalTime;
     }
 
-    constructor(totalTime: number) {
+    constructor(totalTime: number, timeCallbacks?: Record<number, (() => void) | undefined>) {
         super()
         this._totalTime = totalTime;
         this._currentTime = totalTime;
@@ -21,6 +22,9 @@ export class Timer extends Container {
             fill: "white"
         };
         this.addChild(this._timeText);
+
+        this._timeCallbacks = timeCallbacks;
+
         this.countdown();
     }
 
@@ -34,6 +38,9 @@ export class Timer extends Container {
         gsap.to(this, {
             duration: 1,
             _currentTime: this._currentTime - 1,
+
+            onUpdate: this.test.bind(this),
+
             onComplete: () => {
                 this.formatTime()
                 if (this._currentTime > 0) { this.countdown() }
@@ -42,6 +49,16 @@ export class Timer extends Container {
                 }
             }
         })
+    }
+
+    private test(): void {
+        const time = this._currentTime;
+        if (this._timeCallbacks) {
+            const _timeCallbacks = this._timeCallbacks[time];
+            if (_timeCallbacks) { 
+                _timeCallbacks();
+            }
+        }
     }
 
 }

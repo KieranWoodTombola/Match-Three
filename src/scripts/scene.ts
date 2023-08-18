@@ -48,7 +48,10 @@ export class Scene extends Container {
         }
         this.addChild(scoreDisplay);
 
-        const timer = new Timer(62);
+        const timer = new Timer(60, {
+            58: () => {console.log("fizz");},
+            56: () => {console.log("buzz");}
+        });
         timer.x = this.width;
         this.addChild(timer);
     }
