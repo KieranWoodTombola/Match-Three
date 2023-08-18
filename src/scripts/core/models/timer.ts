@@ -4,14 +4,18 @@ import { eventEmitter } from "../../../event-emitter";
 
 export class Timer extends Container{
 
-    private _secondsAllowed: number;
+    private _totalTime: number;
     private _currentTime: number;
     private _timeText: PixiText = new PixiText;
-    private _timeLimit: number = 100;
-    constructor(secondsAllowed: number) {
+
+    public get totalTime() {
+        return this._totalTime;
+    }
+
+    constructor(totalTime: number) {
         super()
-        this._secondsAllowed = secondsAllowed;
-        this._currentTime = secondsAllowed;
+        this._totalTime = totalTime;
+        this._currentTime = totalTime;
         this.formatTime();
         this._timeText.style = {
             fill: "white"
