@@ -94,6 +94,7 @@ export class ScoreDisplay extends Container {
             copyToken.width = Math.floor(copyToken.width);
             copyToken.x = Math.floor(((token.width * 0.75) * tokens.indexOf(token)) + Math.floor(token.width * 0.4));
             copyToken.y = (token.height * 0.6 * this._trackedHeight) + (token.height * 0.4);
+            copyToken.animate(true);
             displayTokenContainer.addChild(copyToken);
         });
         displayTokenContainer.position = {

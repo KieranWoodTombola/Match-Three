@@ -104,4 +104,12 @@ export class Token extends Container {
             duration: 1
         });
     }
+
+    public animate(bool: boolean): void {
+        this._skin.state.setAnimation(0, "animation", bool);
+    }
+
+    public freeze(): void {
+        this._skin.state.setEmptyAnimation(0, 0);
+    }
 }
