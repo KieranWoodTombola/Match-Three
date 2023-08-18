@@ -39,9 +39,8 @@ export class Timer extends Container {
             duration: 1,
             _currentTime: this._currentTime - 1,
 
-            onUpdate: this.test.bind(this),
-
             onComplete: () => {
+                this.test(),
                 this.formatTime()
                 if (this._currentTime > 0) { this.countdown() }
                 else {
