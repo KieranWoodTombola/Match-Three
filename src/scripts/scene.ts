@@ -1,6 +1,7 @@
 import { Assets, Container } from 'pixi.js'
 import { Grid } from './core/models/grid';
 import { ScoreDisplay } from './core/models/score-display';
+import { Background } from './core/models/background';
 
 export class Scene extends Container {
     private _viewWidth: number;
@@ -25,6 +26,8 @@ export class Scene extends Container {
     public async load(): Promise<void> {
         const assetList = [
             { key: 'logo', url: 'assets/images/logo.png' },
+            { key: 'background', url: 'assets/animations/symbols/background.jpeg'},
+            { key: 'waterSprite', url: 'assets/animations/symbols/waterStock.png'},
             { key: 'symbols', url: 'assets/animations/symbols/symbol.json' }
         ];
 
@@ -36,6 +39,11 @@ export class Scene extends Container {
     }
 
     public initialise(): void {
+
+        const background = new Background(this._viewWidth, this._viewHeight);
+        background.position = {x: 0, y: 0}
+        this.addChild(background);
+
         const grid = new Grid(6, this._gridPossibleWidth);
         this.addChild(grid);
 
