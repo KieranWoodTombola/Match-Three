@@ -25,10 +25,8 @@ export class Timer extends Container {
     }
 
     private formatTime(): void {
-        let minutes = "0";
-        let seconds = "0";
-        this._currentTime >= 60 ? minutes = Math.floor(this._currentTime / 60).toString() : minutes = '0';
-        this._currentTime % 60 === 0 ? seconds = "00" : seconds = (this._currentTime % 60).toString().padStart(2, "0");
+        const minutes: String = this._currentTime >= 60 ? Math.floor(this._currentTime / 60).toString() : '0';
+        const seconds = (this._currentTime % 60).toString().padStart(2, "0");
         this._timeText.text = minutes + ":" + seconds;
     }
 
@@ -40,7 +38,7 @@ export class Timer extends Container {
                 this.formatTime()
                 if (this._currentTime > 0) { this.countdown() }
                 else {
-                    eventEmitter.emit('countdown');
+                    eventEmitter.emit('onTotalTimerComplete');
                 }
             }
         })
