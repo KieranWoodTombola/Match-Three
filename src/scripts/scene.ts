@@ -48,7 +48,7 @@ export class Scene extends Container {
         }
         this.addChild(scoreDisplay);
 
-        const timer = new Timer(90);
+        const timer = new Timer(62);
         timer.x = this.width;
         this.addChild(timer);
     }
