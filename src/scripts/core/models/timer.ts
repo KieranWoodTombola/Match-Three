@@ -27,10 +27,11 @@ export class Timer extends Container{
     private formatTime(): void {
         let minutes = "0";
         let seconds = "0";
-        if(this._currentTime > 60){
-            minutes = Math.floor(this._currentTime/60).toString();
-        }
-        seconds = this._currentTime % 60 === 0 ? '00' : (this._currentTime % 60).toString()
+        this._currentTime >= 60 ? minutes = Math.floor(this._currentTime/60).toString() : minutes = '0';
+
+        this._currentTime % 60 === 0 ? seconds = '00' :
+        this._currentTime % 60 >= 10 ? seconds = (this._currentTime % 60).toString() :
+        seconds = '0' + (this._currentTime % 60).toString();
         this._timeText.text =  minutes + ":" + seconds;
     }
 
