@@ -6,15 +6,13 @@ interface Events {
 
     //grid events
     clickCheck: (token: Token) => void;
-    onSwapComplete: () => void;
-
+    onSwapComplete: () => void
+    onMatch: (tokens: Token[]) => void
+  
     //column events
 
     //token events
-    tokenFirstClicked: (tokenX: number, tokenY: number) => void;
-    tokenSecondClicked: (tokenX: number, tokenY: number) => void;
-    tokenPositionChange: () => void;
-    //tokenRevealed: (arg1: number) => void;
+    
 }
 
 export const eventEmitter = new EventEmitter<Events>();
