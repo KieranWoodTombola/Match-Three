@@ -26,7 +26,7 @@ export class Timer extends Container {
 
     private formatTime(): void {
         const minutes: String = this._currentTime >= 60 ? Math.floor(this._currentTime / 60).toString() : '0';
-        const seconds = (this._currentTime % 60).toString().padStart(2, "0");
+        const seconds: String = (this._currentTime % 60).toString().padStart(2, "0");
         this._timeText.text = minutes + ":" + seconds;
     }
 
