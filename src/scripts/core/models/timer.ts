@@ -8,12 +8,14 @@ export class Timer extends Container {
     private _currentTime: number;
     private _timeText: PixiText = new PixiText;
     private _timeCallbacks: Record <number, (() => void) | undefined> | undefined;
+    private _finalCallback: Function | undefined;
+
 
     public get totalTime() {
         return this._totalTime;
     }
 
-    constructor(totalTime: number, timeCallbacks?: Record<number, (() => void) | undefined>) {
+    constructor(totalTime: number, timeCallbacks?: Record<number, (() => void) | undefined>, finalCallback?: Function ) {
         super()
         this._totalTime = totalTime;
         this._currentTime = totalTime;
@@ -24,6 +26,7 @@ export class Timer extends Container {
         this.addChild(this._timeText);
 
         this._timeCallbacks = timeCallbacks;
+        this._finalCallback = finalCallback;
 
         this.countdown();
     }
@@ -42,9 +45,12 @@ export class Timer extends Container {
             onComplete: () => {
                 this.callBacks(),
                 this.formatTime()
-                if (this._currentTime > 0) { this.countdown() }
+                if (this._currentTime > 0) { 
+                    this.countdown();
+                }
                 else {
-                    eventEmitter.emit('onTotalTimerComplete');
+                    if(this._finalCallback)
+                        this._finalCallback();
                 }
             }
         })

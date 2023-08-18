@@ -13,8 +13,6 @@ interface Events {
 
     //token events
     
-    //countdown events
-    onTotalTimerComplete: () => void;
 }
 
 export const eventEmitter = new EventEmitter<Events>();
