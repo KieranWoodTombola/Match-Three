@@ -39,15 +39,15 @@ export class Background extends Container {
 
     }
 
-    private lowWave(): void {
+    public lowWave(): void {
         this.idleWaves(-0.2);
     }
 
-    private midWave(): void {
+    public midWave(): void {
         this.idleWaves(-0.15);
     }
 
-    private highWave(): void {
+    public highWave(): void {
         this.idleWaves(0);
     }
 
