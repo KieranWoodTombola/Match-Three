@@ -54,10 +54,10 @@ export class Scene extends Container {
         }
         this.addChild(scoreDisplay);
         const timer = new Timer(90, {
-            45: () => {background.midWave();},
-            10: () => {background.highWave();}
+            45: () => {background.setWaveHeightMedium();},
+            10: () => {background.setWaveHeightHigh();}
         }, () => {
-            background.lowWave()
+            background.setWaveHeightLow()
         });
         timer.x = scoreDisplay.x + scoreDisplay.width * 0.5 - timer.width * 0.5;
         timer.y = scoreDisplay.y - timer.height;
