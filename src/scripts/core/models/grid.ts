@@ -15,6 +15,10 @@ export class Grid extends Container {
     private _selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
     private _matchedTokens: Token[] = [];
 
+    get gridSize() {
+        return this._gridSize;
+    }
+
     constructor(gridSize: number, availWidth: number) {
         super()
         eventEmitter.on('clickCheck', this.clickCheck, this);
@@ -198,7 +202,7 @@ export class Grid extends Container {
         });
     }
 
-    private getToken(X: number, Y: number): Token {
+    public getToken(X: number, Y: number): Token {
         return this._columns[X].getToken(Y);
     }
 }

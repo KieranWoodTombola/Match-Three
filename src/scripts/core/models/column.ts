@@ -20,8 +20,9 @@ export class Column extends Container {
                 availWidth: this._availHeight,
                 parentID: this._columnID,
                 parentSize: this._columnSize,
-                verticalIndex: tokenIndex
+                verticalIndex: tokenIndex,
             });
+            columnToken.interactive = true;
             columnToken.y = (availHeight / (this._columnSize / tokenIndex));
             this.tokens.push(columnToken);
             this.addChild(columnToken);

@@ -40,7 +40,7 @@ export class Token extends Container {
 
         this.on('pointerdown', this.onClicked);
 
-        this.interactive = true;
+        this.interactive = false;
         this._availWidth = args.availWidth;
         this._availHeight = args.availHeight;
         if (args.parentID) { this._parentID = args.parentID }

@@ -50,7 +50,7 @@ export class Background extends Container {
         );
     }
 
-    private animateShip(): void {
+    public animateShip(): void {
         this._ship.animate(false);
     }
 
@@ -75,9 +75,7 @@ export class Background extends Container {
         const farTime = Math.floor(Math.random() * 5) + 3;
         const midTime = Math.floor(Math.random() * 5) + 3;
         const closeTime = Math.floor(Math.random() * 5) + 3;
-
         const splash = gsap.timeline();
-
         splash.to(this._farWave, {
             y: 0 - this._farWave.height * waveHeight,
             duration: farTime,
@@ -102,7 +100,7 @@ export class Background extends Container {
             repeat: -1,
             yoyo: true
         }, 0);
-
+        
         splash.to(this._closeWave, {
             y: 0 - this._closeWave.height * (waveHeight * 1.5),
             duration: closeTime,
