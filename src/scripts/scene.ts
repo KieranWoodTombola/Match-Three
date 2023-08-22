@@ -42,7 +42,6 @@ export class Scene extends Container {
     public initialise(): void {
 
         const background = new Background(this._viewWidth, this._viewHeight);
-        background.position = {x: 0, y: 0}
         this.addChild(background);
         const grid = new Grid(6, this._gridPossibleWidth);
         this.addChild(grid);
