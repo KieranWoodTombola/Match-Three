@@ -1,6 +1,7 @@
 import { Assets, Container } from 'pixi.js'
 import { Grid } from './core/models/grid';
 import { ScoreDisplay } from './core/models/score-display';
+import { Background } from './core/models/background';
 import { Timer } from './core/models/timer';
 
 export class Scene extends Container {
@@ -26,6 +27,8 @@ export class Scene extends Container {
     public async load(): Promise<void> {
         const assetList = [
             { key: 'logo', url: 'assets/images/logo.png' },
+            { key: 'background', url: 'assets/animations/symbols/background.jpeg'},
+            { key: 'waterSprite', url: 'assets/animations/symbols/waterStock.png'},
             { key: 'symbols', url: 'assets/animations/symbols/symbol.json' }
         ];
 
@@ -37,22 +40,26 @@ export class Scene extends Container {
     }
 
     public initialise(): void {
+
+        const background = new Background(this._viewWidth, this._viewHeight);
+        this.addChild(background);
         const grid = new Grid(6, this._gridPossibleWidth);
         this.addChild(grid);
-
         const scoreDisplay = new ScoreDisplay();
         const remainingWidth = this._viewWidth - grid.width;
         scoreDisplay.position = {
-            x: this._gridPossibleWidth + remainingWidth * 0.5,
+            x: (this._gridPossibleWidth + remainingWidth * 0.5) - scoreDisplay.width * 0.5,
             y: this._viewHeight * 0.3
         }
         this.addChild(scoreDisplay);
-
-        const timer = new Timer(60, {
-            58: () => {console.log("fizz");},
-            56: () => {console.log("buzz");}
+        const timer = new Timer(90, {
+            45: () => {background.setWaveHeightMedium();},
+            10: () => {background.setWaveHeightHigh();}
+        }, () => {
+            background.setWaveHeightLow()
         });
-        timer.x = this.width;
+        timer.x = scoreDisplay.x + scoreDisplay.width * 0.5 - timer.width * 0.5;
+        timer.y = scoreDisplay.y - timer.height;
         this.addChild(timer);
     }
 

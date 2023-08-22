@@ -7,7 +7,7 @@ export class Timer extends Container {
     private _totalTime: number;
     private _currentTime: number;
     private _timeText: PixiText = new PixiText;
-    private _timeCallbacks: Record <number, (() => void) | undefined> | undefined;
+    private _timeCallbacks: Record<number, (() => void) | undefined> | undefined;
     private _finalCallback: Function | undefined;
 
 
@@ -15,7 +15,7 @@ export class Timer extends Container {
         return this._totalTime;
     }
 
-    constructor(totalTime: number, timeCallbacks?: Record<number, (() => void) | undefined>, finalCallback?: Function ) {
+    constructor(totalTime: number, timeCallbacks?: Record<number, (() => void) | undefined>, finalCallback?: Function) {
         super()
         this._totalTime = totalTime;
         this._currentTime = totalTime;
@@ -24,10 +24,8 @@ export class Timer extends Container {
             fill: "white"
         };
         this.addChild(this._timeText);
-
         this._timeCallbacks = timeCallbacks;
         this._finalCallback = finalCallback;
-
         this.countdown();
     }
 
@@ -41,16 +39,16 @@ export class Timer extends Container {
         gsap.to(this, {
             duration: 1,
             _currentTime: this._currentTime - 1,
-
             onComplete: () => {
-                this.callBacks(),
-                this.formatTime()
-                if (this._currentTime > 0) { 
+                this.callBacks();
+                this.formatTime();
+                if (this._currentTime > 0) {
                     this.countdown();
                 }
                 else {
-                    if(this._finalCallback)
+                    if (this._finalCallback) {
                         this._finalCallback();
+                    }
                 }
             }
         })
@@ -60,7 +58,7 @@ export class Timer extends Container {
         const time = this._currentTime;
         if (this._timeCallbacks) {
             const _timeCallbacks = this._timeCallbacks[time];
-            if (_timeCallbacks) { 
+            if (_timeCallbacks) {
                 _timeCallbacks();
             }
         }

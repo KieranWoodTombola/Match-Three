@@ -14,7 +14,7 @@ export class ScoreDisplay extends Container {
     constructor() {
         super()
 
-        eventEmitter.on('onMatch', this.recordMatchedTokens, this)
+        eventEmitter.on('onMatch', this.recordMatchedTokens, this);
 
         const title: PixiText = new PixiText("SCORE");
         this._scoreText.style = {
@@ -32,7 +32,6 @@ export class ScoreDisplay extends Container {
         this._textContainer.addChild(scoreCard);
         this._textContainer.addChild(this._scoreText);
         this.addChild(this._textContainer);
-
     }
 
     private updateScore(targetScore: number) {

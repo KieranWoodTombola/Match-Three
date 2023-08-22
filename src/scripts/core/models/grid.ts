@@ -17,12 +17,9 @@ export class Grid extends Container {
 
     constructor(gridSize: number, availWidth: number) {
         super()
-
         eventEmitter.on('clickCheck', this.clickCheck, this);
-
         this._availWidth = availWidth;
         this._gridSize = gridSize;
-
         for (let i = 0; i < this._gridSize; i++) {
             const newColumn = new Column(i, this._gridSize, this._availWidth);
             newColumn.x = (availWidth / (gridSize / i));
@@ -36,7 +33,6 @@ export class Grid extends Container {
         if (targetToken.matched) {
             return;
         }
-
         targetToken.animate(false);
 
         //on FirstClick
@@ -153,15 +149,6 @@ export class Grid extends Container {
         // this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
 
-    /**
-       * Identifies rows/columns of tokens where there are at least
-       * 3 adjacent to eachother.
-       * 
-       * Identified tokens are marked with highLight()
-       * and their matched status is set
-       * 
-       * @param Token[] - Array of Tokens to be searched for matches
-       */
     private matchLine(tokens: Token[]): void {
         let cacheSkIndex: number | undefined = undefined;
         let currentComboTokens: Token[] = [];
