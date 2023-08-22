@@ -12,6 +12,8 @@ export class Background extends Container {
     private _midWave: Sprite = new Sprite(Assets.get('waterSprite'));
     private _closeWave: Sprite = new Sprite(Assets.get('waterSprite'));
     private _ship: Token;
+    private _whoopsCount: number = 0;
+    private _splash: gsap.core.Timeline | undefined;
 
     constructor(viewWidth: number, viewHeight: number) {
         super();
@@ -77,23 +79,25 @@ export class Background extends Container {
         const midTime = Math.floor(Math.random() * 5) + 3;
         const closeTime = Math.floor(Math.random() * 5) + 3;
 
-        const splash = gsap.timeline();
+        if(this._splash){this._splash.kill();}
+        this._splash = gsap.timeline();
+    
 
-        splash.to(this._farWave, {
+        this._splash.to(this._farWave, {
             y: 0 - this._farWave.height * waveHeightMultiplier,
             duration: farTime,
             repeat: -1,
             yoyo: true
         }, 0);
 
-        splash.to(this._midWaveContainer, {
+        this._splash.to(this._midWaveContainer, {
             y: 0 - this._ship.height * waveHeightMultiplier,
             duration: midTime,
             repeat: -1,
             yoyo: true
         }, 0);
 
-        splash.fromTo(this._ship, {
+        this._splash.fromTo(this._ship, {
             angle: -20,
             x: this._ship.x - (this._ship.width * 0.25)
         }, {
@@ -104,7 +108,7 @@ export class Background extends Container {
             yoyo: true
         }, 0);
 
-        splash.to(this._closeWave, {
+        this._splash.to(this._closeWave, {
             y: 0 - this._closeWave.height * waveHeightMultiplier,
             duration: closeTime,
             repeat: -1,
