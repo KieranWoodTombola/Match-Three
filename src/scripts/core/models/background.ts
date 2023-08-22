@@ -34,8 +34,10 @@ export class Background extends Container {
             skIndex: 1
         });
         this._ship.scale.set(1);
-        this._ship.x = this._viewWidth * 0.75;
-        this._ship.y = this._viewHeight - this._ship.height * 0.5;
+        this._ship.position = {
+            x: this._viewWidth * 0.75,
+            y: this._viewHeight - this._ship.height * 0.5
+        }
         this._midWaveContainer.addChild(this._midWave, this._ship);
         const background = new Sprite(Assets.get('background'));
         background.width = this._viewWidth;
