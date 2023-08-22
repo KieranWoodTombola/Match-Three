@@ -12,10 +12,10 @@ export class Button extends Container {
         this.interactive = true;
         this.cursor = "pointer";
 
-        this.on('pointerdown',this.onPointerDown, this)
-        .on('pointerover', this.onPointerOver, this)
-        .on('pointerup', this.onPointerUp, this)
-        .on('pointerout', this.onPointerOut, this);
+        this.on('pointerdown',this.buttonActivateAndCallback, this)
+        .on('pointerover', this.highlightAndEnlargeButton, this)
+        .on('pointerup', this.resetButtonToStartingState, this)
+        .on('pointerout', this.resetButtonToStartingState, this);
         
         this._buttonCallback = buttonCallback;
         this._coin = new Graphics()
@@ -42,8 +42,7 @@ export class Button extends Container {
         this.addChild(this._buttonText);
     }
 
-    private onPointerOver(): void {
-        console.log("over");
+    private highlightAndEnlargeButton(): void {
         gsap.to(this._coin, {
             duration: 0.3,
             pixi: {
@@ -53,7 +52,7 @@ export class Button extends Container {
         });
     }
     
-    private onPointerOut(): void {
+    private resetButtonToStartingState(): void {
         gsap.to(this._coin, {
             duration: 0.3,
             pixi: {
@@ -63,7 +62,7 @@ export class Button extends Container {
         });
     }
 
-    private onPointerDown(): void {
+    private buttonActivateAndCallback(): void {
         gsap.to(this._coin, {
             duration: 0.3,
             pixi: {
@@ -72,16 +71,6 @@ export class Button extends Container {
             },
             onComplete: () => { 
                 this._buttonCallback!();
-            }
-        });
-    }
-
-    private onPointerUp(): void {
-        gsap.to(this._coin, {
-            duration: 0.3,
-            pixi: {
-                tint: "white",
-                scale: 1
             }
         });
     }

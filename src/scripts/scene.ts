@@ -32,8 +32,6 @@ export class Scene extends Container {
 
     public async load(): Promise<void> {
         const assetList = [
-            { key: 'transparent', url: 'assets/images/transparent.png'},
-            { key: 'logo', url: 'assets/images/logo.png' },
             { key: 'background', url: 'assets/images/background.jpeg'},
             { key: 'waterSprite', url: 'assets/images/waterStock.png'},
             { key: 'symbols', url: 'assets/animations/symbols/symbol.json' }
@@ -68,9 +66,11 @@ export class Scene extends Container {
         timer.x = scoreDisplay.x + scoreDisplay.width * 0.5 - timer.width * 0.5;
         timer.y = scoreDisplay.y - timer.height;
         this.addChild(timer);
-        const startButton = new Button("Lorem Ipsum", (grid.getToken(1, 1).width), () => {background.animateShip()});
-        startButton.x = scoreDisplay.x;
-        startButton.y = scoreDisplay.y + startButton.height * 1.5;
+        const startButton = new Button("Animate Ship", (grid.getToken(1, 1).width), () => {background.animateShip()});
+        startButton.position = {
+            x: scoreDisplay.x + scoreDisplay.width * 0.5 - startButton.width * 0.4,
+            y: scoreDisplay.y - startButton.height
+        }
         this.addChild(startButton);
     }
 
