@@ -1,6 +1,6 @@
 import { gsap } from "gsap";
 import { Container, Graphics, Text as PixiText } from "pixi.js";
-import { Token, IToken } from "./token";
+import { Token } from "./token";
 import { eventEmitter } from "../../../event-emitter";
 import { ScoreMaths } from "../services/score-maths";
 

@@ -1,6 +1,5 @@
 import { Container, Text as PixiText } from "pixi.js";
 import { gsap } from "gsap";
-import { eventEmitter } from "../../../event-emitter";
 
 export class Timer extends Container {
 

@@ -1,5 +1,5 @@
 import { Container } from "pixi.js";
-import { IToken, Token } from "./token";
+import { Token } from "./token";
 import { gsap } from "gsap";
 
 export class Column extends Container {
