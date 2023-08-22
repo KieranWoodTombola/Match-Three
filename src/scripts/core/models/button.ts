@@ -20,10 +20,6 @@ export class Button extends Container {
         .on('pointerout', this.onPointerOut, this)
 
         this._buttonCallback = buttonCallback;
-        this._buttonText = new PixiText(buttonText)
-        this._buttonText.style = {
-            fill: "white"
-        };
         this._coin = new Graphics()
             .beginFill('white')
             .lineStyle({
@@ -35,6 +31,17 @@ export class Button extends Container {
             .endFill()
         this._coin.interactive = true;
         this.addChild(this._coin);
+        this._buttonText = new PixiText(buttonText)
+        this._buttonText.style = {
+            fill: "white",
+            stroke: "black",
+            strokeThickness: 1,
+        };
+        this._buttonText.position = {
+            x: this._coin.width * 0.6 ,
+            y: 0 - this._buttonText.height * 0.5
+        }
+        this.addChild(this._buttonText);
     }
 
     private onPointerOver() {

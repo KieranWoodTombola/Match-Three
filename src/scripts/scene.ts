@@ -64,7 +64,7 @@ export class Scene extends Container {
         timer.x = scoreDisplay.x + scoreDisplay.width * 0.5 - timer.width * 0.5;
         timer.y = scoreDisplay.y - timer.height;
         this.addChild(timer);
-        const startButton = new Button("test", (grid.getToken(1, 1).width), () => {background.animateShip()});
+        const startButton = new Button("Lorem Ipsum", (grid.getToken(1, 1).width), () => {background.animateShip()});
         startButton.x = scoreDisplay.x;
         startButton.y = scoreDisplay.y + startButton.height * 1.5;
         this.addChild(startButton);
