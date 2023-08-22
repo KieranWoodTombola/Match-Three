@@ -49,7 +49,6 @@ export class Scene extends Container {
     public initialise(): void {
 
         const background = new Background(this._viewWidth, this._viewHeight);
-        background.position = {x: 0, y: 0}
         this.addChild(background);
         const grid = new Grid(6, this._gridPossibleWidth);
         this.addChild(grid);
@@ -61,10 +60,10 @@ export class Scene extends Container {
         }
         this.addChild(scoreDisplay);
         const timer = new Timer(90, {
-            45: () => {background.midWave();},
-            10: () => {background.highWave();}
+            45: () => {background.setWaveHeightMedium();},
+            10: () => {background.setWaveHeightHigh();}
         }, () => {
-            background.lowWave()
+            background.setWaveHeightLow()
         });
         timer.x = scoreDisplay.x + scoreDisplay.width * 0.5 - timer.width * 0.5;
         timer.y = scoreDisplay.y - timer.height;

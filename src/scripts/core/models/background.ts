@@ -12,6 +12,8 @@ export class Background extends Container {
     private _midWave: Sprite = new Sprite(Assets.get('waterSprite'));
     private _closeWave: Sprite = new Sprite(Assets.get('waterSprite'));
     private _ship: Token;
+    private _whoopsCount: number = 0;
+    private _splash: gsap.core.Timeline | undefined;
 
     constructor(viewWidth: number, viewHeight: number) {
         super();
@@ -33,15 +35,16 @@ export class Background extends Container {
             availWidth: this._viewHeight,
             skIndex: 1
         });
-        this._ship.scale.x = 1;
-        this._ship.scale.y = 1;
-        this._ship.x = this._viewWidth * 0.75;
-        this._ship.y = this._viewHeight - this._ship.height * 0.5;
+        this._ship.scale.set(1);
+        this._ship.position = {
+            x: this._viewWidth * 0.75,
+            y: this._viewHeight - this._ship.height * 0.5
+        }
         this._midWaveContainer.addChild(this._midWave, this._ship);
         const background = new Sprite(Assets.get('background'));
         background.width = this._viewWidth;
         background.height = this._viewHeight;
-        this.lowWave();
+        this.setWaveHeightLow();
         this.addChild(
             background,
             this._farWave,
@@ -54,16 +57,16 @@ export class Background extends Container {
         this._ship.animate(false);
     }
 
-    public lowWave(): void {
-        this.idleWaves(-0.2);
+    public setWaveHeightLow(): void {
+        this.backgroundSpriteTweenManager(-0.2);
     }
 
-    public midWave(): void {
-        this.idleWaves(-0.15);
+    public setWaveHeightMedium(): void {
+        this.backgroundSpriteTweenManager(-0.15);
     }
 
-    public highWave(): void {
-        this.idleWaves(0);
+    public setWaveHeightHigh(): void {
+        this.backgroundSpriteTweenManager(0);
     }
 
     private initWave(sprite: Sprite, width: number, height: number): void {
@@ -71,26 +74,30 @@ export class Background extends Container {
         sprite.height = height;
     }
 
-    private idleWaves(waveHeight: number): void {
+    private backgroundSpriteTweenManager(waveHeightMultiplier: number): void {
         const farTime = Math.floor(Math.random() * 5) + 3;
         const midTime = Math.floor(Math.random() * 5) + 3;
         const closeTime = Math.floor(Math.random() * 5) + 3;
-        const splash = gsap.timeline();
-        splash.to(this._farWave, {
-            y: 0 - this._farWave.height * waveHeight,
+
+        if(this._splash){this._splash.kill();}
+        this._splash = gsap.timeline();
+    
+
+        this._splash.to(this._farWave, {
+            y: 0 - this._farWave.height * waveHeightMultiplier,
             duration: farTime,
             repeat: -1,
             yoyo: true
         }, 0);
 
-        splash.to(this._midWaveContainer, {
-            y: 0 - this._ship.height * waveHeight,
+        this._splash.to(this._midWaveContainer, {
+            y: 0 - this._ship.height * waveHeightMultiplier,
             duration: midTime,
             repeat: -1,
             yoyo: true
         }, 0);
 
-        splash.fromTo(this._midWaveContainer.getChildAt(1), {
+        this._splash.fromTo(this._ship, {
             angle: -20,
             x: this._ship.x - (this._ship.width * 0.25)
         }, {
@@ -100,9 +107,9 @@ export class Background extends Container {
             repeat: -1,
             yoyo: true
         }, 0);
-        
-        splash.to(this._closeWave, {
-            y: 0 - this._closeWave.height * (waveHeight * 1.5),
+
+        this._splash.to(this._closeWave, {
+            y: 0 - this._closeWave.height * waveHeightMultiplier,
             duration: closeTime,
             repeat: -1,
             yoyo: true
