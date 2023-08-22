@@ -1,5 +1,4 @@
 import { Text as PixiText, Container, Graphics} from "pixi.js";
-// import '@pixi/graphics-extras';
 import { gsap } from "gsap";
 
 export class Button extends Container {
@@ -13,12 +12,11 @@ export class Button extends Container {
         this.interactive = true;
         this.cursor = "pointer";
 
-        this
-        .on('pointerdown',this.onPointerDown, this)
+        this.on('pointerdown',this.onPointerDown, this)
         .on('pointerover', this.onPointerOver, this)
         .on('pointerup', this.onPointerUp, this)
-        .on('pointerout', this.onPointerOut, this)
-
+        .on('pointerout', this.onPointerOut, this);
+        
         this._buttonCallback = buttonCallback;
         this._coin = new Graphics()
             .beginFill('white')
@@ -44,58 +42,47 @@ export class Button extends Container {
         this.addChild(this._buttonText);
     }
 
-    private onPointerOver() {
+    private onPointerOver(): void {
         console.log("over");
         gsap.to(this._coin, {
-            tint: "orange",
-            duration: 0.3
-        });
-        gsap.to(this._coin.scale, {
-            x: 1.1,
-            y: 1.1,
-            duration: 0.2
+            duration: 0.3,
+            pixi: {
+                tint: "orange",
+                scale: 1.1,
+            }
         });
     }
     
-    private onPointerOut() {
+    private onPointerOut(): void {
         gsap.to(this._coin, {
-            tint: "white",
-            duration: 0.3
-        });
-        gsap.to(this._coin.scale, {
-            x: 1.0,
-            y: 1.0,
-            duration: 0.2
+            duration: 0.3,
+            pixi: {
+                tint: "white",
+                scale: 1.0,
+            }
         });
     }
 
-    private onPointerDown() {
-        const pointerDownTL = gsap.timeline({
+    private onPointerDown(): void {
+        gsap.to(this._coin, {
+            duration: 0.3,
+            pixi: {
+                tint: "red",
+                scale: 1.1
+            },
             onComplete: () => { 
                 this._buttonCallback!();
             }
         });
-        pointerDownTL.to(this._coin, {
-            tint: "red",
-            duration: 0.3,
-        }, 0);
-        pointerDownTL.to(this._coin.scale, {
-            x: 1.1,
-            y: 1.1,
-            duration: 0.2
-        }, 0);
     }
 
-    private onPointerUp() {
+    private onPointerUp(): void {
         gsap.to(this._coin, {
-            tint: "white",
-            duration: 0.3
-        });
-        gsap.to(this._coin.scale, {
-            x: 1.0,
-            y: 1.0,
-            duration: 0.2
+            duration: 0.3,
+            pixi: {
+                tint: "white",
+                scale: 1
+            }
         });
     }
-
 }

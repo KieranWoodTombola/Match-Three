@@ -5,6 +5,11 @@ import { Background } from './core/models/background';
 import { Timer } from './core/models/timer';
 import { Button } from './core/models/button';
 import '@pixi/graphics-extras';
+import * as PIXI from 'pixi.js';
+import PixiPlugin from 'gsap/PixiPlugin';
+import { gsap } from "gsap";
+gsap.registerPlugin(PixiPlugin);
+PixiPlugin.registerPIXI(PIXI);
 
 export class Scene extends Container {
     private _viewWidth: number;
