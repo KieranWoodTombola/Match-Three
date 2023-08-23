@@ -4,53 +4,73 @@ import { Token } from "./token";
 import { eventEmitter } from "../../../event-emitter";
 import { ScoreMaths } from "../services/score-maths";
 
+export interface IScoreDisplay {
+    titleString: string;
+    score: number;
+}
+
 export class ScoreDisplay extends Container {
 
-    private _score: number = 0;
-    private _scoreText: PixiText = new PixiText(`${this._score}`);
-    private _textContainer: Container = new Container();
-    private _trackedHeight = -1;
+    public score: number;
+    public scoreText: PixiText;
+    public textContainer: Container = new Container();
 
-    constructor() {
+    constructor(args: IScoreDisplay) {
         super()
 
-        eventEmitter.on('onMatch', this.recordMatchedTokens, this);
-
-        const title: PixiText = new PixiText("SCORE");
+        const title: PixiText = new PixiText(args.titleString, {
+            fill: "black",
+            align: "center"
+        });
         const scoreCard = new Graphics();
-        scoreCard.beginFill(0xFFFFFF);
-        scoreCard.drawRoundedRect(0, 0, title.width, title.height, 3);
-        scoreCard.endFill();
-        scoreCard.addChild(title);
-        this._textContainer.addChild(scoreCard);
+        scoreCard.beginFill(0xFFFFFF)
+            .drawRoundedRect(0, 0, title.width, title.height, 3)
+            .endFill()
+            .addChild(title);
+        this.textContainer.addChild(scoreCard);
         
-        this._scoreText.style = {
-            fill: "white"
-        }
-        this._scoreText.position = {
-            x: scoreCard.width * 0.5 - this._scoreText.width,
+        this.score = args.score ? args.score : 0;
+        this.scoreText = new PixiText(`${this.score}`, {
+            fill: "white",
+            align: "center"
+        });
+        this.scoreText.position = {
+            x: scoreCard.width * 0.5 - this.scoreText.width,
             y: scoreCard.height * 1.5
         };
-        this._textContainer.addChild(this._scoreText);
+        this.textContainer.addChild(this.scoreText);
 
-        this.addChild(this._textContainer);
+        this.addChild(this.textContainer);
     }
 
-    private updateScore(targetScore: number) {
+    public updateScore(targetScore: number) {
         gsap.to(this, {
-            _score: this._score + targetScore,
+            score: this.score + targetScore,
             duration: 3,
             onUpdate: this.showScore.bind(this),
         });
     }
 
     private showScore(): void {
-        if (!this._scoreText) { return; }
+        if (!this.scoreText) { return; }
     
-        const score = Math.round(this._score);
-        if (this._score !== score) {
-            this._scoreText.text = score;
+        const score = Math.floor(Math.round(this.score));
+        if (this.score !== score) {
+            console.log(score);
+            this.scoreText.text = score;
         }
+    }
+
+}
+
+export class GridScoreDisplay extends ScoreDisplay {
+
+    private _trackedHeight = -1;
+
+    constructor(args: IScoreDisplay) {
+        super(args);
+
+        eventEmitter.on('onMatch', this.recordMatchedTokens, this);
     }
 
     private recordMatchedTokens(tokens: Token[]): void {
@@ -59,8 +79,8 @@ export class ScoreDisplay extends Container {
             yoyo: true,
             onComplete: () => {
                 this.removeChildren();
-                this.addChild(this._scoreText);
-                this.addChild(this._textContainer);
+                this.addChild(this.scoreText);
+                this.addChild(this.textContainer);
             }
         });
 
@@ -81,7 +101,7 @@ export class ScoreDisplay extends Container {
                 const bonus = ScoreMaths.getScore(token.skIndex);
                 if (bonus) { score += bonus }
             });
-            if (score) { this.updateScore(score); }
+            if (score) { super.updateScore(score); }
             
             this.addChild(tokensContainer);
         });
@@ -107,8 +127,8 @@ export class ScoreDisplay extends Container {
         });
 
         displayTokenContainer.position = {
-            x: (this._textContainer.width * 0.5) - (displayTokenContainer.width * 0.5),
-            y: this._textContainer.height
+            x: (this.textContainer.width * 0.5) - (displayTokenContainer.width * 0.5),
+            y: this.textContainer.height
         };
 
         return displayTokenContainer;
