@@ -56,8 +56,8 @@ export class MenuScene extends Scene {
         const startButton = new Button("Start Game",
             this._viewWidth * 0.1,
             () => {
-                SceneManager.switchToScene(new GameScene(this._viewWidth, this._viewHeight), new LoadScreen());
                 this.unload();
+                SceneManager.switchToScene(new GameScene(this._viewWidth, this._viewHeight), new LoadScreen());
             });
         startButton.position = {
             x: this._viewWidth * 0.5 - startButton.width * 0.5,

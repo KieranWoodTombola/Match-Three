@@ -56,7 +56,6 @@ export class ScoreDisplay extends Container {
     
         const score = Math.floor(Math.round(this.score));
         if (this.score !== score) {
-            console.log(score);
             this.scoreText.text = score;
         }
     }
@@ -66,11 +65,13 @@ export class ScoreDisplay extends Container {
 export class GridScoreDisplay extends ScoreDisplay {
 
     private _trackedHeight = -1;
+    private _recordMatchedTokensBound: (tokens: Token[]) => void;
 
     constructor(args: IScoreDisplay) {
         super(args);
 
-        eventEmitter.on('onMatch', this.recordMatchedTokens, this);
+        this._recordMatchedTokensBound = this.recordMatchedTokens.bind(this);
+        eventEmitter.on('onMatch', this._recordMatchedTokensBound);
     }
 
     private recordMatchedTokens(tokens: Token[]): void {
@@ -132,5 +133,11 @@ export class GridScoreDisplay extends ScoreDisplay {
         };
 
         return displayTokenContainer;
+    }
+
+    public destroy(): void {
+        super.destroy();
+        eventEmitter.off('onMatch', this._recordMatchedTokensBound);
+        return;
     }
 }

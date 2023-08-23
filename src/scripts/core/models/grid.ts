@@ -9,11 +9,15 @@ import { Curve } from "../services/curve"
 
 export class Grid extends Container {
 
+    private gridID: number;
+    private tokenTracker: number = 0;
+
     private _availWidth: number;
     private _gridSize: number;
     private _columns: Column[] = [];
     private _selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
     private _matchedTokens: Token[] = [];
+    private _clickCheckBound: (targetToken: Token) => void;
 
     get gridSize() {
         return this._gridSize;
@@ -21,9 +25,15 @@ export class Grid extends Container {
 
     constructor(gridSize: number, availWidth: number) {
         super()
-        eventEmitter.on('clickCheck', this.clickCheck, this);
+
+        this.gridID = Math.round(Math.random() * (100 - 1) + 1);
+
+        this._clickCheckBound = this.clickCheck.bind(this)
+        eventEmitter.on('clickCheck', this._clickCheckBound);
+
         this._availWidth = availWidth;
         this._gridSize = gridSize;
+
         for (let i = 0; i < this._gridSize; i++) {
             const newColumn = new Column(i, this._gridSize, this._availWidth);
             newColumn.x = (availWidth / (gridSize / i));
@@ -34,6 +44,10 @@ export class Grid extends Container {
     }
 
     private clickCheck(targetToken: Token): void {
+
+        this.tokenTracker++ ;
+        console.log(targetToken.getLocation(), this.tokenTracker, this.gridID)
+
         if (targetToken.matched) {
             return;
         }
@@ -93,7 +107,6 @@ export class Grid extends Container {
                     });
                     this._selectedTokens = [undefined, undefined];
                     this.resolveMatches();
-                    eventEmitter.emit('onSwapComplete');
                 }),
             });
 
@@ -206,5 +219,11 @@ export class Grid extends Container {
 
     public getToken(X: number, Y: number): Token {
         return this._columns[X].getToken(Y);
+    }
+
+    public destroy(): void {
+        super.destroy();
+        eventEmitter.off('clickCheck', this._clickCheckBound);
+        return;
     }
 }

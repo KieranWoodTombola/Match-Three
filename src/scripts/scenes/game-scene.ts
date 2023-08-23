@@ -1,7 +1,7 @@
-import { Assets, } from 'pixi.js'
+import { Assets, Text as PixiText} from 'pixi.js'
 import { Scene, SceneManager } from '../core/scene-manager';
 import { Grid } from '../core/models/grid';
-import { ScoreDisplay } from '../core/models/score-display';
+import { ScoreDisplay, GridScoreDisplay } from '../core/models/score-display';
 import { Background } from '../core/models/background';
 import { Timer } from '../core/models/timer';
 import { Button } from '../core/models/button';
@@ -47,6 +47,7 @@ export class GameScene extends Scene {
     }
 
     public onLoadComplete(): void {
+        this.removeChildren();
 
         const background = new Background(this._viewWidth, this._viewHeight);
         background.enterShip();
@@ -55,45 +56,94 @@ export class GameScene extends Scene {
         const grid = new Grid(6, this._gridPossibleWidth!);
         this.addChild(grid);
 
-        const scoreDisplay = new ScoreDisplay();
+        const gridScoreDisplay = new GridScoreDisplay({
+            titleString: "SCORE",
+            score: 0
+        });
         const remainingWidth = this._viewWidth - grid.width;
-        scoreDisplay.position = {
-            x: (this._gridPossibleWidth! + remainingWidth * 0.5) - scoreDisplay.width * 0.5,
+        gridScoreDisplay.position = {
+            x: (this._gridPossibleWidth! + remainingWidth * 0.5) - gridScoreDisplay.width * 0.5,
             y: this._viewHeight * 0.3
         }
-        this.addChild(scoreDisplay);
+        this.addChild(gridScoreDisplay);
 
-        const timer = new Timer(90, {
-            45: () => { background.setWaveHeightMedium(); },
-            10: () => { background.setWaveHeightHigh(); }
-        }, () => {
-            background.setWaveHeightLow()
-        });
-        timer.position = {
-            x: scoreDisplay.x + scoreDisplay.width * 0.5 - timer.width * 0.5,
-            y: scoreDisplay.y - timer.height
-        }
-        this.addChild(timer);
-
-        const startButton = new Button("Back to Menu",
+        const menuButton = new Button("Back to Menu",
             (grid.getToken(1, 1).width),
             () => {
-                SceneManager.switchToScene(new MenuScene(this._viewWidth, this._viewHeight), new LoadScreen());
                 this.unload();
+                SceneManager.switchToScene(new MenuScene(this._viewWidth, this._viewHeight), new LoadScreen());
             });
-        startButton.position = {
-            x: (scoreDisplay.x + scoreDisplay.width * 0.5) - startButton.width * 0.4,
-            y: startButton.height * 0.7
+            menuButton.position = {
+            x: (gridScoreDisplay.x + gridScoreDisplay.width * 0.5) - menuButton.width * 0.4,
+            y: menuButton.height * 0.7
         }
-        this.addChild(startButton);
+        this.addChild(menuButton);
+
+        const timer = new Timer(30, {
+            45: () => { background.setWaveHeightMedium(); },
+            10: () => { background.setWaveHeightHigh(); }
+        }, 
+        //Things to happen when the timer runs out
+        () => {
+            background.setWaveHeightLow();
+
+            const highScore = localStorage.highScore;
+            const highScoreDisplay = new ScoreDisplay({
+                titleString: "HIGHSCORE",
+                score: highScore
+            });
+            highScoreDisplay.alpha = 0;
+            highScoreDisplay.position = {
+                x: this._viewWidth * 0.5 - gridScoreDisplay.width,
+                y: this._viewHeight * 0.5 - gridScoreDisplay.height * 0.5
+            };
+            this.addChild(highScoreDisplay);
+
+            const endgameTimeline = gsap.timeline({
+                duration: 5,
+                //onComplete being carried out before token tweens are complete
+                onComplete: (() => {
+                    if(gridScoreDisplay.score > highScoreDisplay.score) {
+                        highScoreDisplay.updateScore(gridScoreDisplay.score);
+                        localStorage.highScore = gridScoreDisplay.score;
+                    }
+                })
+            });
+            endgameTimeline.to(grid, {
+                x: 0 - grid.width
+            }, 0);
+            endgameTimeline.to(timer, {
+                alpha: 0
+            }, 1)
+            endgameTimeline.to(menuButton, {
+                x: this._viewWidth * 0.5 - menuButton.width * 0.5
+            }, 1);
+            endgameTimeline.to(gridScoreDisplay, {
+                x: this._viewWidth * 0.5 - gridScoreDisplay.width,
+                y: this._viewHeight * 0.5 - gridScoreDisplay.height * 0.5
+            }, 1);
+
+            endgameTimeline.to(highScoreDisplay, {
+                x: this._viewWidth * 0.5 + highScoreDisplay.width * 0.5,
+                y: this._viewHeight * 0.5 - highScoreDisplay.height * 0.5,
+                alpha: 1
+            }, 2);
+            
+        });
+
+        timer.position = {
+            x: gridScoreDisplay.x + gridScoreDisplay.width * 0.5 - timer.width * 0.5,
+            y: gridScoreDisplay.y - timer.height
+        }
+        this.addChild(timer);
     }
 
     public unload(): Promise<void> {
+        console.log(this.children);
         this.children.forEach(child => {
             gsap.killTweensOf(child);
-            child.destroy;
+            child.destroy();
         });
-        
         return Assets.unloadBundle(this._assetBundleName);
     }
 
