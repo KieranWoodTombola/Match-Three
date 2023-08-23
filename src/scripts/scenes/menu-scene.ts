@@ -24,8 +24,10 @@ export class MenuScene extends Scene {
 
     constructor(width: number, height: number) {
         super();
+
         this._viewWidth = width;
         this._viewHeight = height;
+
         Assets.addBundle(this._assetBundleName, this._assetBundle);
     }
 
@@ -34,9 +36,10 @@ export class MenuScene extends Scene {
     }
 
     public onLoadComplete(): void {
-        this.removeChildren();
+
         const background = new Background(this._viewWidth, this._viewHeight);
         this.addChild(background);
+
         const title = new PixiText("Vikings: Match-3", {
             fill: "white",
             stroke: "black",
@@ -49,6 +52,7 @@ export class MenuScene extends Scene {
             y: 0
         }
         this.addChild(title);
+
         const startButton = new Button("Start Game",
             this._viewWidth * 0.1,
             () => {
@@ -67,6 +71,7 @@ export class MenuScene extends Scene {
             gsap.killTweensOf(child);
             child.destroy;
         });
+        
         return Assets.unloadBundle(this._assetBundleName);
     }
 

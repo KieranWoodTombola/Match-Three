@@ -18,7 +18,7 @@ PixiPlugin.registerPIXI(PIXI);
 export class GameScene extends Scene {
     private _viewWidth: number;
     private _viewHeight: number;
-    private _gridPossibleWidth: number;
+    private _gridPossibleWidth: number | undefined = undefined;
 
     private readonly _assetBundleName = 'example-scene';
     private readonly _assetBundle: PIXI.ResolverAssetsObject = {
@@ -29,15 +29,16 @@ export class GameScene extends Scene {
 
     constructor(width: number, height: number) {
         super();
+
         this._viewWidth = width;
         this._viewHeight = height;
-        this._gridPossibleWidth = 0;
         if (this._viewWidth <= this.height) {
             this._gridPossibleWidth = this._viewWidth;
         }
         else {
             this._gridPossibleWidth = this._viewHeight;
         }
+
         Assets.addBundle(this._assetBundleName, this._assetBundle);
     }
 
@@ -46,28 +47,34 @@ export class GameScene extends Scene {
     }
 
     public onLoadComplete(): void {
-        this.removeChildren();
+
         const background = new Background(this._viewWidth, this._viewHeight);
         background.enterShip();
         this.addChild(background);
-        const grid = new Grid(6, this._gridPossibleWidth);
+
+        const grid = new Grid(6, this._gridPossibleWidth!);
         this.addChild(grid);
+
         const scoreDisplay = new ScoreDisplay();
         const remainingWidth = this._viewWidth - grid.width;
         scoreDisplay.position = {
-            x: (this._gridPossibleWidth + remainingWidth * 0.5) - scoreDisplay.width * 0.5,
+            x: (this._gridPossibleWidth! + remainingWidth * 0.5) - scoreDisplay.width * 0.5,
             y: this._viewHeight * 0.3
         }
         this.addChild(scoreDisplay);
+
         const timer = new Timer(90, {
             45: () => { background.setWaveHeightMedium(); },
             10: () => { background.setWaveHeightHigh(); }
         }, () => {
             background.setWaveHeightLow()
         });
-        timer.x = scoreDisplay.x + scoreDisplay.width * 0.5 - timer.width * 0.5;
-        timer.y = scoreDisplay.y - timer.height;
+        timer.position = {
+            x: scoreDisplay.x + scoreDisplay.width * 0.5 - timer.width * 0.5,
+            y: scoreDisplay.y - timer.height
+        }
         this.addChild(timer);
+
         const startButton = new Button("Back to Menu",
             (grid.getToken(1, 1).width),
             () => {
@@ -86,6 +93,7 @@ export class GameScene extends Scene {
             gsap.killTweensOf(child);
             child.destroy;
         });
+        
         return Assets.unloadBundle(this._assetBundleName);
     }
 

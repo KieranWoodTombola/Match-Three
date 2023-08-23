@@ -29,6 +29,7 @@ export class Background extends Container {
         this._midWave.y = this._viewHeight - this._midWave.height * 0.7;
         this.initWave(this._closeWave, this._viewWidth * 2, this._viewHeight);
         this._closeWave.y = this._viewHeight - this._closeWave.height * 0.5;
+
         this._ship = new Token({
             availHeight: this._viewWidth,
             availWidth: this._viewHeight,
@@ -44,10 +45,13 @@ export class Background extends Container {
             y: this._ship.height * 0.75
         }
         this._ship.alpha = 0;
+
         this._midWaveContainer.addChild(this._midWave, this._ship);
+
         const background = new Sprite(Assets.get('background'));
         background.width = this._viewWidth;
         background.height = this._viewHeight;
+        
         this.setWaveHeightLow();
         this.addChild(
             background,

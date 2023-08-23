@@ -82,8 +82,19 @@ export class Grid extends Container {
             //tween the tokens from their DESTINATION to their ORIGIN
             const swapTween = gsap.timeline({
                 ease: "back",
-                onStart: this.onSwapStart.bind(this),
-                onComplete: this.onSwapComplete.bind(this)
+                onStart:( () => {
+                    this._columns.forEach(column => { 
+                        column.deactivateAllTokens() 
+                    });
+                }),
+                onComplete:( () => {
+                    this._columns.forEach(column => {
+                        column.activateAllTokens()
+                    });
+                    this._selectedTokens = [undefined, undefined];
+                    this.resolveMatches();
+                    eventEmitter.emit('onSwapComplete');
+                }),
             });
 
             swapTween.to(this._selectedTokens[0],
@@ -113,24 +124,12 @@ export class Grid extends Container {
         }
     }
 
-    private onSwapStart(): void {
-        this._columns.forEach(column => { column.deactivateAllTokens() });
-    }
-
-    private onSwapComplete(): void {
-        this._columns.forEach(column => { column.activateAllTokens() });
-        eventEmitter.emit('onSwapComplete');
-        if (!this._selectedTokens[0] || !this._selectedTokens[1]) { return; }
-        this._selectedTokens = [undefined, undefined];
-        this.resolveMatches();
-        return;
-    }
-
     private resolveMatches(): void {
         //Y Matches
         this._columns.forEach(column => {
             this.matchLine(column.tokens);
         });
+
         //X Matches
         for (let i = 0; i < this._gridSize; i++) {
             const horizontalArray: Token[] = [];
@@ -173,15 +172,18 @@ export class Grid extends Container {
                 currentComboTokens.push(token);
                 return;
             }
+
             //matching token
             if (token.skIndex === cacheSkIndex) {
                 currentComboTokens.push(token);
             }
+
             //last token in the array
             if (token === tokens[this._gridSize - 1]) {
                 checkForCombo();
                 return;
             }
+            
             //cache defined but match failed
             if (token.skIndex !== cacheSkIndex) {
                 checkForCombo();

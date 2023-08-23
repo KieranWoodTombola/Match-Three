@@ -16,6 +16,7 @@ export class Timer extends Container {
 
     constructor(totalTime: number, timeCallbacks?: Record<number, (() => void) | undefined>, finalCallback?: Function) {
         super()
+        
         this._totalTime = totalTime;
         this._currentTime = totalTime;
         this.formatTime();
@@ -23,8 +24,10 @@ export class Timer extends Container {
             fill: "white"
         };
         this.addChild(this._timeText);
+
         this._timeCallbacks = timeCallbacks;
         this._finalCallback = finalCallback;
+
         this.countdown();
     }
 

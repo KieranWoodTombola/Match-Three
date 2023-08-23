@@ -15,12 +15,15 @@ export class ScoreMaths {
     ]);
 
     static getScore(skin: number): number | undefined {
-        if(this.scoreMap.has(skin)) {return this.scoreMap.get(skin)}
-        else return undefined;
+        if(this.scoreMap.has(skin)) {
+            return this.scoreMap.get(skin);
+        }
+        else 
+            return undefined;
     }
 
     static orderMatchedTokens(tokens: Token[]): Token [][] {
-        const orderedTokens: Token[][] = []
+        const orderedTokens: Token[][] = [];
         let tokenCache: Token[] = [];
         let skIndexCache: number = -1;
 
@@ -31,28 +34,33 @@ export class ScoreMaths {
                 tokenCache.push(token);
                 return;
             }
+
             if(tokens.indexOf(token) === tokens.length - 1){
                 tokenCache.push(token);
                 orderedTokens.push(tokenCache);
                 return;
             }
+
             if(token.skIndex !== tokenCache[0].skIndex) {
                 orderedTokens.push(tokenCache);
                 tokenCache = [];
                 tokenCache.push(token);
                 return;
             }
+
             else {
                 tokenCache.push(token);
                 return;
             }
-        })
+        });
+
         //if an array is multiple of 3, break into smaller arrays
         orderedTokens.forEach(tokenArray => {
             if(tokenArray.length % 3 !== 0 || tokenArray.length === 3){
                 return;
             }
-            let newArray: Token[] = []
+
+            let newArray: Token[] = [];
             for(let i = 0; i < tokenArray.length; i++) {
                 if(i % 3 === 0){
                     newArray.push(tokenArray[i])
@@ -64,9 +72,8 @@ export class ScoreMaths {
                 }
             }
             orderedTokens.splice(orderedTokens.indexOf(tokenArray), 1);
-        }) 
+        });
 
         return orderedTokens;
     }
-
 }
