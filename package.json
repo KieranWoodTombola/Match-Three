@@ -21,9 +21,10 @@
     "webpack-dev-server": "^4.13.2"
   },
   "dependencies": {
-    "pixi-spine": "^4.0.4",
-    "pixi.js": "^7.2.3",
+    "@pixi/graphics-extras": "^7.2.4",
     "eventemitter3": "5.0.1",
-    "gsap": "3.12.2"
+    "gsap": "3.12.2",
+    "pixi-spine": "^4.0.4",
+    "pixi.js": "^7.2.3"
   }
 }

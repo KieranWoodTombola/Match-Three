@@ -53,7 +53,7 @@ export class Background extends Container {
         );
     }
 
-    private animateShip(): void {
+    public animateShip(): void {
         this._ship.animate(false);
     }
 
