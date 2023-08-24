@@ -67,6 +67,19 @@ export class GameScene extends Scene {
         }
         this.addChild(gridScoreDisplay);
 
+        const highScore = localStorage.highScore;
+        const highScoreDisplay = new ScoreDisplay({
+            titleString: "HIGHSCORE",
+            score: highScore,
+            onScoreChange: () => {localStorage.highScore = gridScoreDisplay.score;}
+        });
+        highScoreDisplay.alpha = 0;
+        highScoreDisplay.position = {
+            x: this._viewWidth * 0.5 - gridScoreDisplay.width,
+            y: this._viewHeight * 0.5 - gridScoreDisplay.height * 0.5
+        };
+        this.addChild(highScoreDisplay);
+
         const menuButton = new Button("Back to Menu",
             (grid.getToken(1, 1).width),
             () => {
@@ -79,7 +92,7 @@ export class GameScene extends Scene {
         }
         this.addChild(menuButton);
 
-        const timer = new Timer(30, {
+        const timer = new Timer(10, {
             45: () => { background.setWaveHeightMedium(); },
             10: () => { background.setWaveHeightHigh(); }
         }, 
@@ -87,26 +100,13 @@ export class GameScene extends Scene {
         () => {
             background.setWaveHeightLow();
 
-            const highScore = localStorage.highScore;
-            const highScoreDisplay = new ScoreDisplay({
-                titleString: "HIGHSCORE",
-                score: highScore
-            });
-            highScoreDisplay.alpha = 0;
-            highScoreDisplay.position = {
-                x: this._viewWidth * 0.5 - gridScoreDisplay.width,
-                y: this._viewHeight * 0.5 - gridScoreDisplay.height * 0.5
-            };
-            this.addChild(highScoreDisplay);
-
             const endgameTimeline = gsap.timeline({
                 duration: 5,
                 //onComplete being carried out before token tweens are complete
                 onComplete: (() => {
                     if(gridScoreDisplay.score > highScoreDisplay.score) {
-                        highScoreDisplay.updateScore(gridScoreDisplay.score);
-                        localStorage.highScore = gridScoreDisplay.score;
-                    }
+                        highScoreDisplay.updateScore(gridScoreDisplay.score)
+                    };
                 })
             });
             endgameTimeline.to(grid, {

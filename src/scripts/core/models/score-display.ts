@@ -7,13 +7,15 @@ import { ScoreMaths } from "../services/score-maths";
 export interface IScoreDisplay {
     titleString: string;
     score: number;
+    onScoreChange?: () => void;
 }
 
 export class ScoreDisplay extends Container {
 
     public score: number;
-    public scoreText: PixiText;
+    public scoreAsText: PixiText;
     public textContainer: Container = new Container();
+    public OnScoreChange?: () => void;
 
     constructor(args: IScoreDisplay) {
         super()
@@ -22,23 +24,23 @@ export class ScoreDisplay extends Container {
             fill: "black",
             align: "center"
         });
-        const scoreCard = new Graphics();
-        scoreCard.beginFill(0xFFFFFF)
+        const titleTextBackground = new Graphics();
+        titleTextBackground.beginFill(0xFFFFFF)
             .drawRoundedRect(0, 0, title.width, title.height, 3)
             .endFill()
             .addChild(title);
-        this.textContainer.addChild(scoreCard);
+        this.textContainer.addChild(titleTextBackground);
         
         this.score = args.score ? args.score : 0;
-        this.scoreText = new PixiText(`${this.score}`, {
+        this.scoreAsText = new PixiText(`${this.score}`, {
             fill: "white",
             align: "center"
         });
-        this.scoreText.position = {
-            x: scoreCard.width * 0.5 - this.scoreText.width,
-            y: scoreCard.height * 1.5
+        this.scoreAsText.position = {
+            x: titleTextBackground.width * 0.5 - this.scoreAsText.width,
+            y: titleTextBackground.height * 1.5
         };
-        this.textContainer.addChild(this.scoreText);
+        this.textContainer.addChild(this.scoreAsText);
 
         this.addChild(this.textContainer);
     }
@@ -48,15 +50,22 @@ export class ScoreDisplay extends Container {
             score: this.score + targetScore,
             duration: 3,
             onUpdate: this.showScore.bind(this),
+            onComplete: () => {
+                if(this.OnScoreChange) {
+                    this.OnScoreChange();
+                }
+            }
         });
     }
 
     private showScore(): void {
-        if (!this.scoreText) { return; }
+        if (!this.scoreAsText) { 
+            return; 
+        }
     
         const score = Math.floor(Math.round(this.score));
         if (this.score !== score) {
-            this.scoreText.text = score;
+            this.scoreAsText.text = score.toString();
         }
     }
 
@@ -80,7 +89,7 @@ export class GridScoreDisplay extends ScoreDisplay {
             yoyo: true,
             onComplete: () => {
                 this.removeChildren();
-                this.addChild(this.scoreText);
+                this.addChild(this.scoreAsText);
                 this.addChild(this.textContainer);
             }
         });

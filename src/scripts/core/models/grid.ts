@@ -9,9 +9,6 @@ import { Curve } from "../services/curve"
 
 export class Grid extends Container {
 
-    private gridID: number;
-    private tokenTracker: number = 0;
-
     private _availWidth: number;
     private _gridSize: number;
     private _columns: Column[] = [];
@@ -25,8 +22,6 @@ export class Grid extends Container {
 
     constructor(gridSize: number, availWidth: number) {
         super()
-
-        this.gridID = Math.round(Math.random() * (100 - 1) + 1);
 
         this._clickCheckBound = this.clickCheck.bind(this)
         eventEmitter.on('clickCheck', this._clickCheckBound);
@@ -44,9 +39,6 @@ export class Grid extends Container {
     }
 
     private clickCheck(targetToken: Token): void {
-
-        this.tokenTracker++ ;
-        console.log(targetToken.getLocation(), this.tokenTracker, this.gridID)
 
         if (targetToken.matched) {
             return;
