@@ -4,10 +4,11 @@ import { Token } from "./token";
 import { eventEmitter } from "../../../event-emitter";
 import { ScoreMaths } from "../services/score-maths";
 
-export interface IScoreDisplay {
+export interface IScoreDisplayOptions {
     titleString: string;
     score: number;
-    onScoreChange?: () => void;
+    onScoreChangeStart: () => void;
+    onScoreChangeComplete: () => void;
 }
 
 export class ScoreDisplay extends Container {
@@ -15,12 +16,16 @@ export class ScoreDisplay extends Container {
     public score: number;
     public scoreAsText: PixiText;
     public textContainer: Container = new Container();
-    public OnScoreChange?: () => void;
+    public onScoreChangeStart: () => void;
+    public onScoreChangeComplete: () => void;
 
-    constructor(args: IScoreDisplay) {
+    constructor(options: IScoreDisplayOptions) {
         super()
 
-        const title: PixiText = new PixiText(args.titleString, {
+        this.onScoreChangeStart = options.onScoreChangeStart;
+        this.onScoreChangeComplete = options.onScoreChangeComplete;
+
+        const title: PixiText = new PixiText(options.titleString, {
             fill: "black",
             align: "center"
         });
@@ -31,10 +36,12 @@ export class ScoreDisplay extends Container {
             .addChild(title);
         this.textContainer.addChild(titleTextBackground);
         
-        this.score = args.score ? args.score : 0;
+        this.score = options.score ? options.score : 0;
         this.scoreAsText = new PixiText(`${this.score}`, {
             fill: "white",
-            align: "center"
+            align: "center",
+            stroke: "black",
+            strokeThickness: 1
         });
         this.scoreAsText.position = {
             x: titleTextBackground.width * 0.5 - this.scoreAsText.width,
@@ -46,13 +53,22 @@ export class ScoreDisplay extends Container {
     }
 
     public updateScore(targetScore: number) {
+
         gsap.to(this, {
             score: this.score + targetScore,
             duration: 3,
             onUpdate: this.showScore.bind(this),
+
+            onStart: () => {
+                if(this.onScoreChangeStart) {
+                    console.log("fizz");
+                    this.onScoreChangeStart();
+                }
+            },
+
             onComplete: () => {
-                if(this.OnScoreChange) {
-                    this.OnScoreChange();
+                if(this.onScoreChangeComplete) {
+                    this.onScoreChangeComplete();
                 }
             }
         });
@@ -74,10 +90,11 @@ export class ScoreDisplay extends Container {
 export class GridScoreDisplay extends ScoreDisplay {
 
     private _trackedHeight = -1;
+    public comboTweenStack: string[] = [];
     private _recordMatchedTokensBound: (tokens: Token[]) => void;
 
-    constructor(args: IScoreDisplay) {
-        super(args);
+    constructor(options: IScoreDisplayOptions) {
+        super(options);
 
         this._recordMatchedTokensBound = this.recordMatchedTokens.bind(this);
         eventEmitter.on('onMatch', this._recordMatchedTokensBound);
@@ -106,13 +123,17 @@ export class GridScoreDisplay extends ScoreDisplay {
                 duration: 2,
             }, processedTokens.indexOf(array));
 
-            let score = 0;
+            let newScore = 0;
             array.forEach(token => {
-                const bonus = ScoreMaths.getScore(token.skIndex);
-                if (bonus) { score += bonus }
+                const points = ScoreMaths.getScore(token.skIndex);
+                if (points) { 
+                    newScore += points;
+                }
             });
-            if (score) { super.updateScore(score); }
-            
+            if (newScore) {
+                super.updateScore(newScore);
+
+            }
             this.addChild(tokensContainer);
         });
     }

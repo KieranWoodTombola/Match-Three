@@ -25,7 +25,6 @@ export class SceneManager {
 
         Game.stage.removeChild(loadScreen);
         Game.stage.addChild(newScene);
-        console.log(Game.stage.children)
 
         this._currentScene?.onLoadComplete();
     }
