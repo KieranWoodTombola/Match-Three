@@ -54,7 +54,7 @@ export class Button extends Container {
         });
     }
     
-    private resetButtonToStartingState(): void {
+    public resetButtonToStartingState(): void {
         gsap.to(this._coin, {
             duration: 0.3,
             pixi: {

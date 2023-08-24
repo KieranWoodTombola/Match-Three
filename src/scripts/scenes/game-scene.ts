@@ -11,6 +11,7 @@ import PixiPlugin from 'gsap/PixiPlugin';
 import { gsap } from "gsap";
 import { MenuScene } from './menu-scene';
 import { LoadScreen } from '../core/views/load-screen';
+import { eventEmitter } from '../../event-emitter';
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
@@ -50,61 +51,76 @@ export class GameScene extends Scene {
         this.removeChildren();
 
         let timerComplete: Boolean = false;
+        let gridTweens = false;
+
         function checkGameEnd(_viewWidth: number, _viewHeight: number): void {
-            if (gridScoreDisplay.comboTweenStack.length > 0 || !timerComplete) {
+            if (gridTweens || !timerComplete) {
                 return;
             }
 
+            menuButton.interactive = false;
+            menuButton.resetButtonToStartingState();
             background.setWaveHeightLow();
-
-            const endgameTimeline = gsap.timeline({
-                duration: 10,
-                onComplete: () => {
-                    if(gridScoreDisplay.score <= highScoreDisplay.score) {
-                        return;
-                    };
-        
-                    gsap.to(gridScoreDisplay, {
-                        x: 0,
-                        alpha: 0
-                    });
-        
-                    endgameTimeline.to(highScoreDisplay, {
-                        x: _viewWidth * 0.5 - highScoreDisplay.width * 0.5,
-                        onComplete: () => {
-                            highScoreDisplay.updateScore(gridScoreDisplay.score);
-                            background.animateShip();
-                        }
-                    });
-                }
-            });
-
-            endgameTimeline.to(grid, {
+            const clearBoard = gsap.timeline({
+                delay: 3,
+                duration: 3,
+                onComplete: () => {enterHighScore.play()}
+            })
+            .to(grid, {
                 x: 0 - grid.width
-            }, 0);
-
-            endgameTimeline.to(timer, {
+            }, 1)
+            .to(timer, {
                 alpha: 0
-            }, 1);
-
-            endgameTimeline.to(menuButton, {
-                x: _viewWidth * 0.5 - gridScoreDisplay.width
-            }, 1);
-
-            endgameTimeline.to(gridScoreDisplay, {
-                x: _viewWidth * 0.5 - gridScoreDisplay.width,
+            }, 2)
+            .to(menuButton, {
+                x: _viewWidth * 0.5 - menuButton.width * 0.5
+            }, 2)
+            .to(gridScoreDisplay, {
+                x: _viewWidth * 0.5 - gridScoreDisplay.width * 0.5,
                 y: _viewHeight * 0.5 - gridScoreDisplay.height * 0.5
-            }, 1);
-
-            endgameTimeline.to(highScoreDisplay, {
+            }, 2)
+            .to(highScoreDisplay, {
                 x: _viewWidth * 0.5 - gridScoreDisplay.width,
                 y: _viewHeight * 0.5 - gridScoreDisplay.height * 0.5,
-            }, 1);
+            }, 2);
 
-            endgameTimeline.to(highScoreDisplay, {
-                x: _viewWidth * 0.5 + gridScoreDisplay.width * 0.1 ,
+
+            const enterHighScore = gsap.timeline({
+                paused: true,
+                delay: 2,
+                onComplete: () => {changeHighScore.play()}
+            })
+            .to(gridScoreDisplay, {
+                x: _viewWidth * 0.5 - gridScoreDisplay.width * 1.1,
+                y: _viewHeight * 0.5 - gridScoreDisplay.height * 0.5,
+            }, 2)
+            .to(highScoreDisplay, {
+                x: _viewWidth * 0.5 ,
                 alpha: 1
             }, 2);
+
+
+            const changeHighScore = gsap.timeline({
+                delay: 3,
+                paused: true,
+                duration: 3,
+                onStart: () => {
+                    highScoreDisplay.updateScore(gridScoreDisplay.score);
+                    background.animateShip();
+                },
+                onComplete: () => {
+                    menuButton.interactive = true;
+                }
+            })
+            .to(gridScoreDisplay, {
+                x: _viewWidth * 0.5 - gridScoreDisplay.width * 1.9,
+                alpha: 0
+            }, 1)
+            .to(highScoreDisplay, {
+                x: _viewWidth * 0.5 - highScoreDisplay.width * 0.5,
+            }, 1)
+            .to(highScoreDisplay, {
+            }, 1)
 
         }
 
@@ -120,15 +136,8 @@ export class GameScene extends Scene {
         const gridScoreDisplay = new GridScoreDisplay({
             titleString: "SCORE",
             score: 0,
-            onScoreChangeStart: () => {
-                gridScoreDisplay.comboTweenStack.push("tween");
-            },
-            onScoreChangeComplete: () => {
-                gridScoreDisplay.comboTweenStack.pop();
-                checkGameEnd(this._viewWidth, this._viewHeight);
-            }
+            onScoreChangeComplete: () => {return;}
         });
-        if(!gridScoreDisplay.onScoreChangeStart) {debugger;}
         const remainingWidth = this._viewWidth - grid.width;
         gridScoreDisplay.position = {
             x: (this._gridPossibleWidth! + remainingWidth * 0.5) - gridScoreDisplay.width * 0.5,
@@ -141,7 +150,6 @@ export class GameScene extends Scene {
         const highScoreDisplay = new ScoreDisplay({
             titleString: "HIGHSCORE",
             score: highScore,
-            onScoreChangeStart: () => {return;},
             onScoreChangeComplete: () => {
                 localStorage.highScore = gridScoreDisplay.score;
             }
@@ -164,13 +172,13 @@ export class GameScene extends Scene {
         this.addChild(menuButton);
 
 
-        const timer = new Timer(10, {
+        const timer = new Timer(3, {
             45: () => { background.setWaveHeightMedium(); },
             10: () => { background.setWaveHeightHigh(); }
         }, 
         () => {
             timerComplete = true;
-            this.interactive = false;
+            grid.deactivate();
             checkGameEnd(this._viewWidth, this._viewHeight);
         });
 
@@ -183,7 +191,6 @@ export class GameScene extends Scene {
     }
 
     public unload(): Promise<void> {
-        console.log(this.children);
         this.children.forEach(child => {
             gsap.killTweensOf(child);
             child.destroy();

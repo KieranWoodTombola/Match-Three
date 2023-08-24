@@ -89,9 +89,7 @@ export class Grid extends Container {
             const swapTween = gsap.timeline({
                 ease: "back",
                 onStart:( () => {
-                    this._columns.forEach(column => { 
-                        column.deactivateAllTokens() 
-                    });
+                    this.deactivate();
                 }),
                 onComplete:( () => {
                     this._columns.forEach(column => {
@@ -206,6 +204,12 @@ export class Grid extends Container {
                     this._matchedTokens.push(comboToken);
                 }
             });
+        });
+    }
+
+    public deactivate(): void {
+        this._columns.forEach(column => { 
+            column.deactivateAllTokens() 
         });
     }
 

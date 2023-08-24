@@ -4,7 +4,7 @@ import { Token } from './scripts/core/models/token';
 interface Events {
     //grid events
     clickCheck: (token: Token) => void;
-    onMatch: (tokens: Token[]) => void
+    onMatch: (tokens: Token[]) => void;
   
     //column events
 

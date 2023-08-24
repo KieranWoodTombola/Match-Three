@@ -7,7 +7,6 @@ import { ScoreMaths } from "../services/score-maths";
 export interface IScoreDisplayOptions {
     titleString: string;
     score: number;
-    onScoreChangeStart: () => void;
     onScoreChangeComplete: () => void;
 }
 
@@ -16,13 +15,11 @@ export class ScoreDisplay extends Container {
     public score: number;
     public scoreAsText: PixiText;
     public textContainer: Container = new Container();
-    public onScoreChangeStart: () => void;
     public onScoreChangeComplete: () => void;
 
     constructor(options: IScoreDisplayOptions) {
         super()
 
-        this.onScoreChangeStart = options.onScoreChangeStart;
         this.onScoreChangeComplete = options.onScoreChangeComplete;
 
         const title: PixiText = new PixiText(options.titleString, {
@@ -58,13 +55,6 @@ export class ScoreDisplay extends Container {
             score: this.score + targetScore,
             duration: 3,
             onUpdate: this.showScore.bind(this),
-
-            onStart: () => {
-                if(this.onScoreChangeStart) {
-                    console.log("fizz");
-                    this.onScoreChangeStart();
-                }
-            },
 
             onComplete: () => {
                 if(this.onScoreChangeComplete) {
@@ -104,6 +94,7 @@ export class GridScoreDisplay extends ScoreDisplay {
         const comboDisplayTimeline = gsap.timeline({
             repeat: 1,
             yoyo: true,
+
             onComplete: () => {
                 this.removeChildren();
                 this.addChild(this.scoreAsText);
