@@ -18,8 +18,9 @@ export class ScoreMaths {
         if(this.scoreMap.has(skin)) {
             return this.scoreMap.get(skin);
         }
-        else 
+        else {
             return undefined;
+        }
     }
 
     static orderMatchedTokens(tokens: Token[]): Token [][] {
@@ -33,24 +34,25 @@ export class ScoreMaths {
                 skIndexCache = token.skIndex;
                 tokenCache.push(token);
                 return;
-            }
 
-            if(tokens.indexOf(token) === tokens.length - 1){
+            }
+            else if(tokens.indexOf(token) === tokens.length - 1){
                 tokenCache.push(token);
                 orderedTokens.push(tokenCache);
                 return;
-            }
 
-            if(token.skIndex !== tokenCache[0].skIndex) {
+            }
+            else if(token.skIndex !== tokenCache[0].skIndex) {
                 orderedTokens.push(tokenCache);
                 tokenCache = [];
                 tokenCache.push(token);
                 return;
-            }
 
+            }
             else {
                 tokenCache.push(token);
                 return;
+
             }
         });
 

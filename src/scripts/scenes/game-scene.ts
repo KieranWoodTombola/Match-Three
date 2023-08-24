@@ -11,7 +11,6 @@ import PixiPlugin from 'gsap/PixiPlugin';
 import { gsap } from "gsap";
 import { MenuScene } from './menu-scene';
 import { LoadScreen } from '../core/views/load-screen';
-import { Game } from '../main';
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
@@ -95,8 +94,5 @@ export class GameScene extends Scene {
         });
         
         return Assets.unloadBundle(this._assetBundleName);
-    }
-
-    public update(delta: number): void {
     }
 }

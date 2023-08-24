@@ -29,21 +29,27 @@ export class Engine {
     constructor(options: EngineParams) {
         this._canvasWidth = options.canvasW;
         this._canvasHeight = options.canvasH;
+
         this.renderer = autoDetectRenderer({
             resolution: window.devicePixelRatio || 1,
             width: options.canvasW,
             height: options.canvasH,
             antialias: true
         });
+
         this.stage = new Container();
+
         this._htmlContainer = options.containerId ? document.getElementById(options.containerId) || document.body : document.body;
         this._htmlContainer.appendChild(this.renderer.view);
+
         this._fpsMeterItem = document.createElement('div');
         this._fpsMeterItem.classList.add('fps');
         this._htmlContainer.appendChild(this._fpsMeterItem);
+
         this._ticker = new Ticker();
         this.resize();
         this._ticker.add(this.update, this);
+
         window.onresize = this.resize.bind(this);
     }
 
@@ -53,7 +59,6 @@ export class Engine {
     }
 
     public update(delta: number) {
-        SceneManager.update(delta);
         this.renderer.render(this.stage);
         this._fpsMeterItem.innerHTML = 'FPS: ' + this._ticker.FPS.toFixed(0);
     }
