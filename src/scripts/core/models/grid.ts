@@ -81,9 +81,6 @@ export class Grid extends Container {
                 [this._selectedTokens[0].x, this._selectedTokens[0].y],
                 [this._selectedTokens[1].x, this._selectedTokens[1].y]
             );
-
-
-            const rotateFirst: [number, number] = [tweenCurve.getCurvePoints()[0], tweenCurve.getCurvePoints()[1]];
             const rotateSecond: [number, number] = [tweenCurve.getCurvePoints()[2], tweenCurve.getCurvePoints()[3]];
 
             //tween the tokens from their DESTINATION to their ORIGIN
@@ -104,9 +101,8 @@ export class Grid extends Container {
             swapTween.to(this._selectedTokens[0],
                 {
                     motionPath: {
-                        curviness: 2,
                         path: [
-                            { x: rotateFirst[0], y: rotateFirst[1] },
+                            { x: tweenCurve.getCurvePoints()[2], y: tweenCurve.getCurvePoints()[3] },
                             { x: firstX, y: firstY }
                         ]
                     },
@@ -116,9 +112,8 @@ export class Grid extends Container {
             swapTween.to(this._selectedTokens[1],
                 {
                     motionPath: {
-                        curviness: 2,
                         path: [
-                            { x: rotateSecond[0], y: rotateSecond[1] },
+                            { x: tweenCurve.getCurvePoints()[0], y: tweenCurve.getCurvePoints()[1] },
                             { x: secondX, y: secondY }
                         ]
                     },

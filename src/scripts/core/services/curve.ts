@@ -28,9 +28,9 @@ export class Curve {
         let secondY: number = (this.getMidpoint()[1] + this.firstY) * 0.5;
 
         if(this.firstX === this.secondX){
-            const curveRadius = (this.getMidpoint()[1] + secondY) * 0.25
-            firstX = this.getMidpoint()[0] + curveRadius;
-            secondX = this.getMidpoint()[0] - curveRadius;
+            const curveRadius = (this.getMidpoint()[1] + secondY) * 0.5
+            firstX = this.getMidpoint()[0] + curveRadius * 0.5;
+            secondX = this.getMidpoint()[0] - curveRadius * 0.5;
 
             firstY = this.getMidpoint()[1];
             secondY = this.getMidpoint()[1];
@@ -39,12 +39,12 @@ export class Curve {
         }
 
         if(this.firstY === this.secondY){
-            const curveRadius = (this.getMidpoint()[0] + secondX) * 0.25
-            firstY = this.getMidpoint()[1] + curveRadius;
-            secondY = this.getMidpoint()[1] - curveRadius;
+            const curveRadius = (this.getMidpoint()[0] + secondX) * 0.5
+            firstY = this.getMidpoint()[1] + curveRadius * 0.5;
+            secondY = this.getMidpoint()[1] - curveRadius * 0.5;
 
             firstX = this.getMidpoint()[0];
-            secondY = this.getMidpoint()[0];
+            secondX = this.getMidpoint()[0];
 
             return [firstX, firstY, secondX, secondY];
         }
