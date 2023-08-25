@@ -15,6 +15,10 @@ export class Background extends Container {
     private _splash: gsap.core.Timeline = gsap.timeline();
     private _waveStartingPosition: number;
 
+    public get ship() {
+        return this._ship;
+    }
+
     constructor(viewWidth: number, viewHeight: number) {
         super();
 

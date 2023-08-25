@@ -52,7 +52,7 @@ export class ScoreDisplay extends Container {
     public updateScore(targetScore: number) {
 
         gsap.to(this, {
-            score: this.score + targetScore,
+            score: targetScore,
             duration: 3,
             onUpdate: this.showScore.bind(this),
 
@@ -122,7 +122,7 @@ export class GridScoreDisplay extends ScoreDisplay {
                 }
             });
             if (newScore) {
-                super.updateScore(newScore);
+                super.updateScore(this.score + newScore);
 
             }
             this.addChild(tokensContainer);

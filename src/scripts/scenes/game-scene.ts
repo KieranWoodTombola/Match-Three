@@ -60,17 +60,28 @@ export class GameScene extends Scene {
 
             menuButton.interactive = false;
             menuButton.resetButtonToStartingState();
+            if(gridScoreDisplay.score > highScore.score) {
+                localStorage.highScore = gridScoreDisplay.score;
+            }
             background.setWaveHeight(0.2, 0.2, 0.2, 2);
 
 
             const clearBoard = gsap.timeline({
                 delay: 3,
                 duration: 3,
-                onComplete: () => {enterHighScore.play()}
+
+                onComplete: () => {
+                    enterHighScore.play();
+                }
             })
             .to(grid, {
                 x: 0 - grid.width
             }, 1)
+            .to (background.ship, {
+                duration: 5,
+
+                x: _viewWidth * 0.5 + background.ship.width * 0.5
+            })
             .to(timer, {
                 alpha: 0
             }, 2)
@@ -89,8 +100,10 @@ export class GameScene extends Scene {
 
             const enterHighScore = gsap.timeline({
                 paused: true,
-                delay: 2,
-                onComplete: () => {changeHighScore.play()}
+                //delay: 2,
+                onComplete: () => {
+                    changeHighScore.play();
+                }
             })
             .to(gridScoreDisplay, {
                 x: _viewWidth * 0.5 - gridScoreDisplay.width * 1.1,
@@ -103,12 +116,14 @@ export class GameScene extends Scene {
 
 
             const changeHighScore = gsap.timeline({
-                delay: 3,
+                // delay: 3,
                 paused: true,
                 duration: 3,
                 onStart: () => {
+                    console.log(highScore.score)
                     highScoreDisplay.updateScore(gridScoreDisplay.score);
                     background.animateShip();
+                    console.log(highScore.score)
                 },
                 onComplete: () => {
                     menuButton.interactive = true;
@@ -174,8 +189,8 @@ export class GameScene extends Scene {
 
 
         const timer = new Timer(90, {
-            60: () => { background.setWaveHeight(0.3, 0.3, 0.3, 1); },
-            30: () => { background.setWaveHeight(0.4, 0.4, 0.4, 0); }
+            // 60: () => { background.setWaveHeight(0.3, 0.3, 0.3, 1); },
+            // 30: () => { background.setWaveHeight(0.4, 0.4, 0.4, 0); }
         }, 
         () => {
             timerComplete = true;
