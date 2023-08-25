@@ -99,8 +99,6 @@ export class Background extends Container {
         const midTime = Math.floor(Math.random() * duration) + 3;
         const closeTime = Math.floor(Math.random() * duration) + 2;
 
-        console.log(farTime, midTime, closeTime)
-
         this._splash = gsap.timeline({
             repeat: -1,
             yoyo: true

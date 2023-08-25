@@ -82,12 +82,13 @@ export class Grid extends Container {
                 [this._selectedTokens[1].x, this._selectedTokens[1].y]
             );
 
-            const rotateFirst = tweenCurve.rotate90(this._selectedTokens[0].x, this._selectedTokens[0].y);
-            const rotateSecond = tweenCurve.rotate90(this._selectedTokens[1].x, this._selectedTokens[1].y);
+
+            const rotateFirst: [number, number] = [tweenCurve.getCurvePoints()[0], tweenCurve.getCurvePoints()[1]];
+            const rotateSecond: [number, number] = [tweenCurve.getCurvePoints()[2], tweenCurve.getCurvePoints()[3]];
 
             //tween the tokens from their DESTINATION to their ORIGIN
             const swapTween = gsap.timeline({
-                ease: "back",
+                //ease: "back",
                 onStart:( () => {
                     this.deactivate();
                 }),
