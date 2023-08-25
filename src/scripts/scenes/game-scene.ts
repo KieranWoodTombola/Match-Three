@@ -60,7 +60,9 @@ export class GameScene extends Scene {
 
             menuButton.interactive = false;
             menuButton.resetButtonToStartingState();
-            background.setWaveHeightLow();
+            background.setWaveHeight(0.2, 0.2, 0.2, 2);
+
+
             const clearBoard = gsap.timeline({
                 delay: 3,
                 duration: 3,
@@ -120,8 +122,7 @@ export class GameScene extends Scene {
                 x: _viewWidth * 0.5 - highScoreDisplay.width * 0.5,
             }, 1)
             .to(highScoreDisplay, {
-            }, 1)
-
+            }, 1);
         }
 
         const background = new Background(this._viewWidth, this._viewHeight);
@@ -172,9 +173,9 @@ export class GameScene extends Scene {
         this.addChild(menuButton);
 
 
-        const timer = new Timer(3, {
-            45: () => { background.setWaveHeightMedium(); },
-            10: () => { background.setWaveHeightHigh(); }
+        const timer = new Timer(90, {
+            60: () => { background.setWaveHeight(0.3, 0.3, 0.3, 1); },
+            30: () => { background.setWaveHeight(0.4, 0.4, 0.4, 0); }
         }, 
         () => {
             timerComplete = true;
