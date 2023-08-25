@@ -6,7 +6,7 @@ export class Button extends Container {
     private _coin: Graphics;
     private _buttonCallback: Function | undefined;
 
-    constructor (buttonText: string, buttonRadius: number, buttonCallback: Function) {
+    constructor (buttonText: string, buttonRadius: number, buttonCallback: Function ) {
         super();
 
         this.interactive = true;
@@ -18,6 +18,7 @@ export class Button extends Container {
         .on('pointerout', this.resetButtonToStartingState, this);
         
         this._buttonCallback = buttonCallback;
+
         this._coin = new Graphics()
             .beginFill('white')
             .lineStyle({
@@ -26,15 +27,16 @@ export class Button extends Container {
                 alpha: 1
             })
             .drawTorus!(0, 0, buttonRadius * 0.2, buttonRadius * 0.5)
-            .endFill()
+            .endFill();
         this._coin.interactive = true;
         this.addChild(this._coin);
+
         this._buttonText = new PixiText(buttonText)
         this._buttonText.style = {
             fill: "white",
             stroke: "black",
             strokeThickness: 1,
-        };
+        }
         this._buttonText.position = {
             x: this._coin.width * 0.6 ,
             y: 0 - this._buttonText.height * 0.5

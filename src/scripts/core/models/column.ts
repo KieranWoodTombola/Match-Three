@@ -1,5 +1,5 @@
 import { Container } from "pixi.js";
-import { IToken, Token } from "./token";
+import { Token } from "./token";
 import { gsap } from "gsap";
 
 export class Column extends Container {
@@ -11,9 +11,11 @@ export class Column extends Container {
 
     constructor(columnID: number, columnSize: number, availHeight: number) {
         super();
+
         this._columnID = columnID;
         this._columnSize = columnSize;
         this._availHeight = availHeight;
+
         for (let tokenIndex: number = 0; tokenIndex < this._columnSize; tokenIndex++) {
             const columnToken = new Token({
                 availHeight: this._availHeight,
@@ -22,6 +24,7 @@ export class Column extends Container {
                 parentSize: this._columnSize,
                 verticalIndex: tokenIndex,
             });
+
             columnToken.interactive = true;
             columnToken.y = (availHeight / (this._columnSize / tokenIndex));
             this.tokens.push(columnToken);
@@ -37,15 +40,18 @@ export class Column extends Container {
     private repositionOnScreen(): void {
         const matchCombo: Token[] = [];
         const nonMatchCombo: Token[] = [];
+
         const sortTimeline = gsap.timeline({
             paused: true
         });
+
         for (let columnInspector: number = 0; columnInspector < this.tokens.length; columnInspector++) {
             const target = this.tokens[columnInspector];
             let matchCount = 0;
             this.tokens.forEach(token => {
                 if (token.matched) { matchCount++; }
             });
+
             if (target.matched) {
                 matchCombo.push(target);
                 sortTimeline.add(() => target.hide(), 0);
@@ -63,19 +69,23 @@ export class Column extends Container {
                 }
             }
         }
+
         matchCombo.forEach(token => {
             sortTimeline.add(() => token.moveTo(matchCombo.indexOf(token)), 2);
             sortTimeline.add(() => token.reveal(), 2);
             sortTimeline.add(() => token.shuffleSkin(), 2);
-        })
+        });
+
         sortTimeline.play();
     }
 
     private rebuildTokens(): void {
         const matchedTokens: Token[] = [];
         const unmatchedTokens: Token[] = [];
+
         for (let i = 0; i < this.tokens.length; i++) {
             const target = this.tokens[i]
+
             if (target.matched) {
                 matchedTokens.push(target);
             }
@@ -83,11 +93,14 @@ export class Column extends Container {
                 unmatchedTokens.push(target);
             }
         }
-        const newTokens = [...matchedTokens, ...unmatchedTokens]
+
+        const newTokens = [...matchedTokens, ...unmatchedTokens];
+
         for (let i = 0; i < this._columnSize; i++) {
             newTokens[i].matched = false;
             newTokens[i].verticalIndex = i;
         }
+        
         this.tokens = newTokens;
     }
 
