@@ -11,7 +11,6 @@ import PixiPlugin from 'gsap/PixiPlugin';
 import { gsap } from "gsap";
 import { MenuScene } from './menu-scene';
 import { LoadScreen } from '../core/views/load-screen';
-import { eventEmitter } from '../../event-emitter';
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
@@ -120,10 +119,8 @@ export class GameScene extends Scene {
                 paused: true,
                 duration: 3,
                 onStart: () => {
-                    console.log(highScore.score)
                     highScoreDisplay.updateScore(gridScoreDisplay.score);
                     background.animateShip();
-                    console.log(highScore.score)
                 },
                 onComplete: () => {
                     menuButton.interactive = true;
@@ -189,8 +186,8 @@ export class GameScene extends Scene {
 
 
         const timer = new Timer(90, {
-            // 60: () => { background.setWaveHeight(0.3, 0.3, 0.3, 1); },
-            // 30: () => { background.setWaveHeight(0.4, 0.4, 0.4, 0); }
+             60: () => { background.setWaveHeight(0.3, 0.3, 0.3, 1); },
+             30: () => { background.setWaveHeight(0.4, 0.4, 0.4, 0); }
         }, 
         () => {
             timerComplete = true;

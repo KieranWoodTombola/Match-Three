@@ -49,7 +49,6 @@ export class Curve {
             return [firstX, firstY, secondX, secondY];
         }
 
-
         return [firstX, firstY, secondX, secondY];
     }
 
