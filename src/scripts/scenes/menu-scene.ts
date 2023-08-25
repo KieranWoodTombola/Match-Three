@@ -74,7 +74,4 @@ export class MenuScene extends Scene {
         
         return Assets.unloadBundle(this._assetBundleName);
     }
-
-    public update(delta: number): void {
-    }
 }

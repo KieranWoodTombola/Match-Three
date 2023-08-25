@@ -48,7 +48,6 @@ export class Column extends Container {
         for (let columnInspector: number = 0; columnInspector < this.tokens.length; columnInspector++) {
             const target = this.tokens[columnInspector];
             let matchCount = 0;
-
             this.tokens.forEach(token => {
                 if (token.matched) { matchCount++; }
             });
@@ -58,7 +57,6 @@ export class Column extends Container {
                 sortTimeline.add(() => target.hide(), 0);
                 sortTimeline.add(() => target.moveTo((0 - matchCount) + matchCombo.indexOf(target)), 1);
             }
-
             else {
                 nonMatchCombo.unshift(target);
                 for (let combo = columnInspector + 1; combo <= this.tokens.length - 1; combo++) {
@@ -91,7 +89,6 @@ export class Column extends Container {
             if (target.matched) {
                 matchedTokens.push(target);
             }
-
             else {
                 unmatchedTokens.push(target);
             }

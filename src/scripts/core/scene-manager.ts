@@ -6,7 +6,6 @@ export abstract class Scene extends Container {
     public abstract load(onProgress: ProgressCallback): Promise<void>;
     public abstract unload(): Promise<void>;
     public abstract onLoadComplete(): void;
-    public abstract update(delta: number): void;
 }
 
 export class SceneManager {
@@ -27,9 +26,5 @@ export class SceneManager {
         Game.stage.addChild(newScene);
 
         this._currentScene?.onLoadComplete();
-    }
-
-    public static update(delta: number): void {
-        this._currentScene?.update(delta);
     }
 }
