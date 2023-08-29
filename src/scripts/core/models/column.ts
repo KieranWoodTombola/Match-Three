@@ -7,26 +7,22 @@ export class Column extends Container {
     public tokens: Token[] = [];
     private _columnID: number;
     private _columnSize: number;
-    private _availHeight: number;
 
-    constructor(columnID: number, columnSize: number, availHeight: number) {
+    constructor(columnID: number, columnSize: number) {
         super();
 
         this._columnID = columnID;
         this._columnSize = columnSize;
-        this._availHeight = availHeight;
 
         for (let tokenIndex: number = 0; tokenIndex < this._columnSize; tokenIndex++) {
             const columnToken = new Token({
-                availHeight: this._availHeight,
-                availWidth: this._availHeight,
                 parentID: this._columnID,
                 parentSize: this._columnSize,
                 verticalIndex: tokenIndex,
             });
 
             columnToken.interactive = true;
-            columnToken.y = (availHeight / (this._columnSize / tokenIndex));
+            columnToken.y = (columnToken.height * tokenIndex);
             this.tokens.push(columnToken);
             this.addChild(columnToken);
         }

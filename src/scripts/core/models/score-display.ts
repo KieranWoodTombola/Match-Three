@@ -137,8 +137,6 @@ export class GridScoreDisplay extends ScoreDisplay {
 
         tokens.forEach(token => {
             const copyToken = new Token({
-                availWidth: token.availWidth,
-                availHeight: token.availHeight,
                 skIndex: token.skIndex
             });
             copyToken.scale.set(0.3);

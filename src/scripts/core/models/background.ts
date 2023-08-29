@@ -38,13 +38,11 @@ export class Background extends Container {
         this._closeWave.y = this._waveStartingPosition;
 
         this._ship = new Token({
-            availHeight: this._viewWidth,
-            availWidth: this._viewHeight,
             skIndex: 1
         });
         this._ship.scale.set(1);
         this._ship.position = {
-            x: this._viewWidth * 0.9 ,
+            x: this._viewWidth * 0.95 ,
             y: this._viewHeight
         }
         this._ship.pivot = {

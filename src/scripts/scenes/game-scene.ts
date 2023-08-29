@@ -23,7 +23,8 @@ export class GameScene extends Scene {
     private readonly _assetBundle: PIXI.ResolverAssetsObject = {
         'background': 'assets/images/background.jpeg',
         'waterSprite': 'assets/images/waterStock.png',
-        'symbols': 'assets/animations/symbols/symbol.json'
+        'symbols': 'assets/animations/symbols/symbol.json',
+        'gridBackground': 'assets/images/PTBackground.png',
     }
 
     constructor(width: number, height: number) {
@@ -137,7 +138,7 @@ export class GameScene extends Scene {
         this.addChild(background);
 
 
-        const grid = new Grid(6, this._gridPossibleWidth!);
+        const grid = new Grid(11, this._gridPossibleWidth!);
         this.addChild(grid);
 
 
@@ -146,9 +147,8 @@ export class GameScene extends Scene {
             score: 0,
             onScoreChangeComplete: () => {return;}
         });
-        const remainingWidth = this._viewWidth - grid.width;
         gridScoreDisplay.position = {
-            x: (this._gridPossibleWidth! + remainingWidth * 0.5) - gridScoreDisplay.width * 0.5,
+            x: (grid.width + ((this._viewWidth - grid.width) * 0.5)) - (gridScoreDisplay.width * 0.5),
             y: this._viewHeight * 0.3
         }
         this.addChild(gridScoreDisplay);
