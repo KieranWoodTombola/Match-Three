@@ -12,10 +12,14 @@ export interface IScoreDisplayOptions {
 
 export class ScoreDisplay extends Container {
 
-    public score: number;
-    public scoreAsText: PixiText;
-    public textContainer: Container = new Container();
-    public onScoreChangeComplete: () => void;
+    protected _score: number;
+    protected _scoreAsText: PixiText;
+    protected _textContainer: Container = new Container();
+    protected onScoreChangeComplete: () => void;
+
+    get score() {
+        return this._score;
+    }
 
     constructor(options: IScoreDisplayOptions) {
         super()
@@ -31,22 +35,22 @@ export class ScoreDisplay extends Container {
             .drawRoundedRect(0, 0, title.width, title.height, 3)
             .endFill()
             .addChild(title);
-        this.textContainer.addChild(titleTextBackground);
+        this._textContainer.addChild(titleTextBackground);
         
-        this.score = options.score ? options.score : 0;
-        this.scoreAsText = new PixiText(`${this.score}`, {
+        this._score = options.score ? options.score : 0;
+        this._scoreAsText = new PixiText(`${this._score}`, {
             fill: "white",
             align: "center",
             stroke: "black",
             strokeThickness: 1
         });
-        this.scoreAsText.position = {
-            x: titleTextBackground.width * 0.5 - this.scoreAsText.width * 0.5,
+        this._scoreAsText.position = {
+            x: titleTextBackground.width * 0.5 - this._scoreAsText.width * 0.5,
             y: titleTextBackground.height * 1.5
         };
-        this.textContainer.addChild(this.scoreAsText);
+        this._textContainer.addChild(this._scoreAsText);
 
-        this.addChild(this.textContainer);
+        this.addChild(this._textContainer);
     }
 
     public updateScore(targetScore: number) {
@@ -60,21 +64,21 @@ export class ScoreDisplay extends Container {
                 if(this.onScoreChangeComplete) {
                     this.onScoreChangeComplete();
                 }
-                gsap.to(this.scoreAsText, {
-                    x: this.textContainer.width * 0.5 - this.scoreAsText.width * 0.5
+                gsap.to(this._scoreAsText, {
+                    x: this._textContainer.width * 0.5 - this._scoreAsText.width * 0.5
                 });
             }
         });
     }
 
     private showScore(): void {
-        if (!this.scoreAsText) { 
+        if (!this._scoreAsText) { 
             return; 
         }
     
-        const score = Math.floor(Math.round(this.score));
-        if (this.score !== score) {
-            this.scoreAsText.text = score.toString();
+        const score = Math.floor(Math.round(this._score));
+        if (this._score !== score) {
+            this._scoreAsText.text = score.toString();
         }
     }
 
@@ -100,8 +104,8 @@ export class GridScoreDisplay extends ScoreDisplay {
 
             onComplete: () => {
                 this.removeChildren();
-                this.addChild(this.scoreAsText);
-                this.addChild(this.textContainer);
+                this.addChild(this._scoreAsText);
+                this.addChild(this._textContainer);
             }
         });
 
@@ -125,7 +129,7 @@ export class GridScoreDisplay extends ScoreDisplay {
                 }
             });
             if (newScore) {
-                super.updateScore(this.score + newScore);
+                super.updateScore(this._score + newScore);
 
             }
             this.addChild(tokensContainer);
@@ -152,8 +156,8 @@ export class GridScoreDisplay extends ScoreDisplay {
         });
 
         displayTokenContainer.position = {
-            x: (this.textContainer.width * 0.5) - (displayTokenContainer.width * 0.5),
-            y: this.textContainer.height
+            x: (this._textContainer.width * 0.5) - (displayTokenContainer.width * 0.5),
+            y: this._textContainer.height
         };
 
         return displayTokenContainer;

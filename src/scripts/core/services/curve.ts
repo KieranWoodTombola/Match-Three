@@ -71,7 +71,15 @@ export class Curve {
         return Math.PI * Math.pow(this.getRadius(), 2);
     }
 
-    /** Using a known degree, return the coordinates of a point on the circumference of a circle*/
+    /** 
+     * Assuming a circle with a diameter drawn from the Class'
+     * first and second position, where 0 degrees is 12 o'clock,
+     * returns the position on the circumference of the circle
+     * at a given degree.
+     * 
+     * @param {number} Degree of the circle, where 12 o'clock is 0 degrees
+     * @returns {[number, number]} position on the circumference of the circle 
+    */
     public getPointOnCircumference(degrees: number): [number, number] {
         const radians = degrees * (Math.PI / 180)
         return [
