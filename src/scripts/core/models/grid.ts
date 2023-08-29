@@ -90,14 +90,13 @@ export class Grid extends Container {
 
             //THE TOKENS SWAP POSITIONS FIRST!
             const tweenCurve = new Curve(
-                [this._selectedTokens[0].x, this._selectedTokens[0].y],
-                [this._selectedTokens[1].x, this._selectedTokens[1].y]
+                [Math.floor(this._selectedTokens[0].x), Math.floor(this._selectedTokens[0].y)],
+                [Math.floor(this._selectedTokens[1].x), Math.floor(this._selectedTokens[1].y)],
+                this._selectedTokens[0].width
             );
-            const rotateSecond: [number, number] = [tweenCurve.getCurvePoints()[2], tweenCurve.getCurvePoints()[3]];
 
             //tween the tokens from their DESTINATION to their ORIGIN
             const swapTween = gsap.timeline({
-                //ease: "back",
                 onStart:( () => {
                     this.deactivate();
                 }),

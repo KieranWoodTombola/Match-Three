@@ -4,12 +4,14 @@ export class Curve {
     private firstY: number;
     private secondX: number;
     private secondY: number;
+    private tokenWidth: number;
 
-    constructor(first: [number, number], second: [number, number]) {
+    constructor(first: [number, number], second: [number, number], tokenWidth: number) {
         this.firstX = first[0];
         this.firstY = first[1];
         this.secondX = second[0];
         this.secondY = second[1];
+        this.tokenWidth = tokenWidth;
     }
 
     public getFirst(): [number, number] {
@@ -28,9 +30,8 @@ export class Curve {
         let secondY: number = (this.getMidpoint()[1] + this.firstY) * 0.5;
 
         if(this.firstX === this.secondX){
-            const curveRadius = (this.getMidpoint()[1] + secondY) * 0.5
-            firstX = this.getMidpoint()[0] + curveRadius * 0.5;
-            secondX = this.getMidpoint()[0] - curveRadius * 0.5;
+            firstX = this.getMidpoint()[0] + this.tokenWidth;
+            secondX = this.getMidpoint()[0] - this.tokenWidth;
 
             firstY = this.getMidpoint()[1];
             secondY = this.getMidpoint()[1];
@@ -39,9 +40,8 @@ export class Curve {
         }
 
         if(this.firstY === this.secondY){
-            const curveRadius = (this.getMidpoint()[0] + secondX) * 0.5
-            firstY = this.getMidpoint()[1] + curveRadius * 0.5;
-            secondY = this.getMidpoint()[1] - curveRadius * 0.5;
+            firstY = this.getMidpoint()[1] + this.tokenWidth;
+            secondY = this.getMidpoint()[1] - this.tokenWidth;
 
             firstX = this.getMidpoint()[0];
             secondX = this.getMidpoint()[0];
@@ -71,7 +71,15 @@ export class Curve {
         return Math.PI * Math.pow(this.getRadius(), 2);
     }
 
-    /** Using a known degree, return the coordinates of a point on the circumference of a circle*/
+    /** 
+     * Assuming a circle with a diameter drawn from the Class'
+     * first and second position, where 0 degrees is 12 o'clock,
+     * returns the position on the circumference of the circle
+     * at a given degree.
+     * 
+     * @param {number} Degree of the circle, where 12 o'clock is 0 degrees
+     * @returns {[number, number]} position on the circumference of the circle 
+    */
     public getPointOnCircumference(degrees: number): [number, number] {
         const radians = degrees * (Math.PI / 180)
         return [

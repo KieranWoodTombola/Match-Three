@@ -174,8 +174,8 @@ export class GameScene extends Scene {
                 SceneManager.switchToScene(new MenuScene(this._viewWidth, this._viewHeight), new LoadScreen());
             });
             menuButton.position = {
-            x: (gridScoreDisplay.x + gridScoreDisplay.width * 0.5) - menuButton.width * 0.4,
-            y: menuButton.height * 0.7
+            x: grid.width * 0.5 - menuButton.width * 0.35,
+            y: grid.height + menuButton.height
         }
         this.addChild(menuButton);
 
