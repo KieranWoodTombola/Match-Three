@@ -1,4 +1,4 @@
-import { Assets } from 'pixi.js'
+import { Assets, Container, Sprite } from 'pixi.js'
 import { Scene, SceneManager } from '../core/scene-manager';
 import { Grid } from '../core/models/grid';
 import { ScoreDisplay, GridScoreDisplay } from '../core/models/score-display';
@@ -11,6 +11,7 @@ import PixiPlugin from 'gsap/PixiPlugin';
 import { gsap } from "gsap";
 import { MenuScene } from './menu-scene';
 import { LoadScreen } from '../core/views/load-screen';
+import { Spine } from 'pixi-spine';
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
@@ -25,6 +26,7 @@ export class GameScene extends Scene {
         'waterSprite': 'assets/images/waterStock.png',
         'symbols': 'assets/animations/symbols/symbol.json',
         'gridBackground': 'assets/images/PTBackground.png',
+        'bigWins': 'assets/animations/bigWins/bigWinVikings.png'
     }
 
     constructor(width: number, height: number) {
@@ -149,7 +151,7 @@ export class GameScene extends Scene {
         });
         gridScoreDisplay.position = {
             x: (grid.width + ((this._viewWidth - grid.width) * 0.5)) - (gridScoreDisplay.width * 0.5),
-            y: this._viewHeight * 0.3
+            y: grid.y + (grid.height) - gridScoreDisplay.height * 1.1,
         }
         this.addChild(gridScoreDisplay);
 
@@ -190,7 +192,7 @@ export class GameScene extends Scene {
 
         timer.position = {
             x: gridScoreDisplay.x + gridScoreDisplay.width * 0.5 - timer.width * 0.5,
-            y: gridScoreDisplay.y - timer.height
+            y: grid.y + timer.height * 0.05
         }
         this.addChild(timer);
 

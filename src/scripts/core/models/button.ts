@@ -34,8 +34,9 @@ export class Button extends Container {
         this._buttonText = new PixiText(buttonText)
         this._buttonText.style = {
             fill: "white",
+            fontFamily: "PR_Viking",
             stroke: "black",
-            strokeThickness: 1,
+            strokeThickness: 2,
         }
         this._buttonText.position = {
             x: this._coin.width * 0.6 ,

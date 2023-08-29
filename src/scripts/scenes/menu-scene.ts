@@ -19,7 +19,8 @@ export class MenuScene extends Scene {
     private readonly _assetBundle: PIXI.ResolverAssetsObject = {
         'background': 'assets/images/background.jpeg',
         'waterSprite': 'assets/images/waterStock.png',
-        'symbols': 'assets/animations/symbols/symbol.json'
+        'symbols': 'assets/animations/symbols/symbol.json',
+        'bigWins': 'assets/animations/bigWins/bigWinVikings.json'
     }
 
     constructor(width: number, height: number) {

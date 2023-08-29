@@ -1,10 +1,13 @@
-import { Container, Text as PixiText } from "pixi.js";
+import { Container, Text as PixiText, Assets } from "pixi.js";
+import { Spine } from "pixi-spine";
 import { gsap } from "gsap";
 
 export class Timer extends Container {
 
+    private _timerBackground: Spine = new Spine(Assets.get('bigWins').spineData);
     private _totalTime: number;
     private _currentTime: number;
+    private _titleText: PixiText = new PixiText;
     private _timeText: PixiText = new PixiText;
     private _timeCallbacks: Record<number, (() => void) | undefined> | undefined;
     private _timeCompleteCallback: Function | undefined;
@@ -16,17 +19,49 @@ export class Timer extends Container {
 
     constructor(totalTime: number, timeCallbacks?: Record<number, (() => void) | undefined>, timeCompleteCallback?: Function) {
         super()
+
+        this._timerBackground.skeleton.setSkinByName('default');
+        this._timerBackground.state.setAnimation(0, 'static', true);
+        this._timerBackground.scale.set(0.35);
+        this._timerBackground.position = {
+            x: this._timerBackground.width * 0.5,
+            y: this._timerBackground.height * 0.5
+        }
+        this.addChild(this._timerBackground)
         
         this._totalTime = totalTime;
         this._currentTime = totalTime;
         this.formatTime();
+
+
         this._timeText.style = {
             fill: "white",
+            fontFamily: "PR_Viking",
             align: "center",
             stroke: "black",
-            strokeThickness: 1            
+            strokeThickness: 2         
         };
+        this._timeText.position = {
+            x: this._timerBackground.width * 0.5 - this._timeText.width * 0.5,
+            y: this._timerBackground.height * 0.5 + this._timeText.height * 0.25
+        }
         this.addChild(this._timeText);
+
+
+        this._titleText.text = "Time";
+        this._titleText.style = {
+            fill: "white",
+            fontFamily: "PR_Viking",
+            align: "center",
+            stroke: "black",
+            strokeThickness: 2         
+        };
+        this._titleText.position = {
+            x: this._timerBackground.width * 0.5 - this._titleText.width * 0.5,
+            y: this._timerBackground.height * 0.5 - this._titleText.height * 0.8
+        }
+        this.addChild(this._titleText);
+
 
         this._timeCallbacks = timeCallbacks;
         this._timeCompleteCallback = timeCompleteCallback;
