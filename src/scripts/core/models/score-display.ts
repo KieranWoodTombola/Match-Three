@@ -41,7 +41,7 @@ export class ScoreDisplay extends Container {
             strokeThickness: 1
         });
         this.scoreAsText.position = {
-            x: titleTextBackground.width * 0.5 - this.scoreAsText.width,
+            x: titleTextBackground.width * 0.5 - this.scoreAsText.width * 0.5,
             y: titleTextBackground.height * 1.5
         };
         this.textContainer.addChild(this.scoreAsText);
@@ -60,6 +60,9 @@ export class ScoreDisplay extends Container {
                 if(this.onScoreChangeComplete) {
                     this.onScoreChangeComplete();
                 }
+                gsap.to(this.scoreAsText, {
+                    x: this.textContainer.width * 0.5 - this.scoreAsText.width * 0.5
+                });
             }
         });
     }

@@ -71,7 +71,7 @@ export class Curve {
         return Math.PI * Math.pow(this.getRadius(), 2);
     }
 
-    //using known degree, get grid position of a point
+    /** Using a known degree, return the coordinates of a point on the circumference of a circle*/
     public getPointOnCircumference(degrees: number): [number, number] {
         const radians = degrees * (Math.PI / 180)
         return [

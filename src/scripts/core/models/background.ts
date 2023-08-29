@@ -68,7 +68,7 @@ export class Background extends Container {
         background.width = this._viewWidth;
         background.height = this._viewHeight;
         
-        this.setWaveHeight(0.2, 0.2, 0.2, 2.5);
+        this.addWavesToTimeline(0.2, 0.2, 0.2, 2);
         this.addChild(
             background,
             this._farWave,
@@ -94,14 +94,10 @@ export class Background extends Container {
         sprite.height = height;
     }
 
-    public setWaveHeight(farWaveHeightMod: number, midWaveHeightMod: number, closeWaveHeightMod: number, duration: number): void {
-        this.resetSplashTimeline(farWaveHeightMod, midWaveHeightMod ,closeWaveHeightMod, duration);
-    }
-
     private addWavesToTimeline(farWaveHeightMod: number, midWaveHeightMod: number, closeWaveHeightMod: number, duration: number): void {
-        const farTime = Math.floor(Math.random() * duration) + 4;
-        const midTime = Math.floor(Math.random() * duration) + 3;
-        const closeTime = Math.floor(Math.random() * duration) + 2;
+        const farTime = Math.floor(Math.random() * duration) + 3;
+        const midTime = Math.floor(Math.random() * duration) + 2;
+        const closeTime = Math.floor(Math.random() * duration) + 1;
 
         this._splash = gsap.timeline({
             repeat: -1,
@@ -121,15 +117,6 @@ export class Background extends Container {
             duration: closeTime,
         }, 0);
 
-    }
-
-    private resetSplashTimeline(farWaveHeightMod: number, midWaveHeightMod: number, closeWaveHeightMod: number, duration: number): void {
-        this._splash.then( () => {
-            this._splash.yoyo(false);
-        })
-        .then(() => {
-            this.addWavesToTimeline(farWaveHeightMod, midWaveHeightMod, closeWaveHeightMod, duration);
-        });
     }
 
 }

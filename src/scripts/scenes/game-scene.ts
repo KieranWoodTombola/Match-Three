@@ -62,7 +62,6 @@ export class GameScene extends Scene {
             if(gridScoreDisplay.score > highScore.score) {
                 localStorage.highScore = gridScoreDisplay.score;
             }
-            background.setWaveHeight(0.2, 0.2, 0.2, 2);
 
 
             const clearBoard = gsap.timeline({
@@ -99,7 +98,6 @@ export class GameScene extends Scene {
 
             const enterHighScore = gsap.timeline({
                 paused: true,
-                //delay: 2,
                 onComplete: () => {
                     changeHighScore.play();
                 }
@@ -115,7 +113,6 @@ export class GameScene extends Scene {
 
 
             const changeHighScore = gsap.timeline({
-                // delay: 3,
                 paused: true,
                 duration: 3,
                 onStart: () => {
@@ -133,8 +130,6 @@ export class GameScene extends Scene {
             .to(highScoreDisplay, {
                 x: _viewWidth * 0.5 - highScoreDisplay.width * 0.5,
             }, 1)
-            .to(highScoreDisplay, {
-            }, 1);
         }
 
         const background = new Background(this._viewWidth, this._viewHeight);
@@ -186,8 +181,6 @@ export class GameScene extends Scene {
 
 
         const timer = new Timer(90, {
-             60: () => { background.setWaveHeight(0.3, 0.3, 0.3, 1); },
-             30: () => { background.setWaveHeight(0.4, 0.4, 0.4, 0); }
         }, 
         () => {
             timerComplete = true;
