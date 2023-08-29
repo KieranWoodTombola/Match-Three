@@ -11,12 +11,14 @@ export class Background extends Container {
     private _midWaveContainer: Container = new Container();
     private _midWave: Sprite = new Sprite(Assets.get('waterSprite'));
     private _closeWave: Sprite = new Sprite(Assets.get('waterSprite'));
-    private _ship: Token;
+    private _playerShip: Sprite = new Sprite(Assets.get('ship'));
+    private _npcShipClose: Sprite = new Sprite(Assets.get('ship'));
+    private _npcShipFar: Sprite = new Sprite(Assets.get('ship'));
     private _splash: gsap.core.Timeline = gsap.timeline();
     private _waveStartingPosition: number;
 
-    public get ship() {
-        return this._ship;
+    public get playerShip() {
+        return this._playerShip;
     }
 
     constructor(viewWidth: number, viewHeight: number) {
@@ -25,8 +27,6 @@ export class Background extends Container {
         this.interactive = false;
         this._viewWidth = viewWidth;
         this._viewHeight = viewHeight;
-
-        eventEmitter.on('onMatch', this.animateShip, this);
 
         this._waveStartingPosition = this._viewHeight * 0.5;
 
@@ -37,30 +37,76 @@ export class Background extends Container {
         this.initWave(this._closeWave, this._viewWidth * 2, this._viewHeight);
         this._closeWave.y = this._waveStartingPosition;
 
-        this._ship = new Token({
-            skIndex: 1
+
+        this._npcShipClose.scale.set(0.4);
+        this._npcShipClose.position = {
+            x: this._viewWidth * 0.2 ,
+            y: this._viewHeight - this._npcShipClose.height * 0.2
+        }
+        this._npcShipClose.pivot = {
+            x: this._npcShipClose.width * 0.75, 
+            y: this._npcShipClose.height 
+        }
+        this._npcShipClose.angle = -20;
+        this._npcShipClose.alpha = 0;
+        gsap.to(this._npcShipClose, {
+            duration: Math.floor(Math.random() * 3) + 5,
+            repeat: -1,
+            yoyo: true,
+
+            y: this._npcShipClose.y + this._npcShipClose.height * 0.1,
+            angle: 20,
         });
-        this._ship.scale.set(1);
-        this._ship.position = {
-            x: this._viewWidth * 0.95 ,
-            y: this._viewHeight
+
+
+        this._playerShip.scale.set(0.6);
+        this._playerShip.position = {
+            x: this._viewWidth * 0.8 ,
+            y: this._viewHeight - this._playerShip.height * 0.2
         }
-        this._ship.pivot = {
-            x: this._ship.width * 0.5, 
-            y: this._ship.height * 0.25
+        this._playerShip.pivot = {
+            x: this._playerShip.width * 0.75, 
+            y: this._playerShip.height 
         }
-        this._ship.angle = -20;
-        this._ship.alpha = 0;
-        gsap.to(this._ship, {
+        this._playerShip.angle = -20;
+        this._playerShip.alpha = 0;
+        gsap.to(this._playerShip, {
             duration: 5,
             repeat: -1,
             yoyo: true,
 
-            y: this._ship.y + this._ship.height * 0.1,
+            y: this._playerShip.y + this._playerShip.height * 0.1,
             angle: 20,
         });
 
-        this._midWaveContainer.addChild(this._ship, this._midWave);
+
+        this._npcShipFar.scale.set(0.3);
+        this._npcShipFar.position = {
+            x: this._viewWidth * 0.8 ,
+            y: this._viewHeight - this._npcShipFar.height * 0.2
+        }
+        this._npcShipFar.pivot = {
+            x: this._playerShip.width * 0.75, 
+            y: this._playerShip.height 
+        }
+        this._npcShipFar.angle = -20;
+        this._npcShipFar.alpha = 0;
+        gsap.to(this._npcShipFar, {
+            duration: Math.floor(Math.random() * 3) + 8,
+            repeat: -1,
+            yoyo: true,
+
+            y: this._npcShipFar.y + this._npcShipFar.height * 0.1,
+            angle: 20,
+        });
+
+        
+
+        this._midWaveContainer.addChild(
+            this._npcShipFar,
+            this._playerShip,
+            this._npcShipClose,
+            this._midWave);
 
         const background = new Sprite(Assets.get('background'));
         background.width = this._viewWidth;
@@ -75,16 +121,26 @@ export class Background extends Container {
         );
     }
 
-    public animateShip(): void {
-        this._ship.animate(false);
+    public enterPlayerShip(): void {
+        this._playerShip.alpha = 1;
+        gsap.from(this._playerShip, {
+            x: this._viewWidth + this._playerShip.width,
+            duration: 3
+        })
     }
 
-    public enterShip(): void {
-        this._ship.alpha = 1;
-        // gsap.from(this._ship, {
-        //     x: this._viewWidth + this._ship.width,
-        //     duration: 3
-        // })
+    public enterNPCShips(): void {
+        this._npcShipClose.alpha = 1;
+        gsap.from(this._npcShipClose, {
+            x: 0 - this._npcShipClose.width,
+            duration: 7
+        })
+
+        this._npcShipFar.alpha = 1;
+        gsap.from(this._npcShipFar, {
+            x: 0 - this._npcShipFar.width,
+            duration: 20
+        })
     }
 
     private initWave(sprite: Sprite, width: number, height: number): void {

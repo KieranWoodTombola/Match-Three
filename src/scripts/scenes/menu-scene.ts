@@ -44,6 +44,7 @@ export class MenuScene extends Scene {
         const title = new PixiText("Vikings: Match-3", {
             fill: "white",
             stroke: "black",
+            fontFamily: "PR_Viking",
             strokeThickness: 2,
             fontSize: 50,
             align: 'center'

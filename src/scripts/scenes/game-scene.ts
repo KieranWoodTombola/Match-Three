@@ -23,6 +23,7 @@ export class GameScene extends Scene {
     private readonly _assetBundleName = 'example-scene';
     private readonly _assetBundle: PIXI.ResolverAssetsObject = {
         'background': 'assets/images/background.jpeg',
+        'ship': 'assets/images/wild-static.png',
         'waterSprite': 'assets/images/waterStock.png',
         'symbols': 'assets/animations/symbols/symbol.json',
         'gridBackground': 'assets/images/PTBackground.png',
@@ -78,10 +79,12 @@ export class GameScene extends Scene {
             .to(grid, {
                 x: 0 - grid.width
             }, 1)
-            .to (background.ship, {
+            .to (background.playerShip, {
                 duration: 5,
-
-                x: _viewWidth * 0.5 + background.ship.width * 0.5
+                x: _viewWidth * 0.5 
+            })
+            .call(() => {
+                background.enterNPCShips();
             })
             .to(timer, {
                 alpha: 0
@@ -120,7 +123,6 @@ export class GameScene extends Scene {
                 duration: 3,
                 onStart: () => {
                     highScoreDisplay.updateScore(gridScoreDisplay.score);
-                    background.animateShip();
                 },
                 onComplete: () => {
                     menuButton.interactive = true;
@@ -136,7 +138,7 @@ export class GameScene extends Scene {
         }
 
         const background = new Background(this._viewWidth, this._viewHeight);
-        background.enterShip();
+        background.enterPlayerShip();
         this.addChild(background);
 
 
@@ -182,7 +184,7 @@ export class GameScene extends Scene {
         this.addChild(menuButton);
 
 
-        const timer = new Timer(90, {
+        const timer = new Timer(3, {
         }, 
         () => {
             timerComplete = true;

@@ -66,7 +66,6 @@ export class Token extends Container {
     public shuffleSkin(): void {
         const randomNumber = Math.round(Math.random() * (12 - 1) + 1);
         this.skIndex = randomNumber;
-        if(this.skIndex === 1){this.skIndex++}
         this._skin.skeleton.setSkinByName(`${this.skIndex}`);
     }
 
