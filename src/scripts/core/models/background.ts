@@ -1,10 +1,13 @@
 import { Assets, Container, Sprite } from "pixi.js";
 import { gsap } from "gsap";
+import { Spine } from "pixi-spine";
 
 export class Background extends Container {
 
     private _viewWidth: number;
     private _viewHeight: number;
+    private _stormClouds: Spine;
+    private _ground: Spine;
     private _farWave: Sprite = new Sprite(Assets.get('waterSprite'));
     private _midWaveContainer: Container = new Container();
     private _midWave: Sprite = new Sprite(Assets.get('waterSprite'));
@@ -26,14 +29,30 @@ export class Background extends Container {
         this._viewWidth = viewWidth;
         this._viewHeight = viewHeight;
 
-        this._waveStartingPosition = this._viewHeight * 0.5;
+        this._stormClouds = new Spine(Assets.get("introduction").spineData);
+        this._stormClouds.skeleton.setSkinByName("sky&clouds");
+        this._stormClouds.scale.set(0.5);
+        this._stormClouds.position = {
+            x: this._viewWidth * 0.5,
+            y: this._viewHeight * 0.5
+        }
+        this.addChild(this._stormClouds);
+
+        this._ground = new Spine(Assets.get("introduction").spineData);
+        this._ground.skeleton.setSkinByName("nature");
+        this._ground.position = {
+            x: this._viewWidth * 0.5,
+            y: this._viewHeight * 0.475
+        }
+
+        this._waveStartingPosition = this._viewHeight * 0.4;
 
         this.initWave(this._farWave, this._viewWidth * 2, this._viewHeight);
-        this._farWave.y = this._waveStartingPosition;
+        this._farWave.y = this._waveStartingPosition + this._waveStartingPosition * 0.2;
         this.initWave(this._midWave, this._viewWidth * 1.5, this._viewHeight);
         this._midWave.y = this._waveStartingPosition;
         this.initWave(this._closeWave, this._viewWidth * 2, this._viewHeight);
-        this._closeWave.y = this._waveStartingPosition;
+        this._closeWave.y = this._waveStartingPosition + this._waveStartingPosition * 0.5;
 
 
         this._npcShipClose = this.addShip(0.4, 9);
@@ -53,12 +72,13 @@ export class Background extends Container {
         background.width = this._viewWidth;
         background.height = this._viewHeight;
         
-        this.addWavesToTimeline(0.2, 0.2, 0.2, 2);
+        this.addWavesToTimeline(0.15, 0.1, 0, 2);
         this.addChild(
-            background,
+            this._stormClouds,
             this._farWave,
             this._midWaveContainer,
-            this._closeWave
+            this._closeWave,
+            this._ground
         );
     }
 
@@ -118,7 +138,7 @@ export class Background extends Container {
     private addWavesToTimeline(farWaveHeightMod: number, midWaveHeightMod: number, closeWaveHeightMod: number, duration: number): void {
         const farTime = Math.floor(Math.random() * duration) + 3;
         const midTime = Math.floor(Math.random() * duration) + 2;
-        const closeTime = Math.floor(Math.random() * duration) + 1;
+        const closeTime = Math.floor(Math.random() * duration) + 3;
 
         this._splash = gsap.timeline({
             repeat: -1,

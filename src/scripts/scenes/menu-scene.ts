@@ -1,7 +1,5 @@
 import { Assets, Text as PixiText, } from 'pixi.js'
 import { Scene, SceneManager } from './scene-manager';
-import { Background } from '../core/models/background';
-import { Button } from '../core/models/button';
 import '@pixi/graphics-extras';
 import * as PIXI from 'pixi.js';
 import PixiPlugin from 'gsap/PixiPlugin';
@@ -24,7 +22,8 @@ export class MenuScene extends Scene {
         'background': 'assets/images/background.jpeg',
         'waterSprite': 'assets/images/waterStock.png',
         'symbols': 'assets/animations/symbols/symbol.json',
-        'bigWins': 'assets/animations/bigWins/bigWinVikings.json'
+        'bigWins': 'assets/animations/bigWins/bigWinVikings.json',
+        'introduction': 'assets/animations/introduction/introduction.json'
     }
 
     constructor(width: number, height: number) {

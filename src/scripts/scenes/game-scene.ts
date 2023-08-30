@@ -24,7 +24,8 @@ export class GameScene extends Scene {
         'waterSprite': 'assets/images/waterStock.png',
         'symbols': 'assets/animations/symbols/symbol.json',
         'gridBackground': 'assets/images/PTBackground.png',
-        'bigWins': 'assets/animations/bigWins/bigWinVikings.png'
+        'bigWins': 'assets/animations/bigWins/bigWinVikings.png',
+        'introduction': 'assets/animations/introduction/introduction.json'
     }
 
     constructor(width: number, height: number) {
