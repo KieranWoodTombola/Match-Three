@@ -1,6 +1,7 @@
 import { Container, Text as PixiText, Assets } from "pixi.js";
 import { Spine } from "pixi-spine";
 import { gsap } from "gsap";
+import { eventEmitter } from "../../../event-emitter";
 
 export class Timer extends Container {
 
@@ -10,14 +11,13 @@ export class Timer extends Container {
     private _titleText: PixiText = new PixiText;
     private _timeText: PixiText = new PixiText;
     private _timeCallbacks: Record<number, (() => void) | undefined> | undefined;
-    private _timeCompleteCallback: Function | undefined;
 
 
     public get totalTime() {
         return this._totalTime;
     }
 
-    constructor(totalTime: number, timeCallbacks?: Record<number, (() => void) | undefined>, timeCompleteCallback?: Function) {
+    constructor(totalTime: number, timeCallbacks?: Record<number, (() => void) | undefined>) {
         super()
 
         this._timerBackground.skeleton.setSkinByName('default');
@@ -32,7 +32,6 @@ export class Timer extends Container {
         this._totalTime = totalTime;
         this._currentTime = totalTime;
         this.formatTime();
-
 
         this._timeText.style = {
             fill: "white",
@@ -58,13 +57,12 @@ export class Timer extends Container {
         };
         this._titleText.position = {
             x: this._timerBackground.width * 0.5 - this._titleText.width * 0.5,
-            y: this._timerBackground.height * 0.5 - this._titleText.height * 0.8
+            y: this._timerBackground.height * 0.5 - this._titleText.height * 0.9
         }
         this.addChild(this._titleText);
 
 
         this._timeCallbacks = timeCallbacks;
-        this._timeCompleteCallback = timeCompleteCallback;
 
         this.countdown();
     }
@@ -86,9 +84,7 @@ export class Timer extends Container {
                     this.countdown();
                 }
                 else {
-                    if (this._timeCompleteCallback) {
-                        this._timeCompleteCallback();
-                    }
+                    eventEmitter.emit('onTimeComplete')
                 }
             }
         })

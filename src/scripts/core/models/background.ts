@@ -1,6 +1,4 @@
 import { Assets, Container, Sprite } from "pixi.js";
-import { eventEmitter } from "../../../event-emitter";
-import { Token } from "./token";
 import { gsap } from "gsap";
 
 export class Background extends Container {
@@ -11,7 +9,7 @@ export class Background extends Container {
     private _midWaveContainer: Container = new Container();
     private _midWave: Sprite = new Sprite(Assets.get('waterSprite'));
     private _closeWave: Sprite = new Sprite(Assets.get('waterSprite'));
-    private _playerShip: Sprite = new Sprite(Assets.get('ship'));
+    private _playerShip: Sprite;
     private _npcShipClose: Sprite = new Sprite(Assets.get('ship'));
     private _npcShipFar: Sprite = new Sprite(Assets.get('ship'));
     private _splash: gsap.core.Timeline = gsap.timeline();
@@ -38,75 +36,18 @@ export class Background extends Container {
         this._closeWave.y = this._waveStartingPosition;
 
 
-        this._npcShipClose.scale.set(0.4);
-        this._npcShipClose.position = {
-            x: this._viewWidth * 0.2 ,
-            y: this._viewHeight - this._npcShipClose.height * 0.2
-        }
-        this._npcShipClose.pivot = {
-            x: this._npcShipClose.width * 0.75, 
-            y: this._npcShipClose.height 
-        }
-        this._npcShipClose.angle = -20;
-        this._npcShipClose.alpha = 0;
-        gsap.to(this._npcShipClose, {
-            duration: Math.floor(Math.random() * 3) + 5,
-            repeat: -1,
-            yoyo: true,
-
-            y: this._npcShipClose.y + this._npcShipClose.height * 0.1,
-            angle: 20,
-        });
-
-
-        this._playerShip.scale.set(0.6);
-        this._playerShip.position = {
-            x: this._viewWidth * 0.8 ,
-            y: this._viewHeight - this._playerShip.height * 0.2
-        }
-        this._playerShip.pivot = {
-            x: this._playerShip.width * 0.75, 
-            y: this._playerShip.height 
-        }
-        this._playerShip.angle = -20;
-        this._playerShip.alpha = 0;
-        gsap.to(this._playerShip, {
-            duration: 5,
-            repeat: -1,
-            yoyo: true,
-
-            y: this._playerShip.y + this._playerShip.height * 0.1,
-            angle: 20,
-        });
-
-
-        this._npcShipFar.scale.set(0.3);
-        this._npcShipFar.position = {
-            x: this._viewWidth * 0.8 ,
-            y: this._viewHeight - this._npcShipFar.height * 0.2
-        }
-        this._npcShipFar.pivot = {
-            x: this._playerShip.width * 0.75, 
-            y: this._playerShip.height 
-        }
-        this._npcShipFar.angle = -20;
-        this._npcShipFar.alpha = 0;
-        gsap.to(this._npcShipFar, {
-            duration: Math.floor(Math.random() * 3) + 8,
-            repeat: -1,
-            yoyo: true,
-
-            y: this._npcShipFar.y + this._npcShipFar.height * 0.1,
-            angle: 20,
-        });
-
+        this._npcShipClose = this.addShip(0.4, 9);
+        this._npcShipClose.x = this._viewWidth * 0.3;
+        this._playerShip = this.addShip(0.6, 5);
+        this._npcShipFar = this.addShip(0.3, 3);
         
 
         this._midWaveContainer.addChild(
             this._npcShipFar,
             this._playerShip,
             this._npcShipClose,
-            this._midWave);
+            this._midWave
+        );
 
         const background = new Sprite(Assets.get('background'));
         background.width = this._viewWidth;
@@ -119,6 +60,32 @@ export class Background extends Container {
             this._midWaveContainer,
             this._closeWave
         );
+    }
+
+    private addShip(scale: number, duration: number): Sprite {
+        const ship = new Sprite(Assets.get('ship'));
+
+        ship.scale.set(scale);
+        ship.position = {
+            x: this._viewWidth * 0.8 ,
+            y: this._viewHeight - ship.height * 0.2
+        }
+        ship.pivot = {
+            x: ship.width * 0.75, 
+            y: ship.height 
+        }
+        ship.angle = -20;
+        ship.alpha = 0;
+        gsap.to(ship, {
+            duration: duration,
+            repeat: -1,
+            yoyo: true,
+
+            y: ship.y + ship.height * 0.1,
+            angle: 20,
+        });
+
+        return ship
     }
 
     public enterPlayerShip(): void {

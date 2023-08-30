@@ -45,7 +45,9 @@ export class Column extends Container {
             const target = this.tokens[columnInspector];
             let matchCount = 0;
             this.tokens.forEach(token => {
-                if (token.matched) { matchCount++; }
+                if (token.matched) { 
+                    matchCount++;
+                }
             });
 
             if (target.matched) {

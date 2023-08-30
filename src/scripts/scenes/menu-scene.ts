@@ -1,5 +1,5 @@
 import { Assets, Text as PixiText, } from 'pixi.js'
-import { Scene, SceneManager } from '../core/scene-manager';
+import { Scene, SceneManager } from './scene-manager';
 import { Background } from '../core/models/background';
 import { Button } from '../core/models/button';
 import '@pixi/graphics-extras';
@@ -8,12 +8,16 @@ import PixiPlugin from 'gsap/PixiPlugin';
 import { gsap } from "gsap";
 import { LoadScreen } from '../core/views/load-screen';
 import { GameScene } from './game-scene';
+import { eventEmitter } from '../../event-emitter';
+import { MenuObjectLoader } from './sceneObjects/menu-scene-object-loader';
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
 export class MenuScene extends Scene {
     private _viewWidth: number;
     private _viewHeight: number;
+    private _toGameBound: () => void;
+
 
     private readonly _assetBundleName = 'example-scene';
     private readonly _assetBundle: PIXI.ResolverAssetsObject = {
@@ -26,6 +30,9 @@ export class MenuScene extends Scene {
     constructor(width: number, height: number) {
         super();
 
+        this._toGameBound = this.toGame.bind(this);
+        eventEmitter.on('toGame', this._toGameBound);
+
         this._viewWidth = width;
         this._viewHeight = height;
 
@@ -37,43 +44,21 @@ export class MenuScene extends Scene {
     }
 
     public onLoadComplete(): void {
+        const menuSceneObjects = new MenuObjectLoader(this._viewWidth, this._viewHeight);
+        this.addChild(menuSceneObjects);
+    }
 
-        const background = new Background(this._viewWidth, this._viewHeight);
-        this.addChild(background);
-
-        const title = new PixiText("Vikings: Match-3", {
-            fill: "white",
-            stroke: "black",
-            fontFamily: "PR_Viking",
-            strokeThickness: 2,
-            fontSize: 50,
-            align: 'center'
-        });
-        title.position = {
-            x: (this._viewWidth * 0.5) - (title.width * 0.5),
-            y: 0
-        }
-        this.addChild(title);
-
-        const startButton = new Button("Start Game",
-            this._viewWidth * 0.1,
-            () => {
-                this.unload();
-                SceneManager.switchToScene(new GameScene(this._viewWidth, this._viewHeight), new LoadScreen());
-            });
-        startButton.position = {
-            x: this._viewWidth * 0.5 - startButton.width * 0.5,
-            y: title.height + startButton.height
-        }
-        this.addChild(startButton);
+    private toGame(): void {
+        this.getChildByName('menuSceneObjects')?.destroy()
+        this.unload();
+        eventEmitter.off('toGame');
+        SceneManager.switchToScene(
+            new GameScene(this._viewWidth, this._viewHeight), 
+            new LoadScreen()
+        );
     }
 
     public unload(): Promise<void> {
-        this.children.forEach(child => {
-            gsap.killTweensOf(child);
-            child.destroy;
-        });
-        
         return Assets.unloadBundle(this._assetBundleName);
     }
 }

@@ -1,6 +1,7 @@
 import { Container, ProgressCallback } from 'pixi.js';
 import { Game } from '../main';
-import { LoadScreen } from './views/load-screen';
+import { LoadScreen } from '../core/views/load-screen';
+import { gsap } from 'gsap';
 
 export abstract class Scene extends Container {
     public abstract load(onProgress: ProgressCallback): Promise<void>;
@@ -12,6 +13,7 @@ export class SceneManager {
     private static _currentScene: Scene | undefined;
 
     public static async switchToScene(newScene: Scene, loadScreen: LoadScreen): Promise<void> {
+
         if(this._currentScene) {
             Game.stage.removeChild(this._currentScene);
         }
@@ -22,7 +24,12 @@ export class SceneManager {
         await previousScene?.unload();
         await newScene.load(loadScreen.update.bind(loadScreen));
 
-        Game.stage.removeChild(loadScreen);
+        Game.stage.children.forEach(child => {
+            gsap.killTweensOf(child);
+            child.destroy();
+        });
+        //Game.stage.removeChild(loadScreen);
+
         Game.stage.addChild(newScene);
 
         this._currentScene?.onLoadComplete();

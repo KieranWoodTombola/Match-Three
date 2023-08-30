@@ -8,8 +8,6 @@ gsap.registerPlugin(MotionPathPlugin);
 import { Curve } from "../services/curve"
 
 export class Grid extends Container {
-
-    private _availWidth: number;
     private _background: Sprite = new Sprite(Assets.get('gridBackground'));
     private _columnContainer = new Container();
     private _gridSize: number;
@@ -18,17 +16,18 @@ export class Grid extends Container {
     private _matchedTokens: Token[] = [];
     private _clickCheckBound: (targetToken: Token) => void;
 
+    private _gridID: number = Math.round(Math.random() * (100 - 1) + 1);
+
     get gridSize() {
         return this._gridSize;
     }
 
-    constructor(gridSize: number, availWidth: number) {
+    constructor(gridSize: number) {
         super()
 
-        this._clickCheckBound = this.clickCheck.bind(this)
+        this._clickCheckBound = this.clickCheck.bind(this);
         eventEmitter.on('clickCheck', this._clickCheckBound);
 
-        this._availWidth = availWidth;
         this._gridSize = gridSize;
 
         this._background.scale.set(0.25);
@@ -65,13 +64,19 @@ export class Grid extends Container {
 
         //on SecondClick
         if (this._selectedTokens[0] && !this._selectedTokens[1]) {
-
             this._selectedTokens[1] = targetToken;
+
+            if(this._selectedTokens[0] === this._selectedTokens[1]) { 
+                this._selectedTokens[1] = undefined;
+                return; 
+            }
+
             this._selectedTokens.forEach(token => {
                 if (!token) { return; }
                 token.setParent(this._columnContainer);
                 token.interactive = true;
             });
+
 
             const firstX = this._columnContainer.width / (this.gridSize / this._selectedTokens[0].parentID);
             const firstY = this._selectedTokens[0].y;
@@ -155,14 +160,10 @@ export class Grid extends Container {
         this._columns.forEach(column => {
             column.processMatches();
         });
-
-        //Only use the first Column for testing
-        // this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
-        // this.columns[0].processMatches();
-        // this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
 
     private matchLine(tokens: Token[]): void {
+
         let cacheSkIndex: number | undefined = undefined;
         let currentComboTokens: Token[] = [];
         const totalComboTokens: Token[] = [];
@@ -189,7 +190,7 @@ export class Grid extends Container {
             }
 
             //last token in the array
-            if (token === tokens[this._gridSize - 1]) {
+            if (token === tokens[tokens.length - 1]) {
                 checkForCombo();
                 return;
             }
@@ -226,7 +227,10 @@ export class Grid extends Container {
 
     public destroy(): void {
         super.destroy();
+        this.children.forEach(child => {
+            gsap.killTweensOf(child);
+            child.destroy();
+        });
         eventEmitter.off('clickCheck', this._clickCheckBound);
-        return;
     }
 }
