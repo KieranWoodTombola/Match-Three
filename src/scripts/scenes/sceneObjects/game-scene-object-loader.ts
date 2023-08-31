@@ -70,7 +70,7 @@ export class GameSceneObjectLoader extends SceneObjectLoader{
         this.addChild(this._menuButton);
 
 
-        this._timer = new Timer(3, 
+        this._timer = new Timer(90, 
         {
             /**This is where you can add in callbacks for things happening
              * as the timer runs down
