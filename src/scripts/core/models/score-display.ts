@@ -13,10 +13,9 @@ export interface IScoreDisplayOptions {
 
 export class ScoreDisplay extends Container {
 
-    protected _score: number;
+    public _score: number;
     protected _scoreAsText: PixiText;
     protected _titleText: PixiText;
-    protected _textContainer: Container = new Container();
     protected _scoreBackground: Spine;
     protected _onScoreChangeComplete: () => void;
 
@@ -49,7 +48,7 @@ export class ScoreDisplay extends Container {
         this.addChild(this._titleText)
         
         this._score = options.score ? options.score : 0;
-        this._scoreAsText = new PixiText(`${this.score}`, {
+        this._scoreAsText = new PixiText(`${this._score}`, {
             fill: "white",
             fontFamily: "PR_Viking",
             align: "center",
@@ -93,8 +92,8 @@ export class ScoreDisplay extends Container {
             return; 
         }
     
-        const score = Math.floor(Math.round(this.score));
-        if (this.score !== score) {
+        const score = Math.floor(Math.round(this._score));
+        if (this._score !== score) {
             this._scoreAsText.text = score.toString();
         }
     }
