@@ -1,14 +1,15 @@
 import { Assets } from 'pixi.js'
 import { Scene, SceneManager } from './scene-manager';
-import '@pixi/graphics-extras';
+
+import { MenuScene } from './menu-scene';
+import { LoadScreen } from '../core/views/load-screen';
+import { GameSceneObjectLoader } from './sceneObjects/game-scene-object-loader';
+
+import { eventEmitter } from '../../event-emitter';
+
 import * as PIXI from 'pixi.js';
 import PixiPlugin from 'gsap/PixiPlugin';
 import { gsap } from "gsap";
-import { MenuScene } from './menu-scene';
-import { LoadScreen } from '../core/views/load-screen';
-
-import { GameSceneObjectLoader } from './sceneObjects/game-scene-object-loader';
-import { eventEmitter } from '../../event-emitter';
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
@@ -16,6 +17,7 @@ export class GameScene extends Scene {
     private _viewWidth: number;
     private _viewHeight: number;
     private _toMenuBound: () => void;
+
 
     private readonly _assetBundleName = 'example-scene';
     private readonly _assetBundle: PIXI.ResolverAssetsObject = {
@@ -52,7 +54,6 @@ export class GameScene extends Scene {
 
     public toMenu() {
         this.children.forEach(child => {
-            gsap.killTweensOf(this);
             child.destroy();
         });
         this.unload();

@@ -56,13 +56,6 @@ export class GameSceneObjectLoader extends SceneObjectLoader{
         this._highScoreDisplay.alpha = 0;
         this._highScoreDisplay.position = this._gridScoreDisplay.position;
 
-        /** 
-         * highScoreDisplay is instantiated second but added to the stage first
-         * highScoreDisplay is instantiated second because it's score change function
-         * requires the gridScoreDisplay
-         * It's added to the grid second because it transitions onto the stage
-         * from behind gridScoreDisplay
-         */
         this.addChild(
             this._highScoreDisplay,
             this._gridScoreDisplay
@@ -79,7 +72,7 @@ export class GameSceneObjectLoader extends SceneObjectLoader{
         this.addChild(this._menuButton);
 
 
-        this._timer = new Timer(90, 
+        this._timer = new Timer(3, 
         {
             /**This is where you can add in callbacks for things happening
              * as the timer runs down
@@ -143,7 +136,7 @@ export class GameSceneObjectLoader extends SceneObjectLoader{
             paused: true,
 
             onStart: () => {
-                //this._background.enterNPCShips();
+                this._background.enterNPCShips();
             },
 
             onComplete: () => {

@@ -1,5 +1,5 @@
 import { gsap } from "gsap";
-import { Container, Graphics, Text as PixiText, Assets } from "pixi.js";
+import { Container, Text as PixiText, Assets } from "pixi.js";
 import { Spine } from "pixi-spine";
 import { Token } from "./token";
 import { eventEmitter } from "../../../event-emitter";
@@ -16,15 +16,15 @@ export class ScoreDisplay extends Container {
     public score: number;
     protected _scoreAsText: PixiText;
     protected _titleText: PixiText;
-    protected _scoreBackground: Spine = new Spine(Assets.get('bigWins').spineData);
-    protected onScoreChangeComplete: () => void;
+    protected _scoreBackground: Spine;
+    protected _onScoreChangeComplete: () => void;
 
     constructor(options: IScoreDisplayOptions) {
         super()
-
-        this.onScoreChangeComplete = options.onScoreChangeComplete;
-        this._scoreBackground.skeleton.setSkinByName('default');
-        this._scoreBackground.state.setAnimation(0, 'static', true);
+        
+        this._scoreBackground = new Spine(Assets.get("bigWins").spineData);
+        this._scoreBackground.skeleton.setSkinByName("default");
+        this._scoreBackground.state.setAnimation(0, "static", true);
         this._scoreBackground.scale.set(0.35);
         this._scoreBackground.position = {
             x: this._scoreBackground.width * 0.5,
@@ -57,6 +57,8 @@ export class ScoreDisplay extends Container {
         };
         this.addChild(this._scoreAsText);
 
+        this._onScoreChangeComplete = options.onScoreChangeComplete;
+
     }
 
     public updateScore(targetScore: number) {
@@ -67,8 +69,8 @@ export class ScoreDisplay extends Container {
             onUpdate: this.showScore.bind(this),
 
             onComplete: () => {
-                if(this.onScoreChangeComplete) {
-                    this.onScoreChangeComplete();
+                if(this._onScoreChangeComplete) {
+                    this._onScoreChangeComplete();
                 }
                 gsap.to(this._scoreAsText, {
                     x: this._scoreBackground.x - this._scoreAsText.width * 0.5,

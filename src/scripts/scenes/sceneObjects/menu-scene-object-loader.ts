@@ -3,6 +3,7 @@ import { SceneObjectLoader } from "./scene-object-loader";
 import { Text as PixiText } from "pixi.js";
 import { Button } from "../../core/models/button";
 import { eventEmitter } from "../../../event-emitter";
+import { ScoreDisplay } from "../../core/models/score-display";
 
 export class MenuObjectLoader extends SceneObjectLoader {
 
@@ -25,19 +26,26 @@ export class MenuObjectLoader extends SceneObjectLoader {
         }
         this.addChild(title);
 
-        const startButton = new Button("Start Game",
-            this._viewWidth * 0.1,
+        const highScoreDisplay = new ScoreDisplay({
+            titleString: "HIGHSCORE",
+            score: localStorage.highScore,
+            onScoreChangeComplete: () => { return; }
+        });
+        highScoreDisplay.position = {
+            x: this._viewWidth * 0.5 - highScoreDisplay.width * 0.5,
+            y: this._viewHeight * 0.5 - highScoreDisplay.height * 0.5
+        }
+        this.addChild(highScoreDisplay);
+
+        const startButton = new Button("START \nGAME",
+            this._viewWidth * 0.075,
             () => { eventEmitter.emit('toGame') });
         startButton.position = {
-            x: this._viewWidth * 0.5 - startButton.width * 0.5,
-            y: title.height + startButton.height
+            x: this._viewWidth * 0.5 - startButton.width * 0.25,
+            y: highScoreDisplay.y + highScoreDisplay.height + startButton.height * 0.5
         }
+        startButton.scale.set(0.8);
         this.addChild(startButton);
-
-    }
-
-    public destroy(): void {
-        super.destroy();
 
     }
 

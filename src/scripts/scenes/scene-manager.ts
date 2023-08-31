@@ -28,7 +28,6 @@ export class SceneManager {
             gsap.killTweensOf(child);
             child.destroy();
         });
-        //Game.stage.removeChild(loadScreen);
 
         Game.stage.addChild(newScene);
 

@@ -77,6 +77,7 @@ export class Background extends Container {
         this._npcShipClose = this.addShip(0.4, 9);
         this._npcShipClose.x = this._viewWidth * 0.3;
         this._playerShip = this.addShip(0.6, 5);
+        this._playerShip.y = this._viewHeight - this._playerShip.height * 0.4
         this._npcShipFar = this.addShip(0.3, 3);
         
 
@@ -131,7 +132,7 @@ export class Background extends Container {
         ship.scale.set(scale);
         ship.position = {
             x: this._viewWidth * 0.8 ,
-            y: this._viewHeight - ship.height * 0.2
+            y: this._viewHeight - ship.height * 0.75
         }
         ship.pivot = {
             x: ship.width * 0.75, 
@@ -143,8 +144,6 @@ export class Background extends Container {
             duration: duration,
             repeat: -1,
             yoyo: true,
-
-            y: ship.y + ship.height * 0.1,
             angle: 20,
         });
 

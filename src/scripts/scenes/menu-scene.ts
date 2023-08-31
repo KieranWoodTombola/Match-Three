@@ -1,13 +1,15 @@
-import { Assets, Text as PixiText, } from 'pixi.js'
+import { Assets } from 'pixi.js'
 import { Scene, SceneManager } from './scene-manager';
-import '@pixi/graphics-extras';
+
+import { LoadScreen } from '../core/views/load-screen';
+import { GameScene } from './game-scene';
+import { MenuObjectLoader } from './sceneObjects/menu-scene-object-loader';
+
+import { eventEmitter } from '../../event-emitter';
+
 import * as PIXI from 'pixi.js';
 import PixiPlugin from 'gsap/PixiPlugin';
 import { gsap } from "gsap";
-import { LoadScreen } from '../core/views/load-screen';
-import { GameScene } from './game-scene';
-import { eventEmitter } from '../../event-emitter';
-import { MenuObjectLoader } from './sceneObjects/menu-scene-object-loader';
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
