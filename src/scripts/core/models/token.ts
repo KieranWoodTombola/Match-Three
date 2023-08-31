@@ -17,7 +17,7 @@ export class Token extends Container {
     private _parentHeight: number = 0;;
     private _parentSize: number = 0;
     public verticalIndex: number = 0;
-    private _skin: Spine = new Spine(Assets.get('symbols').spineData);
+    private _skin: Spine;
     public skIndex: number = -1;
 
     public get parentID() {
@@ -33,6 +33,7 @@ export class Token extends Container {
         this.interactive = false;
         if (options.parentID) { this._parentID = options.parentID }
         if (options.verticalIndex) { this.verticalIndex = options.verticalIndex }
+        this._skin = new Spine(Assets.get('symbols').spineData);
         if (options.skIndex) { this.setSkin(options.skIndex) }
         else { this.shuffleSkin() }
 

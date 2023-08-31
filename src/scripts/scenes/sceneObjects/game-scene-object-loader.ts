@@ -26,8 +26,6 @@ export class GameSceneObjectLoader extends SceneObjectLoader{
         this._checkGameEndBind = this.checkGameEnd.bind(this);
         eventEmitter.on('onTimeComplete', this._checkGameEndBind)
 
-        this._background.enterPlayerShip();
-
         this._grid = new Grid(11);
         this.addChild(this._grid);
         
@@ -109,10 +107,6 @@ export class GameSceneObjectLoader extends SceneObjectLoader{
         .to(this._grid, {
             x: 0 - this._grid.width
         }, 1)
-        .to(this._background.playerShip, {
-            duration: 5,
-            x: this._viewWidth * 0.5 
-        }, 2)
         .to(this._timer, {
             alpha: 0
         }, 2)
@@ -136,7 +130,7 @@ export class GameSceneObjectLoader extends SceneObjectLoader{
             paused: true,
 
             onStart: () => {
-                this._background.enterNPCShips();
+                this._background.enterShips();
             },
 
             onComplete: () => {

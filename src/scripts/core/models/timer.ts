@@ -5,7 +5,7 @@ import { eventEmitter } from "../../../event-emitter";
 
 export class Timer extends Container {
 
-    private _timerBackground: Spine = new Spine(Assets.get('bigWins').spineData);
+    private _timerBackground: Spine;
     private _totalTime: number;
     private _currentTime: number;
     private _titleText: PixiText = new PixiText;
@@ -20,6 +20,7 @@ export class Timer extends Container {
     constructor(totalTime: number, timeCallbacks?: Record<number, (() => void) | undefined>) {
         super()
 
+        this._timerBackground = new Spine(Assets.get('bigWins').spineData);
         this._timerBackground.skeleton.setSkinByName('default');
         this._timerBackground.state.setAnimation(0, 'static', true);
         this._timerBackground.scale.set(0.35);

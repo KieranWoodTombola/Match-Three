@@ -8,9 +8,9 @@ import { ScoreDisplay } from "../../core/models/score-display";
 export class MenuObjectLoader extends SceneObjectLoader {
 
     constructor(viewWidth: number, viewHeight: number){
-        super(viewWidth, viewHeight)
+        super(viewWidth, viewHeight) 
 
-        this._background.loopThunder();
+        this._background.showShips();
 
         const title = new PixiText("Vikings: Match-3", {
             fill: "white",
@@ -33,7 +33,7 @@ export class MenuObjectLoader extends SceneObjectLoader {
         });
         highScoreDisplay.position = {
             x: this._viewWidth * 0.5 - highScoreDisplay.width * 0.5,
-            y: this._viewHeight * 0.5 - highScoreDisplay.height * 0.5
+            y: (title.y + title.height)
         }
         this.addChild(highScoreDisplay);
 

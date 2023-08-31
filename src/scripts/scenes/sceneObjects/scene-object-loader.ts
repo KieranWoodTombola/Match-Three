@@ -14,7 +14,8 @@ export class SceneObjectLoader extends Container {
         this._viewHeight = viewHeight;
 
         this._background = new Background(this._viewWidth, this._viewHeight);
-        this.addChild(this._background);   
+        this._background.loopThunder();
+        this.addChild(this._background); 
     }
 
 }

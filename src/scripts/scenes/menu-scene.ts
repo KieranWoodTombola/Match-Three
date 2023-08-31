@@ -21,6 +21,7 @@ export class MenuScene extends Scene {
 
     private readonly _assetBundleName = 'example-scene';
     private readonly _assetBundle: PIXI.ResolverAssetsObject = {
+        'ship': 'assets/images/wild-static.png',
         'background': 'assets/images/background.jpeg',
         'waterSprite': 'assets/images/waterStock.png',
         'symbols': 'assets/animations/symbols/symbol.json',

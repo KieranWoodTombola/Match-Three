@@ -8,7 +8,7 @@ gsap.registerPlugin(MotionPathPlugin);
 import { Curve } from "../services/curve"
 
 export class Grid extends Container {
-    private _background: Sprite = new Sprite(Assets.get('gridBackground'));
+    private _background: Sprite;
     private _columnContainer = new Container();
     private _gridSize: number;
     private _columns: Column[] = [];
@@ -30,6 +30,7 @@ export class Grid extends Container {
 
         this._gridSize = gridSize;
 
+        this._background = new Sprite(Assets.get('gridBackground'));
         this._background.scale.set(0.25);
         this.addChild(this._background);
 

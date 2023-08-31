@@ -13,15 +13,12 @@ export interface IScoreDisplayOptions {
 
 export class ScoreDisplay extends Container {
 
-    public _score: number;
+    public score: number;
     protected _scoreAsText: PixiText;
     protected _titleText: PixiText;
     protected _scoreBackground: Spine;
     protected _onScoreChangeComplete: () => void;
 
-    get score() {
-        return this._score;
-    }
 
     constructor(options: IScoreDisplayOptions) {
         super()
@@ -47,8 +44,8 @@ export class ScoreDisplay extends Container {
         };
         this.addChild(this._titleText)
         
-        this._score = options.score ? options.score : 0;
-        this._scoreAsText = new PixiText(`${this._score}`, {
+        this.score = options.score ? options.score : 0;
+        this._scoreAsText = new PixiText(`${this.score}`, {
             fill: "white",
             fontFamily: "PR_Viking",
             align: "center",
@@ -92,8 +89,8 @@ export class ScoreDisplay extends Container {
             return; 
         }
     
-        const score = Math.floor(Math.round(this._score));
-        if (this._score !== score) {
+        const score = Math.floor(Math.round(this.score));
+        if (this.score !== score) {
             this._scoreAsText.text = score.toString();
         }
     }
@@ -146,7 +143,7 @@ export class GridScoreDisplay extends ScoreDisplay {
                 }
             });
             if (newScore) {
-                super.updateScore(this._score + newScore);
+                super.updateScore(this.score + newScore);
 
             }
             this.addChild(tokensContainer);
