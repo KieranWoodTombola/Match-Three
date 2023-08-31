@@ -12,7 +12,12 @@ export class Background extends Container {
     private _midWave: Sprite = new Sprite(Assets.get('waterSprite'));
     private _closeWave: Sprite = new Sprite(Assets.get('waterSprite'));
     private _ship: Token;
-    private _splash: gsap.core.Timeline | undefined;
+    private _splash: gsap.core.Timeline = gsap.timeline();
+    private _waveStartingPosition: number;
+
+    public get ship() {
+        return this._ship;
+    }
 
     constructor(viewWidth: number, viewHeight: number) {
         super();
@@ -23,12 +28,14 @@ export class Background extends Container {
 
         eventEmitter.on('onMatch', this.animateShip, this);
 
+        this._waveStartingPosition = this._viewHeight * 0.5;
+
         this.initWave(this._farWave, this._viewWidth * 2, this._viewHeight);
-        this._farWave.y = this._viewHeight - this._farWave.height * 0.7;
+        this._farWave.y = this._waveStartingPosition;
         this.initWave(this._midWave, this._viewWidth * 1.5, this._viewHeight);
-        this._midWave.y = this._viewHeight - this._midWave.height * 0.7;
+        this._midWave.y = this._waveStartingPosition;
         this.initWave(this._closeWave, this._viewWidth * 2, this._viewHeight);
-        this._closeWave.y = this._viewHeight - this._closeWave.height * 0.5;
+        this._closeWave.y = this._waveStartingPosition;
 
         this._ship = new Token({
             availHeight: this._viewWidth,
@@ -37,22 +44,31 @@ export class Background extends Container {
         });
         this._ship.scale.set(1);
         this._ship.position = {
-            x: this._viewWidth * 0.75 ,
-            y: this._viewHeight + this._ship.height * 0.25
+            x: this._viewWidth * 0.9 ,
+            y: this._viewHeight
         }
         this._ship.pivot = {
             x: this._ship.width * 0.5, 
-            y: this._ship.height * 0.75
+            y: this._ship.height * 0.25
         }
+        this._ship.angle = -20;
         this._ship.alpha = 0;
+        gsap.to(this._ship, {
+            duration: 5,
+            repeat: -1,
+            yoyo: true,
 
-        this._midWaveContainer.addChild(this._midWave, this._ship);
+            y: this._ship.y + this._ship.height * 0.1,
+            angle: 20,
+        });
+
+        this._midWaveContainer.addChild(this._ship, this._midWave);
 
         const background = new Sprite(Assets.get('background'));
         background.width = this._viewWidth;
         background.height = this._viewHeight;
         
-        this.setWaveHeightLow();
+        this.addWavesToTimeline(0.2, 0.2, 0.2, 2);
         this.addChild(
             background,
             this._farWave,
@@ -67,22 +83,10 @@ export class Background extends Container {
 
     public enterShip(): void {
         this._ship.alpha = 1;
-        gsap.from(this._ship, {
-            x: this._viewWidth + this._ship.width,
-            duration: 3
-        })
-    }
-
-    public setWaveHeightLow(): void {
-        this.backgroundSpriteTweenManager(-0.2);
-    }
-
-    public setWaveHeightMedium(): void {
-        this.backgroundSpriteTweenManager(-0.15);
-    }
-
-    public setWaveHeightHigh(): void {
-        this.backgroundSpriteTweenManager(0);
+        // gsap.from(this._ship, {
+        //     x: this._viewWidth + this._ship.width,
+        //     duration: 3
+        // })
     }
 
     private initWave(sprite: Sprite, width: number, height: number): void {
@@ -90,43 +94,30 @@ export class Background extends Container {
         sprite.height = height;
     }
 
-    private backgroundSpriteTweenManager(waveHeightMultiplier: number): void {
-        const farTime = Math.floor(Math.random() * 5) + 3;
-        const midTime = Math.floor(Math.random() * 5) + 3;
-        const closeTime = Math.floor(Math.random() * 5) + 3;
+    private addWavesToTimeline(farWaveHeightMod: number, midWaveHeightMod: number, closeWaveHeightMod: number, duration: number): void {
+        const farTime = Math.floor(Math.random() * duration) + 3;
+        const midTime = Math.floor(Math.random() * duration) + 2;
+        const closeTime = Math.floor(Math.random() * duration) + 1;
 
-        if (this._splash) { this._splash.kill(); }
-        this._splash = gsap.timeline();
+        this._splash = gsap.timeline({
+            repeat: -1,
+            yoyo: true
+        });
 
         this._splash.to(this._farWave, {
-            y: 0 - this._farWave.height * waveHeightMultiplier,
+            y: this._waveStartingPosition - (this._closeWave.height * farWaveHeightMod),
             duration: farTime,
-            repeat: -1,
-            yoyo: true
-        }, 0);
-
-        this._splash.to(this._midWaveContainer, {
-            y: 0 - this._ship.height * waveHeightMultiplier,
+        }, 0)
+        .to(this._midWaveContainer, {
+            y: this._midWaveContainer.y - (this._midWave.height * midWaveHeightMod),
             duration: midTime,
-            repeat: -1,
-            yoyo: true
-        }, 0);
-
-        this._splash.fromTo(this._ship, {
-            angle: -20,
-        }, {
-            angle: 20,
-            duration: 5,
-            repeat: -1,
-            yoyo: true
-        }, 0);
-
-        this._splash.to(this._closeWave, {
-            y: 0 - this._closeWave.height * waveHeightMultiplier,
+        }, 0)
+        .to(this._closeWave, {
+            y: this._waveStartingPosition - (this._closeWave.height * closeWaveHeightMod),
             duration: closeTime,
-            repeat: -1,
-            yoyo: true
         }, 0);
+
     }
+
 }
 

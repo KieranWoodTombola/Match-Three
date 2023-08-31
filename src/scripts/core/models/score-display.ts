@@ -4,62 +4,107 @@ import { Token } from "./token";
 import { eventEmitter } from "../../../event-emitter";
 import { ScoreMaths } from "../services/score-maths";
 
+export interface IScoreDisplayOptions {
+    titleString: string;
+    score: number;
+    onScoreChangeComplete: () => void;
+}
+
 export class ScoreDisplay extends Container {
 
-    private _score: number = 0;
-    private _scoreText: PixiText = new PixiText(`${this._score}`);
-    private _textContainer: Container = new Container();
-    private _trackedHeight = -1;
+    protected _score: number;
+    protected _scoreAsText: PixiText;
+    protected _textContainer: Container = new Container();
+    protected onScoreChangeComplete: () => void;
 
-    constructor() {
+    get score() {
+        return this._score;
+    }
+
+    constructor(options: IScoreDisplayOptions) {
         super()
 
-        eventEmitter.on('onMatch', this.recordMatchedTokens, this);
+        this.onScoreChangeComplete = options.onScoreChangeComplete;
 
-        const title: PixiText = new PixiText("SCORE");
-        const scoreCard = new Graphics();
-        scoreCard.beginFill(0xFFFFFF);
-        scoreCard.drawRoundedRect(0, 0, title.width, title.height, 3);
-        scoreCard.endFill();
-        scoreCard.addChild(title);
-        this._textContainer.addChild(scoreCard);
+        const title: PixiText = new PixiText(options.titleString, {
+            fill: "black",
+            align: "center"
+        });
+        const titleTextBackground = new Graphics();
+        titleTextBackground.beginFill(0xFFFFFF)
+            .drawRoundedRect(0, 0, title.width, title.height, 3)
+            .endFill()
+            .addChild(title);
+        this._textContainer.addChild(titleTextBackground);
         
-        this._scoreText.style = {
-            fill: "white"
-        }
-        this._scoreText.position = {
-            x: scoreCard.width * 0.5 - this._scoreText.width,
-            y: scoreCard.height * 1.5
+        this._score = options.score ? options.score : 0;
+        this._scoreAsText = new PixiText(`${this._score}`, {
+            fill: "white",
+            align: "center",
+            stroke: "black",
+            strokeThickness: 1
+        });
+        this._scoreAsText.position = {
+            x: titleTextBackground.width * 0.5 - this._scoreAsText.width * 0.5,
+            y: titleTextBackground.height * 1.5
         };
-        this._textContainer.addChild(this._scoreText);
+        this._textContainer.addChild(this._scoreAsText);
 
         this.addChild(this._textContainer);
     }
 
-    private updateScore(targetScore: number) {
+    public updateScore(targetScore: number) {
+
         gsap.to(this, {
-            _score: this._score + targetScore,
+            score: targetScore,
             duration: 3,
             onUpdate: this.showScore.bind(this),
+
+            onComplete: () => {
+                if(this.onScoreChangeComplete) {
+                    this.onScoreChangeComplete();
+                }
+                gsap.to(this._scoreAsText, {
+                    x: this._textContainer.width * 0.5 - this._scoreAsText.width * 0.5
+                });
+            }
         });
     }
 
     private showScore(): void {
-        if (!this._scoreText) { return; }
-    
-        const score = Math.round(this._score);
-        if (this._score !== score) {
-            this._scoreText.text = score;
+        if (!this._scoreAsText) { 
+            return; 
         }
+    
+        const score = Math.floor(Math.round(this._score));
+        if (this._score !== score) {
+            this._scoreAsText.text = score.toString();
+        }
+    }
+
+}
+
+export class GridScoreDisplay extends ScoreDisplay {
+
+    private _trackedHeight = -1;
+    public comboTweenStack: string[] = [];
+    private _recordMatchedTokensBound: (tokens: Token[]) => void;
+
+    constructor(options: IScoreDisplayOptions) {
+        super(options);
+
+        this._recordMatchedTokensBound = this.recordMatchedTokens.bind(this);
+        eventEmitter.on('onMatch', this._recordMatchedTokensBound);
     }
 
     private recordMatchedTokens(tokens: Token[]): void {
         const comboDisplayTimeline = gsap.timeline({
             repeat: 1,
             yoyo: true,
+
             onComplete: () => {
                 this.removeChildren();
-                this.addChild(this._scoreText);
+                this.addChild(this._scoreAsText);
                 this.addChild(this._textContainer);
             }
         });
@@ -76,13 +121,17 @@ export class ScoreDisplay extends Container {
                 duration: 2,
             }, processedTokens.indexOf(array));
 
-            let score = 0;
+            let newScore = 0;
             array.forEach(token => {
-                const bonus = ScoreMaths.getScore(token.skIndex);
-                if (bonus) { score += bonus }
+                const points = ScoreMaths.getScore(token.skIndex);
+                if (points) { 
+                    newScore += points;
+                }
             });
-            if (score) { this.updateScore(score); }
-            
+            if (newScore) {
+                super.updateScore(this._score + newScore);
+
+            }
             this.addChild(tokensContainer);
         });
     }
@@ -112,5 +161,11 @@ export class ScoreDisplay extends Container {
         };
 
         return displayTokenContainer;
+    }
+
+    public destroy(): void {
+        super.destroy();
+        eventEmitter.off('onMatch', this._recordMatchedTokensBound);
+        return;
     }
 }

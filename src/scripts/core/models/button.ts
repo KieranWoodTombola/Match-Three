@@ -6,7 +6,7 @@ export class Button extends Container {
     private _coin: Graphics;
     private _buttonCallback: Function | undefined;
 
-    constructor (buttonText: string, buttonRadius: number, buttonCallback: Function ) {
+    constructor (buttonText: string, buttonRadius: number, buttonCallback: Function) {
         super();
 
         this.interactive = true;
@@ -54,7 +54,7 @@ export class Button extends Container {
         });
     }
     
-    private resetButtonToStartingState(): void {
+    public resetButtonToStartingState(): void {
         gsap.to(this._coin, {
             duration: 0.3,
             pixi: {

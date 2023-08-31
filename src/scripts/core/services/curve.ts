@@ -20,11 +20,36 @@ export class Curve {
         return [this.secondX, this.secondY];
     }
 
-    public getHighNoon(): [number, number] {
-        return [
-            this.getMidpoint()[0],
-            this.getMidpoint()[1] + this.getRadius()
-        ];
+    public getCurvePoints(): [number, number, number, number] {
+
+        let firstX: number = (this.getMidpoint()[0] + this.firstX) * 0.5;
+        let firstY: number = (this.getMidpoint()[1] + this.secondY) * 0.5;
+        let secondX: number = (this.getMidpoint()[0] + this.secondX) * 0.5;
+        let secondY: number = (this.getMidpoint()[1] + this.firstY) * 0.5;
+
+        if(this.firstX === this.secondX){
+            const curveRadius = (this.getMidpoint()[1] + secondY) * 0.5
+            firstX = this.getMidpoint()[0] + curveRadius * 0.5;
+            secondX = this.getMidpoint()[0] - curveRadius * 0.5;
+
+            firstY = this.getMidpoint()[1];
+            secondY = this.getMidpoint()[1];
+
+            return [firstX, firstY, secondX, secondY];
+        }
+
+        if(this.firstY === this.secondY){
+            const curveRadius = (this.getMidpoint()[0] + secondX) * 0.5
+            firstY = this.getMidpoint()[1] + curveRadius * 0.5;
+            secondY = this.getMidpoint()[1] - curveRadius * 0.5;
+
+            firstX = this.getMidpoint()[0];
+            secondX = this.getMidpoint()[0];
+
+            return [firstX, firstY, secondX, secondY];
+        }
+
+        return [firstX, firstY, secondX, secondY];
     }
 
     public getMidpoint(): [number, number]{
@@ -46,24 +71,21 @@ export class Curve {
         return Math.PI * Math.pow(this.getRadius(), 2);
     }
 
+    /** 
+     * Assuming a circle with a diameter drawn from the Class'
+     * first and second position, where 0 degrees is 12 o'clock,
+     * returns the position on the circumference of the circle
+     * at a given degree.
+     * 
+     * @param {number} Degree of the circle, where 12 o'clock is 0 degrees
+     * @returns {[number, number]} position on the circumference of the circle 
+    */
     public getPointOnCircumference(degrees: number): [number, number] {
         const radians = degrees * (Math.PI / 180)
         return [
             (Math.cos(radians) * this.getRadius()) + this.getMidpoint()[0],
             (Math.sin(radians) * this.getRadius()) + this.getMidpoint()[1]
         ];
-    }
-
-    public rotate90(firstX: number, firstY: number): [number, number] {
-        let newX = firstY - this.getMidpoint()[1];
-        let newY = firstX - this.getMidpoint()[0];
-
-        //ToDo reduce height of curve relative to base of curve
-        // const length: number = Math.sqrt(newX * newX + newY * newY);
-        // newX = (newX === 0) ? newX :newX / length;
-        // newY = (newY === 0) ? newY : newY / length;
-
-        return [newX + this.getMidpoint()[0], newY + this.getMidpoint()[1]];
     }
 
 }

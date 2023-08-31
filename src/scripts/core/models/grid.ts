@@ -14,6 +14,7 @@ export class Grid extends Container {
     private _columns: Column[] = [];
     private _selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
     private _matchedTokens: Token[] = [];
+    private _clickCheckBound: (targetToken: Token) => void;
 
     get gridSize() {
         return this._gridSize;
@@ -21,9 +22,13 @@ export class Grid extends Container {
 
     constructor(gridSize: number, availWidth: number) {
         super()
-        eventEmitter.on('clickCheck', this.clickCheck, this);
+
+        this._clickCheckBound = this.clickCheck.bind(this)
+        eventEmitter.on('clickCheck', this._clickCheckBound);
+
         this._availWidth = availWidth;
         this._gridSize = gridSize;
+
         for (let i = 0; i < this._gridSize; i++) {
             const newColumn = new Column(i, this._gridSize, this._availWidth);
             newColumn.x = (availWidth / (gridSize / i));
@@ -34,6 +39,7 @@ export class Grid extends Container {
     }
 
     private clickCheck(targetToken: Token): void {
+
         if (targetToken.matched) {
             return;
         }
@@ -75,17 +81,13 @@ export class Grid extends Container {
                 [this._selectedTokens[0].x, this._selectedTokens[0].y],
                 [this._selectedTokens[1].x, this._selectedTokens[1].y]
             );
-
-            const rotateFirst = tweenCurve.rotate90(this._selectedTokens[0].x, this._selectedTokens[0].y);
-            const rotateSecond = tweenCurve.rotate90(this._selectedTokens[1].x, this._selectedTokens[1].y);
+            const rotateSecond: [number, number] = [tweenCurve.getCurvePoints()[2], tweenCurve.getCurvePoints()[3]];
 
             //tween the tokens from their DESTINATION to their ORIGIN
             const swapTween = gsap.timeline({
-                ease: "back",
+                //ease: "back",
                 onStart:( () => {
-                    this._columns.forEach(column => { 
-                        column.deactivateAllTokens() 
-                    });
+                    this.deactivate();
                 }),
                 onComplete:( () => {
                     this._columns.forEach(column => {
@@ -93,16 +95,14 @@ export class Grid extends Container {
                     });
                     this._selectedTokens = [undefined, undefined];
                     this.resolveMatches();
-                    eventEmitter.emit('onSwapComplete');
                 }),
             });
 
             swapTween.to(this._selectedTokens[0],
                 {
                     motionPath: {
-                        curviness: 2,
                         path: [
-                            { x: rotateFirst[0], y: rotateFirst[1] },
+                            { x: tweenCurve.getCurvePoints()[2], y: tweenCurve.getCurvePoints()[3] },
                             { x: firstX, y: firstY }
                         ]
                     },
@@ -112,9 +112,8 @@ export class Grid extends Container {
             swapTween.to(this._selectedTokens[1],
                 {
                     motionPath: {
-                        curviness: 2,
                         path: [
-                            { x: rotateSecond[0], y: rotateSecond[1] },
+                            { x: tweenCurve.getCurvePoints()[0], y: tweenCurve.getCurvePoints()[1] },
                             { x: secondX, y: secondY }
                         ]
                     },
@@ -204,7 +203,19 @@ export class Grid extends Container {
         });
     }
 
+    public deactivate(): void {
+        this._columns.forEach(column => { 
+            column.deactivateAllTokens() 
+        });
+    }
+
     public getToken(X: number, Y: number): Token {
         return this._columns[X].getToken(Y);
+    }
+
+    public destroy(): void {
+        super.destroy();
+        eventEmitter.off('clickCheck', this._clickCheckBound);
+        return;
     }
 }
