@@ -171,9 +171,4 @@ export class GridScoreDisplay extends ScoreDisplay {
         return displayTokenContainer;
     }
 
-    public destroy(): void {
-        super.destroy();
-        eventEmitter.off('onMatch', this._recordMatchedTokensBound);
-        return;
-    }
 }

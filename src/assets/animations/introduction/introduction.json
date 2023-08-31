@@ -555,10 +555,12 @@
 			"treeColour2": { "y": 0.5, "width": 173, "height": 603 }
 		}
 	},
-	"sky&clouds":{
+	"skyCloudsFront":{
 		"clouds1": {
 			"clouds1": { "x": 0.5, "y": 0.5, "width": 703, "height": 185 }
-		},
+		}
+	},
+	"skyCloudsBack":{
 		"clouds2": {
 			"clouds2": { "x": 0.5, "y": 0.5, "width": 703, "height": 185 }
 		},
@@ -567,6 +569,23 @@
 		},
 		"fireLight": {
 			"fireLight": { "y": 0.5, "width": 150, "height": 75 }
+		}
+	},
+	"thunderFlash": {
+		"thunderFlash": {
+			"thunderFlash": { "x": 0.5, "y": 0.5, "width": 703, "height": 185 }
+		}
+	},
+	"lightning": {
+		"lightningSequence1": {
+			"lightning/lightning_00004": { "width": 234, "height": 300 },
+			"lightning/lightning_00005": { "width": 234, "height": 300 },
+			"lightning/lightning_00008": { "width": 234, "height": 300 },
+			"lightning/lightning_00009": { "width": 234, "height": 300 },
+			"lightning/lightning_00014": { "width": 234, "height": 300 },
+			"lightning/lightning_00015": { "width": 234, "height": 300 },
+			"lightning/lightning_00016": { "width": 234, "height": 300 },
+			"lightning/lightning_00017": { "width": 234, "height": 300 }
 		}
 	}
 },

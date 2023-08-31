@@ -190,7 +190,8 @@ export class GameSceneObjectLoader extends SceneObjectLoader{
             gsap.killTweensOf(child);
             child.destroy();
         });
-        eventEmitter.off('onTimeComplete', this._checkGameEndBind);
+        eventEmitter.off('onMatch')
+        eventEmitter.off('onTimeComplete');
         eventEmitter.off('clickCheck');
     }
 }

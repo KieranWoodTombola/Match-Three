@@ -9,6 +9,8 @@ export class MenuObjectLoader extends SceneObjectLoader {
     constructor(viewWidth: number, viewHeight: number){
         super(viewWidth, viewHeight)
 
+        this._background.loopThunder();
+
         const title = new PixiText("Vikings: Match-3", {
             fill: "white",
             stroke: "black",

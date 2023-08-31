@@ -1,22 +1,29 @@
 import { Assets, Container, Sprite } from "pixi.js";
 import { gsap } from "gsap";
 import { Spine } from "pixi-spine";
+import { eventEmitter } from "../../../event-emitter";
 
 export class Background extends Container {
 
     private _viewWidth: number;
     private _viewHeight: number;
-    private _stormClouds: Spine;
-    private _ground: Spine;
+
+    private _stormCloudsContainer: Container = new Container();
+
+    private _thunderFlash: Spine = new Spine(Assets.get("introduction").spineData);
+    private _lightning: Spine = new Spine(Assets.get("introduction").spineData);
+
+    private _waveStartingPosition: number;
     private _farWave: Sprite = new Sprite(Assets.get('waterSprite'));
     private _midWaveContainer: Container = new Container();
     private _midWave: Sprite = new Sprite(Assets.get('waterSprite'));
     private _closeWave: Sprite = new Sprite(Assets.get('waterSprite'));
+
     private _playerShip: Sprite;
     private _npcShipClose: Sprite = new Sprite(Assets.get('ship'));
     private _npcShipFar: Sprite = new Sprite(Assets.get('ship'));
+
     private _splash: gsap.core.Timeline = gsap.timeline();
-    private _waveStartingPosition: number;
 
     public get playerShip() {
         return this._playerShip;
@@ -25,24 +32,37 @@ export class Background extends Container {
     constructor(viewWidth: number, viewHeight: number) {
         super();
 
+        eventEmitter.on('onMatch', this.playThunder, this);
+
         this.interactive = false;
         this._viewWidth = viewWidth;
         this._viewHeight = viewHeight;
 
-        this._stormClouds = new Spine(Assets.get("introduction").spineData);
-        this._stormClouds.skeleton.setSkinByName("sky&clouds");
-        this._stormClouds.scale.set(0.5);
-        this._stormClouds.position = {
+        const stormCloudsBack = new Spine(Assets.get("introduction").spineData);
+        stormCloudsBack.skeleton.setSkinByName("skyCloudsBack");
+        this._thunderFlash.skeleton.setSkinByName("thunderFlash");
+        this._lightning.skeleton.setSkinByName("lightning");
+        const stormCloudsFront = new Spine(Assets.get("introduction").spineData);
+        stormCloudsFront.skeleton.setSkinByName("skyCloudsFront");
+
+        this._stormCloudsContainer.addChild(
+            stormCloudsBack,
+            this._thunderFlash,
+            this._lightning,
+            stormCloudsFront
+        );
+        this._stormCloudsContainer.scale.set(0.5);
+        this._stormCloudsContainer.position = {
             x: this._viewWidth * 0.5,
             y: this._viewHeight * 0.5
         }
-        this.addChild(this._stormClouds);
 
-        this._ground = new Spine(Assets.get("introduction").spineData);
-        this._ground.skeleton.setSkinByName("nature");
-        this._ground.position = {
+
+        const ground = new Spine(Assets.get("introduction").spineData);
+        ground.skeleton.setSkinByName("nature");
+        ground.position = {
             x: this._viewWidth * 0.5,
-            y: this._viewHeight * 0.475
+            y: this._viewHeight * 0.5
         }
 
         this._waveStartingPosition = this._viewHeight * 0.4;
@@ -53,7 +73,6 @@ export class Background extends Container {
         this._midWave.y = this._waveStartingPosition;
         this.initWave(this._closeWave, this._viewWidth * 2, this._viewHeight);
         this._closeWave.y = this._waveStartingPosition + this._waveStartingPosition * 0.5;
-
 
         this._npcShipClose = this.addShip(0.4, 9);
         this._npcShipClose.x = this._viewWidth * 0.3;
@@ -74,13 +93,37 @@ export class Background extends Container {
         
         this.addWavesToTimeline(0.15, 0.1, 0, 2);
         this.addChild(
-            this._stormClouds,
+            this._stormCloudsContainer,
             this._farWave,
             this._midWaveContainer,
             this._closeWave,
-            this._ground
+            ground
         );
+
+        this.stopThunder();
     }
+
+    public playThunder(): void {
+        this._thunderFlash.alpha = 1;
+        this._lightning.alpha = 1;
+        this._thunderFlash.state.setAnimation(0, "introduction", false);
+        this._lightning.state.setAnimation(0, "introduction", false);
+    }
+
+    public loopThunder(): void {
+        this._thunderFlash.alpha = 1;
+        this._lightning.alpha = 1;
+        this._thunderFlash.state.setAnimation(0, "introduction", true);
+        this._lightning.state.setAnimation(0, "introduction", true);
+    }
+
+    public stopThunder(): void {
+        this._thunderFlash.alpha = 0;
+        this._lightning.alpha = 0;
+        this._thunderFlash.state.setEmptyAnimation(0, 0);
+        this._lightning.state.setEmptyAnimation(0, 0);
+    }
+
 
     private addShip(scale: number, duration: number): Sprite {
         const ship = new Sprite(Assets.get('ship'));
