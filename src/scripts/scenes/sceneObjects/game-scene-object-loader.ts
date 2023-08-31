@@ -22,6 +22,8 @@ export class GameSceneObjectLoader extends SceneObjectLoader{
 
     constructor(viewWidth: number, viewHeight: number) {
         super(viewWidth, viewHeight);
+
+        this._background.stopThunder();
         
         this._checkGameEndBind = this.checkGameEnd.bind(this);
         eventEmitter.on('onTimeComplete', this._checkGameEndBind)

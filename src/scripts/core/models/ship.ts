@@ -1,7 +1,4 @@
-import { Sprite } from "pixi.js";
-import { Texture } from "pixi.js";
-import { Resource } from "pixi.js";
-import { Assets } from "pixi.js";
+import { Sprite, Assets } from "pixi.js";
 
 import { gsap } from "gsap";
 
@@ -23,7 +20,9 @@ export class Ship extends Sprite {
             x: x,
             y: y
         }
+    }
 
+    public rotateOnPivot(): void {
         gsap.fromTo(this, {
             angle: -20
         }, {

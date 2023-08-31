@@ -9,14 +9,12 @@ import { Curve } from "../services/curve"
 
 export class Grid extends Container {
     private _background: Sprite;
-    private _columnContainer = new Container();
+    private _columnContainer;
     private _gridSize: number;
     private _columns: Column[] = [];
     private _selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
     private _matchedTokens: Token[] = [];
     private _clickCheckBound: (targetToken: Token) => void;
-
-    private _gridID: number = Math.round(Math.random() * (100 - 1) + 1);
 
     get gridSize() {
         return this._gridSize;
@@ -34,6 +32,7 @@ export class Grid extends Container {
         this._background.scale.set(0.25);
         this.addChild(this._background);
 
+        this._columnContainer = new Container();
         for (let i = 0; i < this._gridSize; i++) {
             const newColumn = new Column(i, 4);
             newColumn.x = (newColumn.getToken(0).width * i);
@@ -44,7 +43,6 @@ export class Grid extends Container {
             x: (this._background.width * 0.55 - this._columnContainer.width * 0.5),
             y: (this._background.height * 0.6 - this._columnContainer.height * 0.5),
         }
-
         this.addChild(this._columnContainer);
 
         this.position.set(this.getToken(0, 0).width * 0.5, this.getToken(0, 0).height * 0.5);
