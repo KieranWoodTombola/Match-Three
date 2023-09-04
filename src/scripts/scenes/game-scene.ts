@@ -21,9 +21,8 @@ export class GameScene extends Scene {
 
     private readonly _assetBundleName = 'example-scene';
     private readonly _assetBundle: PIXI.ResolverAssetsObject = {
-        'background': 'assets/images/background.jpeg',
         'ship': 'assets/images/wild-static.png',
-        'waterSprite': 'assets/images/waterStock.png',
+        'water': 'assets/images/waves.png',
         'symbols': 'assets/animations/symbols/symbol.json',
         'gridBackground': 'assets/images/PTBackground.png',
         'bigWins': 'assets/animations/bigWins/bigWinVikings.png',
