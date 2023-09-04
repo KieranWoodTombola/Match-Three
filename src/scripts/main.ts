@@ -7,6 +7,4 @@ export const Game = new Engine({
     canvasH: 450
 });
 
-localStorage.highScore = 0;
-
 Game.initialise(new MenuScene(Game.width, Game.height));
