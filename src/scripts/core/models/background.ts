@@ -10,15 +10,15 @@ export class Background extends Container {
     private _viewWidth: number;
     private _viewHeight: number;
 
-    private _ships: Ship[] | undefined;
+    private _ships: Ship[] = [];
 
-    private _stormCloudsContainer: Container = new Container();
+    private _stormCloudsContainer: Container;
     private _thunderFlash: Spine;
     private _lightning: Spine;
 
-    private _closeWaveContainer: Container = new Container();
-    private _midWaveContainer: Container = new Container();
-    private _farWaveContainer: Container = new Container();
+    private _closeWaveContainer: Container;
+    private _midWaveContainer: Container;
+    private _farWaveContainer: Container;
 
     constructor(viewWidth: number, viewHeight: number) {
         super();
@@ -45,6 +45,7 @@ export class Background extends Container {
         const stormCloudsFront = new Spine(Assets.get("introduction").spineData);
         stormCloudsFront.skeleton.setSkinByName("skyCloudsFront");
 
+        this._stormCloudsContainer = new Container();
         this._stormCloudsContainer.addChild(
             stormCloudsBack,
             this._thunderFlash,
@@ -57,6 +58,9 @@ export class Background extends Container {
             y: this._viewHeight * 0.5
         }
 
+        this._closeWaveContainer = new Container();
+        this._midWaveContainer = new Container();
+        this._farWaveContainer = new Container();
 
         const ground = new Spine(Assets.get("introduction").spineData);
         ground.skeleton.setSkinByName("nature");
@@ -65,18 +69,18 @@ export class Background extends Container {
             y: this._viewHeight * 0.5
         }
 
-
         const farWave = this.initWave(this._viewWidth * 2, this._viewHeight, this._viewHeight * 0.4);
         const midWave = this.initWave(this._viewWidth * 1.5, this._viewHeight, this._viewHeight * 0.45);
         const closeWave = this.initWave(this._viewWidth * 2, this._viewHeight, this._viewHeight * 0.5);
-        
 
         this._closeWaveContainer.addChild(closeShip, closeWave);
         this._midWaveContainer.addChild(midShip, midWave);
         this._farWaveContainer.addChild(farShip01, farShip02, farWave);
 
-
         this.setWaveTweens();
+        this._ships.forEach(ship => {
+            ship.rotateOnPivot();
+        })
         this.addChild(
             this._stormCloudsContainer,
             this._farWaveContainer,
