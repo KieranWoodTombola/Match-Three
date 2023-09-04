@@ -1,0 +1,244 @@
+
+introduction.png
+size: 2048,2048
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+bush1
+  rotate: false
+  xy: 1707, 1742
+  size: 316, 104
+  orig: 335, 109
+  offset: 12, 2
+  index: -1
+chicken/chicken_00031
+  rotate: false
+  xy: 1112, 1673
+  size: 89, 79
+  orig: 100, 100
+  offset: 8, 10
+  index: -1
+clouds1
+  rotate: false
+  xy: 2, 1856
+  size: 703, 177
+  orig: 703, 185
+  offset: 0, 8
+  index: -1
+clouds2
+  rotate: false
+  xy: 2, 1536
+  size: 691, 151
+  orig: 703, 185
+  offset: 4, 34
+  index: -1
+fireLight
+  rotate: false
+  xy: 707, 1682
+  size: 150, 70
+  orig: 150, 75
+  offset: 0, 0
+  index: -1
+ground
+  rotate: false
+  xy: 707, 1873
+  size: 703, 160
+  orig: 703, 185
+  offset: 0, 0
+  index: -1
+ground2
+  rotate: false
+  xy: 707, 1754
+  size: 703, 117
+  orig: 703, 185
+  offset: 0, 0
+  index: -1
+leftHouse
+  rotate: false
+  xy: 1412, 1774
+  size: 293, 259
+  orig: 293, 259
+  offset: 0, 0
+  index: -1
+leftHut
+  rotate: false
+  xy: 250, 78
+  size: 136, 185
+  orig: 136, 185
+  offset: 0, 0
+  index: -1
+lightning/lightning_00004
+  rotate: false
+  xy: 2, 194
+  size: 234, 300
+  orig: 234, 300
+  offset: 0, 0
+  index: -1
+lightning/lightning_00005
+  rotate: false
+  xy: 469, 925
+  size: 202, 300
+  orig: 234, 300
+  offset: 32, 0
+  index: -1
+lightning/lightning_00008
+  rotate: false
+  xy: 639, 1234
+  size: 214, 300
+  orig: 234, 300
+  offset: 20, 0
+  index: -1
+lightning/lightning_00009
+  rotate: false
+  xy: 429, 623
+  size: 226, 300
+  orig: 234, 300
+  offset: 5, 0
+  index: -1
+lightning/lightning_00014
+  rotate: false
+  xy: 673, 932
+  size: 150, 300
+  orig: 234, 300
+  offset: 59, 0
+  index: -1
+lightning/lightning_00015
+  rotate: false
+  xy: 673, 932
+  size: 150, 300
+  orig: 234, 300
+  offset: 59, 0
+  index: -1
+lightning/lightning_00016
+  rotate: false
+  xy: 825, 932
+  size: 147, 300
+  orig: 234, 300
+  offset: 64, 0
+  index: -1
+lightning/lightning_00017
+  rotate: false
+  xy: 238, 265
+  size: 135, 277
+  orig: 234, 300
+  offset: 73, 23
+  index: -1
+mound
+  rotate: false
+  xy: 1707, 1848
+  size: 328, 185
+  orig: 328, 185
+  offset: 0, 0
+  index: -1
+raven/ravenBody
+  rotate: false
+  xy: 802, 1611
+  size: 54, 69
+  orig: 61, 73
+  offset: 3, 2
+  index: -1
+raven/ravenTail
+  rotate: false
+  xy: 180, 544
+  size: 208, 86
+  orig: 211, 91
+  offset: 2, 2
+  index: -1
+raven/ravenWing1
+  rotate: false
+  xy: 1203, 1692
+  size: 77, 60
+  orig: 89, 74
+  offset: 5, 8
+  index: -1
+raven/ravenWing2
+  rotate: false
+  xy: 999, 1694
+  size: 111, 58
+  orig: 125, 64
+  offset: 4, 3
+  index: -1
+raven/ravenWing3
+  rotate: false
+  xy: 2, 9
+  size: 154, 39
+  orig: 157, 48
+  offset: 1, 5
+  index: -1
+rightHouse
+  rotate: false
+  xy: 177, 944
+  size: 290, 281
+  orig: 290, 281
+  offset: 0, 0
+  index: -1
+stoneSlab1
+  rotate: false
+  xy: 859, 1706
+  size: 138, 46
+  orig: 151, 62
+  offset: 7, 6
+  index: -1
+thunderFlash
+  rotate: false
+  xy: 2, 1689
+  size: 703, 165
+  orig: 703, 185
+  offset: 0, 20
+  index: -1
+treeColour1
+  rotate: false
+  xy: 2, 496
+  size: 176, 433
+  orig: 176, 433
+  offset: 0, 0
+  index: -1
+treeColour2
+  rotate: false
+  xy: 2, 931
+  size: 173, 603
+  orig: 173, 603
+  offset: 0, 0
+  index: -1
+updatedViking/axe
+  rotate: false
+  xy: 2, 50
+  size: 246, 142
+  orig: 261, 152
+  offset: 4, 7
+  index: -1
+updatedViking/backArm
+  rotate: false
+  xy: 657, 664
+  size: 121, 259
+  orig: 121, 261
+  offset: 0, 0
+  index: -1
+updatedViking/body
+  rotate: false
+  xy: 180, 632
+  size: 247, 310
+  orig: 260, 318
+  offset: 6, 0
+  index: -1
+updatedViking/capeBack
+  rotate: false
+  xy: 177, 1227
+  size: 460, 307
+  orig: 460, 307
+  offset: 0, 0
+  index: -1
+updatedViking/headBase
+  rotate: false
+  xy: 695, 1538
+  size: 105, 142
+  orig: 115, 152
+  offset: 5, 6
+  index: -1
+well
+  rotate: false
+  xy: 780, 682
+  size: 179, 248
+  orig: 193, 262
+  offset: 8, 6
+  index: -1

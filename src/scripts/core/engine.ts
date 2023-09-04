@@ -1,5 +1,5 @@
 import { Container, IRenderer, Ticker, autoDetectRenderer } from 'pixi.js';
-import { Scene, SceneManager } from './scene-manager';
+import { Scene, SceneManager } from '../scenes/scene-manager';
 import { LoadScreen } from './views/load-screen';
 
 interface EngineParams {

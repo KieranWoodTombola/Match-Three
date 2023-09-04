@@ -1,5 +1,6 @@
 import { Text as PixiText, Container, Graphics} from "pixi.js";
 import { gsap } from "gsap";
+import '@pixi/graphics-extras';
 
 export class Button extends Container {
     private _buttonText: PixiText;
@@ -34,8 +35,10 @@ export class Button extends Container {
         this._buttonText = new PixiText(buttonText)
         this._buttonText.style = {
             fill: "white",
+            fontFamily: "PR_Viking",
+            align: 'justify',
             stroke: "black",
-            strokeThickness: 1,
+            strokeThickness: 2,
         }
         this._buttonText.position = {
             x: this._coin.width * 0.6 ,

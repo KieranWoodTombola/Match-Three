@@ -1,4 +1,4 @@
-import { Container } from "pixi.js";
+import { Assets, Container, Sprite } from "pixi.js";
 import { Column } from "./column";
 import { eventEmitter } from "../../../event-emitter";
 import { Token } from "./token";
@@ -8,8 +8,8 @@ gsap.registerPlugin(MotionPathPlugin);
 import { Curve } from "../services/curve"
 
 export class Grid extends Container {
-
-    private _availWidth: number;
+    private _background: Sprite;
+    private _columnContainer;
     private _gridSize: number;
     private _columns: Column[] = [];
     private _selectedTokens: [Token | undefined, Token | undefined] = [undefined, undefined];
@@ -20,21 +20,31 @@ export class Grid extends Container {
         return this._gridSize;
     }
 
-    constructor(gridSize: number, availWidth: number) {
+    constructor(gridSize: number) {
         super()
 
-        this._clickCheckBound = this.clickCheck.bind(this)
+        this._clickCheckBound = this.clickCheck.bind(this);
         eventEmitter.on('clickCheck', this._clickCheckBound);
 
-        this._availWidth = availWidth;
         this._gridSize = gridSize;
 
+        this._background = new Sprite(Assets.get('gridBackground'));
+        this._background.scale.set(0.25);
+        this.addChild(this._background);
+
+        this._columnContainer = new Container();
         for (let i = 0; i < this._gridSize; i++) {
-            const newColumn = new Column(i, this._gridSize, this._availWidth);
-            newColumn.x = (availWidth / (gridSize / i));
+            const newColumn = new Column(i, 4);
+            newColumn.x = (newColumn.getToken(0).width * i);
             this._columns.push(newColumn);
-            this.addChild(newColumn);
+            this._columnContainer.addChild(newColumn);
         }
+        this._columnContainer.position = {
+            x: (this._background.width * 0.55 - this._columnContainer.width * 0.5),
+            y: (this._background.height * 0.6 - this._columnContainer.height * 0.5),
+        }
+        this.addChild(this._columnContainer);
+
         this.position.set(this.getToken(0, 0).width * 0.5, this.getToken(0, 0).height * 0.5);
     }
 
@@ -53,18 +63,24 @@ export class Grid extends Container {
 
         //on SecondClick
         if (this._selectedTokens[0] && !this._selectedTokens[1]) {
-
             this._selectedTokens[1] = targetToken;
+
+            if(this._selectedTokens[0] === this._selectedTokens[1]) { 
+                this._selectedTokens[1] = undefined;
+                return; 
+            }
+
             this._selectedTokens.forEach(token => {
                 if (!token) { return; }
-                token.setParent(this);
+                token.setParent(this._columnContainer);
                 token.interactive = true;
             });
-            //snap the tokens to their destination
-            const firstX = (this._availWidth / (this._gridSize / this._selectedTokens[0].parentID))
-            const firstY = (this._availWidth / (this._gridSize / this._selectedTokens[0].verticalIndex))
-            const secondX = (this._availWidth / (this._gridSize / this._selectedTokens[1].parentID))
-            const secondY = (this._availWidth / (this._gridSize / this._selectedTokens[1].verticalIndex))
+
+
+            const firstX = this._columnContainer.width / (this.gridSize / this._selectedTokens[0].parentID);
+            const firstY = this._selectedTokens[0].y;
+            const secondX = this._columnContainer.width / (this.gridSize / this._selectedTokens[1].parentID);
+            const secondY = this._selectedTokens[1].y;
 
             this._selectedTokens[0].position = { x: secondX, y: secondY }
             this._selectedTokens[1].position = { x: firstX, y: firstY }
@@ -78,14 +94,13 @@ export class Grid extends Container {
 
             //THE TOKENS SWAP POSITIONS FIRST!
             const tweenCurve = new Curve(
-                [this._selectedTokens[0].x, this._selectedTokens[0].y],
-                [this._selectedTokens[1].x, this._selectedTokens[1].y]
+                [Math.floor(this._selectedTokens[0].x), Math.floor(this._selectedTokens[0].y)],
+                [Math.floor(this._selectedTokens[1].x), Math.floor(this._selectedTokens[1].y)],
+                this._selectedTokens[0].width
             );
-            const rotateSecond: [number, number] = [tweenCurve.getCurvePoints()[2], tweenCurve.getCurvePoints()[3]];
 
             //tween the tokens from their DESTINATION to their ORIGIN
             const swapTween = gsap.timeline({
-                //ease: "back",
                 onStart:( () => {
                     this.deactivate();
                 }),
@@ -130,7 +145,7 @@ export class Grid extends Container {
         });
 
         //X Matches
-        for (let i = 0; i < this._gridSize; i++) {
+        for (let i = 0; i < this._columns[0].tokens.length; i++) {
             const horizontalArray: Token[] = [];
             this._columns.forEach(column => {
                 horizontalArray.push(column.tokens[i]);
@@ -144,14 +159,10 @@ export class Grid extends Container {
         this._columns.forEach(column => {
             column.processMatches();
         });
-
-        //Only use the first Column for testing
-        // this.columns[0].tokens = this.matchLine(this.columns[0].tokens);
-        // this.columns[0].processMatches();
-        // this.columns[0].tokens.forEach(token => {token.matched = false;})
     }
 
     private matchLine(tokens: Token[]): void {
+
         let cacheSkIndex: number | undefined = undefined;
         let currentComboTokens: Token[] = [];
         const totalComboTokens: Token[] = [];
@@ -178,7 +189,7 @@ export class Grid extends Container {
             }
 
             //last token in the array
-            if (token === tokens[this._gridSize - 1]) {
+            if (token === tokens[tokens.length - 1]) {
                 checkForCombo();
                 return;
             }
@@ -215,7 +226,10 @@ export class Grid extends Container {
 
     public destroy(): void {
         super.destroy();
+        this.children.forEach(child => {
+            gsap.killTweensOf(child);
+            child.destroy();
+        });
         eventEmitter.off('clickCheck', this._clickCheckBound);
-        return;
     }
 }

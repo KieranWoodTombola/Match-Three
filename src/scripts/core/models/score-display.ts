@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
-import { Container, Graphics, Text as PixiText } from "pixi.js";
+import { Container, Text as PixiText, Assets } from "pixi.js";
+import { Spine } from "pixi-spine";
 import { Token } from "./token";
 import { eventEmitter } from "../../../event-emitter";
 import { ScoreMaths } from "../services/score-maths";
@@ -12,45 +13,53 @@ export interface IScoreDisplayOptions {
 
 export class ScoreDisplay extends Container {
 
-    protected _score: number;
+    public score: number;
     protected _scoreAsText: PixiText;
-    protected _textContainer: Container = new Container();
-    protected onScoreChangeComplete: () => void;
+    protected _titleText: PixiText;
+    protected _scoreBackground: Spine;
+    protected _onScoreChangeComplete: () => void;
 
-    get score() {
-        return this._score;
-    }
 
     constructor(options: IScoreDisplayOptions) {
         super()
+        
+        this._scoreBackground = new Spine(Assets.get("bigWins").spineData);
+        this._scoreBackground.skeleton.setSkinByName("default");
+        this._scoreBackground.state.setAnimation(0, "static", true);
+        this._scoreBackground.scale.set(0.35);
+        this._scoreBackground.position = {
+            x: this._scoreBackground.width * 0.5,
+            y: this._scoreBackground.height * 0.5
+        }
+        this.addChild(this._scoreBackground)
 
-        this.onScoreChangeComplete = options.onScoreChangeComplete;
-
-        const title: PixiText = new PixiText(options.titleString, {
-            fill: "black",
+        this._titleText = new PixiText(options.titleString, {
+            fill: "white",
+            fontFamily: "PR_Viking",
             align: "center"
         });
-        const titleTextBackground = new Graphics();
-        titleTextBackground.beginFill(0xFFFFFF)
-            .drawRoundedRect(0, 0, title.width, title.height, 3)
-            .endFill()
-            .addChild(title);
-        this._textContainer.addChild(titleTextBackground);
+        this._titleText.position = {
+            x: this._scoreBackground.x - this._titleText.width * 0.5,
+            y: this._scoreBackground.y - this._titleText.height
+        };
+        this.addChild(this._titleText)
         
-        this._score = options.score ? options.score : 0;
-        this._scoreAsText = new PixiText(`${this._score}`, {
+        this.score = options.score ? options.score : 0;
+        this._scoreAsText = new PixiText(`${this.score}`, {
             fill: "white",
+            fontFamily: "PR_Viking",
             align: "center",
             stroke: "black",
-            strokeThickness: 1
+            strokeThickness: 2
         });
         this._scoreAsText.position = {
-            x: titleTextBackground.width * 0.5 - this._scoreAsText.width * 0.5,
-            y: titleTextBackground.height * 1.5
+            x: this._scoreBackground.x - this._scoreAsText.width * 0.5,
+            y: this._scoreBackground.y + this._scoreAsText.height * 0.25,
         };
-        this._textContainer.addChild(this._scoreAsText);
+        this.addChild(this._scoreAsText);
 
-        this.addChild(this._textContainer);
+        this._onScoreChangeComplete = options.onScoreChangeComplete;
+
     }
 
     public updateScore(targetScore: number) {
@@ -61,12 +70,16 @@ export class ScoreDisplay extends Container {
             onUpdate: this.showScore.bind(this),
 
             onComplete: () => {
-                if(this.onScoreChangeComplete) {
-                    this.onScoreChangeComplete();
+                if(this._onScoreChangeComplete) {
+                    this._onScoreChangeComplete();
                 }
                 gsap.to(this._scoreAsText, {
-                    x: this._textContainer.width * 0.5 - this._scoreAsText.width * 0.5
+                    x: this._scoreBackground.x - this._scoreAsText.width * 0.5,
+                    onComplete: () => {
+                        this._scoreBackground.alpha = 1;
+                    }
                 });
+
             }
         });
     }
@@ -76,8 +89,8 @@ export class ScoreDisplay extends Container {
             return; 
         }
     
-        const score = Math.floor(Math.round(this._score));
-        if (this._score !== score) {
+        const score = Math.floor(Math.round(this.score));
+        if (this.score !== score) {
             this._scoreAsText.text = score.toString();
         }
     }
@@ -104,8 +117,9 @@ export class GridScoreDisplay extends ScoreDisplay {
 
             onComplete: () => {
                 this.removeChildren();
-                this.addChild(this._scoreAsText);
-                this.addChild(this._textContainer);
+                this.addChild(this._scoreBackground,
+                this._titleText,
+                this._scoreAsText);
             }
         });
 
@@ -129,7 +143,7 @@ export class GridScoreDisplay extends ScoreDisplay {
                 }
             });
             if (newScore) {
-                super.updateScore(this._score + newScore);
+                super.updateScore(this.score + newScore);
 
             }
             this.addChild(tokensContainer);
@@ -141,31 +155,24 @@ export class GridScoreDisplay extends ScoreDisplay {
 
         tokens.forEach(token => {
             const copyToken = new Token({
-                availWidth: token.availWidth,
-                availHeight: token.availHeight,
                 skIndex: token.skIndex
             });
-            copyToken.scale.set(0.3);
+            copyToken.scale.set(0.2);
             copyToken.width = Math.floor(copyToken.width);
             copyToken.position = {
                 x: Math.floor(((token.width * 0.75) * tokens.indexOf(token)) + Math.floor(token.width * 0.4)),
-                y: (token.height * 0.6 * this._trackedHeight) + (token.height * 0.4)
+                y: this._scoreAsText.y + ((token.height * 0.6 * this._trackedHeight))
             }
             copyToken.animate(true);
             displayTokenContainer.addChild(copyToken);
         });
 
         displayTokenContainer.position = {
-            x: (this._textContainer.width * 0.5) - (displayTokenContainer.width * 0.5),
-            y: this._textContainer.height
+            x: (this._scoreBackground.width * 0.5) - (displayTokenContainer.width * 0.5),
+            y: this._scoreBackground.height
         };
 
         return displayTokenContainer;
     }
 
-    public destroy(): void {
-        super.destroy();
-        eventEmitter.off('onMatch', this._recordMatchedTokensBound);
-        return;
-    }
 }

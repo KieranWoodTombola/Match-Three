@@ -4,11 +4,9 @@ import { eventEmitter } from "../../../event-emitter";
 import { gsap } from 'gsap';
 
 export interface IToken {
-    availWidth: number;
-    availHeight: number;
     parentID?: number;
-    verticalIndex?: number;
     parentSize?: number;
+    verticalIndex?: number;
     skIndex?: number;
 }
 
@@ -16,10 +14,9 @@ export class Token extends Container {
 
     public matched: boolean = false;
     private _parentID: number = 0;
+    private _parentHeight: number = 0;;
     private _parentSize: number = 0;
     public verticalIndex: number = 0;
-    private _availWidth: number = 0;
-    private _availHeight: number = 0;
     private _skin: Spine;
     public skIndex: number = -1;
 
@@ -27,33 +24,30 @@ export class Token extends Container {
         return this._parentID;
     }
 
-    public get availWidth() {
-        return this._availWidth;
-    }
 
-    public get availHeight() {
-        return this._availHeight;
-    }
-
-    public constructor(args: IToken) {
+    public constructor(options: IToken) {
         super();
 
         this.on('pointerdown', this.onClicked);
 
         this.interactive = false;
-        this._availWidth = args.availWidth;
-        this._availHeight = args.availHeight;
-        if (args.parentID) { this._parentID = args.parentID }
-        if (args.verticalIndex) { this.verticalIndex = args.verticalIndex }
-        if (args.parentSize) { this._parentSize = args.parentSize }
+        if (options.parentID) { this._parentID = options.parentID }
+        if (options.verticalIndex) { this.verticalIndex = options.verticalIndex }
         this._skin = new Spine(Assets.get('symbols').spineData);
-        if (args.skIndex) { this.setSkin(args.skIndex) }
+        if (options.skIndex) { this.setSkin(options.skIndex) }
         else { this.shuffleSkin() }
 
         this.width = Math.ceil(this._skin.width)
-        this.scale.set(0.4);
+        this.scale.set(0.2);
         this.pivot.set(0.5);
+
         this.addChild(this._skin);
+
+        if (options.parentSize) { 
+            this._parentSize = options.parentSize;
+            this._parentHeight = this._parentSize * this.height;
+        }
+
     }
 
     public onClicked(): void {
@@ -71,7 +65,7 @@ export class Token extends Container {
     }
 
     public shuffleSkin(): void {
-        const randomNumber = Math.round(Math.random() * (9 - 1) + 1);
+        const randomNumber = Math.round(Math.random() * (12 - 1) + 1);
         this.skIndex = randomNumber;
         this._skin.skeleton.setSkinByName(`${this.skIndex}`);
     }
@@ -91,7 +85,7 @@ export class Token extends Container {
     }
 
     public moveTo(desiredArrayPosition: number): void {
-        const TargetLocation = (this.availHeight / (this._parentSize / desiredArrayPosition));
+        const TargetLocation = (this._parentHeight /  this._parentSize) * desiredArrayPosition;
         gsap.to(this, {
             y: TargetLocation,
             duration: 1

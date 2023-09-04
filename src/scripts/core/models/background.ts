@@ -1,123 +1,163 @@
 import { Assets, Container, Sprite } from "pixi.js";
-import { eventEmitter } from "../../../event-emitter";
-import { Token } from "./token";
+import { Spine } from "pixi-spine";
+import { Ship } from "./ship";
+
 import { gsap } from "gsap";
+import { eventEmitter } from "../../../event-emitter";
 
 export class Background extends Container {
 
     private _viewWidth: number;
     private _viewHeight: number;
-    private _farWave: Sprite = new Sprite(Assets.get('waterSprite'));
-    private _midWaveContainer: Container = new Container();
-    private _midWave: Sprite = new Sprite(Assets.get('waterSprite'));
-    private _closeWave: Sprite = new Sprite(Assets.get('waterSprite'));
-    private _ship: Token;
-    private _splash: gsap.core.Timeline = gsap.timeline();
-    private _waveStartingPosition: number;
 
-    public get ship() {
-        return this._ship;
-    }
+    private _ships: Ship[] = [];
+
+    private _stormCloudsContainer: Container;
+    private _thunderFlash: Spine;
+    private _lightning: Spine;
+
+    private _closeWaveContainer: Container;
+    private _midWaveContainer: Container;
+    private _farWaveContainer: Container;
 
     constructor(viewWidth: number, viewHeight: number) {
         super();
+
+        eventEmitter.on('onMatch', this.playThunder, this);
 
         this.interactive = false;
         this._viewWidth = viewWidth;
         this._viewHeight = viewHeight;
 
-        eventEmitter.on('onMatch', this.animateShip, this);
+        const playerShip = new Ship(viewWidth * 0.5, viewHeight, 0.5);
+        const closeShip = new Ship(viewWidth * 0.1, viewHeight, 0.4);
+        const midShip = new Ship(viewWidth * 0.3, viewHeight, 0.3);
+        const farShip01 = new Ship(viewWidth * 0.8, viewHeight * 0.965, 0.2);
+        const farShip02 = new Ship(viewWidth * 0.65, viewHeight * 0.945, 0.2);
+        this._ships = [closeShip, midShip, playerShip, farShip01, farShip02];
 
-        this._waveStartingPosition = this._viewHeight * 0.5;
+        const stormCloudsBack = new Spine(Assets.get("introduction").spineData);
+        stormCloudsBack.skeleton.setSkinByName("skyCloudsBack");
+        this._thunderFlash = new Spine(Assets.get("introduction").spineData);
+        this._thunderFlash.skeleton.setSkinByName("thunderFlash");
+        this._lightning = new Spine(Assets.get("introduction").spineData);
+        this._lightning.skeleton.setSkinByName("lightning");
+        const stormCloudsFront = new Spine(Assets.get("introduction").spineData);
+        stormCloudsFront.skeleton.setSkinByName("skyCloudsFront");
 
-        this.initWave(this._farWave, this._viewWidth * 2, this._viewHeight);
-        this._farWave.y = this._waveStartingPosition;
-        this.initWave(this._midWave, this._viewWidth * 1.5, this._viewHeight);
-        this._midWave.y = this._waveStartingPosition;
-        this.initWave(this._closeWave, this._viewWidth * 2, this._viewHeight);
-        this._closeWave.y = this._waveStartingPosition;
-
-        this._ship = new Token({
-            availHeight: this._viewWidth,
-            availWidth: this._viewHeight,
-            skIndex: 1
-        });
-        this._ship.scale.set(1);
-        this._ship.position = {
-            x: this._viewWidth * 0.9 ,
-            y: this._viewHeight
-        }
-        this._ship.pivot = {
-            x: this._ship.width * 0.5, 
-            y: this._ship.height * 0.25
-        }
-        this._ship.angle = -20;
-        this._ship.alpha = 0;
-        gsap.to(this._ship, {
-            duration: 5,
-            repeat: -1,
-            yoyo: true,
-
-            y: this._ship.y + this._ship.height * 0.1,
-            angle: 20,
-        });
-
-        this._midWaveContainer.addChild(this._ship, this._midWave);
-
-        const background = new Sprite(Assets.get('background'));
-        background.width = this._viewWidth;
-        background.height = this._viewHeight;
-        
-        this.addWavesToTimeline(0.2, 0.2, 0.2, 2);
-        this.addChild(
-            background,
-            this._farWave,
-            this._midWaveContainer,
-            this._closeWave
+        this._stormCloudsContainer = new Container();
+        this._stormCloudsContainer.addChild(
+            stormCloudsBack,
+            this._thunderFlash,
+            this._lightning,
+            stormCloudsFront
         );
+        this._stormCloudsContainer.scale.set(0.5);
+        this._stormCloudsContainer.position = {
+            x: this._viewWidth * 0.5,
+            y: this._viewHeight * 0.5
+        }
+
+        this._closeWaveContainer = new Container();
+        this._midWaveContainer = new Container();
+        this._farWaveContainer = new Container();
+
+        const ground = new Spine(Assets.get("introduction").spineData);
+        ground.skeleton.setSkinByName("nature");
+        ground.position = {
+            x: this._viewWidth * 0.5,
+            y: this._viewHeight * 0.5
+        }
+
+        const farWave = this.initWave(this._viewWidth * 2, this._viewHeight, this._viewHeight * 0.4);
+        const midWave = this.initWave(this._viewWidth * 1.5, this._viewHeight, this._viewHeight * 0.45);
+        const closeWave = this.initWave(this._viewWidth * 2, this._viewHeight, this._viewHeight * 0.5);
+
+        this._closeWaveContainer.addChild(closeShip, closeWave);
+        this._midWaveContainer.addChild(midShip, midWave);
+        this._farWaveContainer.addChild(farShip01, farShip02, farWave);
+
+        this.setWaveTweens();
+        this._ships.forEach(ship => {
+            ship.rotateOnPivot();
+        })
+        this.addChild(
+            this._stormCloudsContainer,
+            this._farWaveContainer,
+            this._midWaveContainer,
+            this._closeWaveContainer,
+            ground
+        );
+
     }
 
-    public animateShip(): void {
-        this._ship.animate(false);
+    public playThunder(): void {
+        this._thunderFlash.alpha = 1;
+        this._lightning.alpha = 1;
+        this._thunderFlash.state.setAnimation(0, "introduction", false);
+        this._lightning.state.setAnimation(0, "introduction", false);
     }
 
-    public enterShip(): void {
-        this._ship.alpha = 1;
-        // gsap.from(this._ship, {
-        //     x: this._viewWidth + this._ship.width,
-        //     duration: 3
-        // })
+    public loopThunder(): void {
+        this._thunderFlash.alpha = 1;
+        this._lightning.alpha = 1;
+        this._thunderFlash.state.setAnimation(0, "introduction", true);
+        this._lightning.state.setAnimation(0, "introduction", true);
     }
 
-    private initWave(sprite: Sprite, width: number, height: number): void {
+    public stopThunder(): void {
+        this._thunderFlash.alpha = 0.001;
+        this._lightning.alpha = 0.001;
+        this._thunderFlash.state.setEmptyAnimation(0, 0);
+        this._lightning.state.setEmptyAnimation(0, 0);
+    }
+
+    private initWave(width: number, height: number, startingY: number): Sprite {
+        const sprite = new Sprite(Assets.get('waterSprite'));
         sprite.width = width;
         sprite.height = height;
+        sprite.y = startingY;
+
+        return sprite;
     }
 
-    private addWavesToTimeline(farWaveHeightMod: number, midWaveHeightMod: number, closeWaveHeightMod: number, duration: number): void {
-        const farTime = Math.floor(Math.random() * duration) + 3;
-        const midTime = Math.floor(Math.random() * duration) + 2;
-        const closeTime = Math.floor(Math.random() * duration) + 1;
+    public showShips(): void {
+        this._ships?.forEach(ship => {
+            ship.alpha = 1;
+        })
+    }
 
-        this._splash = gsap.timeline({
+    public enterShips(): void {
+        this._ships?.forEach(ship => {
+            ship.alpha = 1;
+            gsap.from (ship, {
+                duration: 60,
+                x: 0 - ship.width
+            });
+        });
+    }
+
+    private setWaveTweens(): void {
+        const farTime = Math.floor(Math.random()) + 3;
+        const midTime = Math.floor(Math.random()) + 2;
+        const closeTime = Math.floor(Math.random()) + 3;
+
+        const splash = gsap.timeline({
             repeat: -1,
             yoyo: true
-        });
-
-        this._splash.to(this._farWave, {
-            y: this._waveStartingPosition - (this._closeWave.height * farWaveHeightMod),
+        })
+        .to(this._farWaveContainer, {
+            y: this._viewHeight * 0.45 - (this._viewHeight * 0.5),
             duration: farTime,
         }, 0)
         .to(this._midWaveContainer, {
-            y: this._midWaveContainer.y - (this._midWave.height * midWaveHeightMod),
+            y: this._viewHeight * 0.45 - (this._viewHeight * 0.5),
             duration: midTime,
         }, 0)
-        .to(this._closeWave, {
-            y: this._waveStartingPosition - (this._closeWave.height * closeWaveHeightMod),
+        .to(this._closeWaveContainer, {
+            y: this._viewHeight * 0.3 - (this._viewHeight * 0.35),
             duration: closeTime,
         }, 0);
-
     }
-
 }
 
