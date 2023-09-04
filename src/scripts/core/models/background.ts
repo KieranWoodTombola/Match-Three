@@ -30,10 +30,10 @@ export class Background extends Container {
         this._viewHeight = viewHeight;
 
         const playerShip = new Ship(viewWidth * 0.5, viewHeight, 0.5);
-        const closeShip = new Ship(viewWidth * 0.1, viewHeight, 0.4);
-        const midShip = new Ship(viewWidth * 0.3, viewHeight, 0.3);
-        const farShip01 = new Ship(viewWidth * 0.8, viewHeight * 0.965, 0.2);
-        const farShip02 = new Ship(viewWidth * 0.65, viewHeight * 0.945, 0.2);
+        const closeShip = new Ship(viewWidth * 0.1, viewHeight * 0.95, 0.4);
+        const midShip = new Ship(viewWidth * 0.3, viewHeight * 0.95, 0.3);
+        const farShip01 = new Ship(viewWidth * 0.8, viewHeight * 0.86, 0.2);
+        const farShip02 = new Ship(viewWidth * 0.65, viewHeight * 0.88, 0.2);
         this._ships = [closeShip, midShip, playerShip, farShip01, farShip02];
 
         const stormCloudsBack = new Spine(Assets.get("introduction").spineData);
@@ -69,9 +69,9 @@ export class Background extends Container {
             y: this._viewHeight * 0.5
         }
 
-        const farWave = this.initWave(this._viewWidth * 2, this._viewHeight, this._viewHeight * 0.4);
-        const midWave = this.initWave(this._viewWidth * 1.5, this._viewHeight, this._viewHeight * 0.45);
-        const closeWave = this.initWave(this._viewWidth * 2, this._viewHeight, this._viewHeight * 0.5);
+        const farWave = this.initWave(this._viewWidth * 2.5, this._viewHeight, viewHeight * 0.25);
+        const midWave = this.initWave(this._viewWidth * 3, this._viewHeight, viewHeight * 0.3);
+        const closeWave = this.initWave(this._viewWidth * 4, this._viewHeight, viewHeight * 0.35);
 
         this._closeWaveContainer.addChild(closeShip, closeWave);
         this._midWaveContainer.addChild(midShip, midWave);
@@ -113,7 +113,7 @@ export class Background extends Container {
     }
 
     private initWave(width: number, height: number, startingY: number): Sprite {
-        const sprite = new Sprite(Assets.get('waterSprite'));
+        const sprite = new Sprite(Assets.get("water"));
         sprite.width = width;
         sprite.height = height;
         sprite.y = startingY;
